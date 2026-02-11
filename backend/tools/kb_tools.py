@@ -15,6 +15,7 @@ def _safe_dump(data: Any) -> str:
 
 @tool("Search Knowledge Base")
 def search_kb_tool(query: str, collection: str = "narratives", filters: Optional[Dict[str, Any]] = None, limit: int = 5) -> str:
+    """Search Weaviate collections for related items."""
     try:
         if collection == "narratives":
             results = kb.find_similar_narratives(query, activity_type=filters.get("activity_type") if filters else None, top_k=limit)
@@ -32,6 +33,7 @@ def search_kb_tool(query: str, collection: str = "narratives", filters: Optional
 
 @tool("Get Report Schema")
 def get_schema_tool(report_type: str) -> str:
+    """Fetch the JSON schema for a report type from PostgreSQL."""
     try:
         schema = kb.get_schema(report_type)
         return _safe_dump(schema)
@@ -42,6 +44,7 @@ def get_schema_tool(report_type: str) -> str:
 
 @tool("Get Validation Rules")
 def get_validation_rules_tool(report_type: str) -> str:
+    """Fetch validation rules for a report type from PostgreSQL."""
     try:
         rules = kb.get_validation_rules(report_type)
         return _safe_dump(rules)
@@ -52,6 +55,7 @@ def get_validation_rules_tool(report_type: str) -> str:
 
 @tool("Convert Structured Data to Narrative")
 def convert_to_narrative_tool(transaction_data: str) -> str:
+    """Convert structured transaction JSON into a narrative summary."""
     try:
         payload = json.loads(transaction_data)
         narrative = kb.convert_structured_to_narrative(payload)
@@ -63,6 +67,7 @@ def convert_to_narrative_tool(transaction_data: str) -> str:
 
 @tool("Get Field Mappings")
 def get_field_mappings_tool(report_type: str) -> str:
+    """Fetch field mappings for a report type from PostgreSQL."""
     try:
         mappings = kb.get_field_mappings(report_type)
         return _safe_dump(mappings)
@@ -73,6 +78,7 @@ def get_field_mappings_tool(report_type: str) -> str:
 
 @tool("Add to Knowledge Base")
 def add_to_kb_tool(collection: str, data: str) -> str:
+    """Add a narrative or regulation entry to Weaviate."""
     try:
         payload = json.loads(data)
         if collection == "narratives":

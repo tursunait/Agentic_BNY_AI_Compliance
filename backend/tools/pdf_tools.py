@@ -13,6 +13,7 @@ from reportlab.pdfgen import canvas
 
 @tool("Fill PDF Form")
 def fill_pdf_form_tool(template_path: str, field_data: str, output_path: str) -> str:
+    """Fill PDF form fields using a JSON payload and write to output_path."""
     try:
         fields = json.loads(field_data)
         template = PdfReader(template_path)
@@ -48,6 +49,7 @@ def fill_pdf_form_tool(template_path: str, field_data: str, output_path: str) ->
 
 @tool("Generate Report PDF")
 def generate_report_pdf_tool(case_data: str, narrative: str, report_type: str) -> str:
+    """Generate a summary PDF report from case data and narrative text."""
     try:
         data = json.loads(case_data)
     except json.JSONDecodeError:

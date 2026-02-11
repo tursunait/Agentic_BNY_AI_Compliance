@@ -61,9 +61,10 @@ class WeaviateClient:
         self.url = url
         self.api_key = api_key
         self.openai = OpenAIClient()
+        auth = weaviate.AuthApiKey(api_key=self.api_key) if self.api_key else None
         self.client = weaviate.Client(
             url=self.url,
-            additional_headers={"X-API-KEY": self.api_key},
+            auth_client_secret=auth,
             timeout_config=(5, 30),
         )
         logger.debug("Weaviate client initialized at %s", self.url)

@@ -21,10 +21,11 @@ from sqlalchemy import (
     func,
     create_engine,
 )
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
-DATABASE_URL = "postgresql://postgres:postgres@postgres:5432/compliance"
+from backend.config.settings import settings
 
 
 @contextmanager
@@ -150,10 +151,17 @@ Index("idx_job_status_status", JobStatus.status)
 
 
 class PostgreSQLClient:
-    def __init__(self, database_url: str = DATABASE_URL):
+    def __init__(self, database_url: Optional[str] = None):
+        database_url = database_url or settings.DATABASE_URL
         self.engine = create_engine(database_url, future=True)
         self.SessionLocal = sessionmaker(bind=self.engine, future=True)
-        logger.debug("PostgreSQL client connected to %s", database_url)
+        parsed = make_url(database_url)
+        logger.debug(
+            "PostgreSQL client configured for user={} host={} db={}",
+            parsed.username,
+            parsed.host,
+            parsed.database,
+        )
 
     def create_tables(self) -> None:
         Base.metadata.create_all(bind=self.engine)
