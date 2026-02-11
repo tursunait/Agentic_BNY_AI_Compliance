@@ -1,0 +1,16 @@
+fastapi[all]==0.109.0
+crewai==0.80.0
+weaviate-client==3.24.2
+psycopg2-binary==2.9.9
+redis==5.0.1
+pydantic>=2.6.1
+python-dotenv==1.0.0
+pydantic-settings==2.12.0
+loguru==0.7.2
+pytest>=8.0.0
+openai>=1.13.3
+langchain==0.2.16
+reportlab==4.0.8
+pdfrw==0.4
+httpx==0.26.0
+playwright==1.41.0
