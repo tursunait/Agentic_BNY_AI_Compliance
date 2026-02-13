@@ -1,7 +1,13 @@
 """Seed the knowledge base with initial data"""
 
 import json
+import sys
 from datetime import date
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from backend.knowledge_base.kb_manager import KBManager
 from backend.knowledge_base.postgres_client import PostgreSQLClient

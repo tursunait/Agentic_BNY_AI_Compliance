@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import weaviate
@@ -67,14 +68,20 @@ class WeaviateClient:
             auth_client_secret=auth,
             timeout_config=(5, 30),
         )
-        logger.debug("Weaviate client initialized at %s", self.url)
+        logger.debug("Weaviate client initialized at {}", self.url)
 
     def create_schema(self) -> None:
         configs = [NARRATIVES_CONFIG, REGULATIONS_CONFIG, DEFINITIONS_CONFIG]
+        schema_state = self.client.schema.get()
+        existing_classes = {
+            cls.get("class")
+            for cls in schema_state.get("classes", [])
+            if isinstance(cls, dict) and cls.get("class")
+        }
         for config in configs:
             try:
-                if self.client.schema.contains(config.name):
-                    logger.debug("Collection %s already exists", config.name)
+                if config.name in existing_classes:
+                    logger.debug("Collection {} already exists", config.name)
                     continue
 
                 schema = {
@@ -86,12 +93,11 @@ class WeaviateClient:
                         "efConstruction": 128,
                         "maxConnections": 64,
                     },
-                    "vectorDimension": config.vector_dim,
                 }
-                self.client.schema.create_collection(schema)
-                logger.info("Created collection %s", config.name)
+                self.client.schema.create_class(schema)
+                logger.info("Created collection {}", config.name)
             except Exception as exc:
-                logger.error("Failed to create collection %s: %s", config.name, exc)
+                logger.error("Failed to create collection {}: {}", config.name, exc)
                 raise
 
     @staticmethod
@@ -132,9 +138,51 @@ class WeaviateClient:
             return None
         return clauses[0] if len(clauses) == 1 else Where(operator="And", operands=clauses)
 
+    @staticmethod
+    def _date_properties(config: _CollectionConfig) -> set[str]:
+        return {
+            prop.get("name")
+            for prop in config.properties
+            if isinstance(prop, dict)
+            and prop.get("name")
+            and "date" in (prop.get("dataType") or [])
+        }
+
+    @staticmethod
+    def _to_rfc3339(value: Any) -> Any:
+        if value is None:
+            return value
+        if isinstance(value, datetime):
+            dt = value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        if isinstance(value, date):
+            return datetime(value.year, value.month, value.day, tzinfo=timezone.utc).isoformat().replace(
+                "+00:00", "Z"
+            )
+        if isinstance(value, str):
+            text = value.strip()
+            if len(text) == 10:
+                try:
+                    parsed = date.fromisoformat(text)
+                    return datetime(
+                        parsed.year, parsed.month, parsed.day, tzinfo=timezone.utc
+                    ).isoformat().replace("+00:00", "Z")
+                except ValueError:
+                    return value
+            return value
+        return value
+
+    def _normalize_date_fields(self, config: _CollectionConfig, payload: Dict[str, Any]) -> Dict[str, Any]:
+        normalized = dict(payload)
+        for key in self._date_properties(config):
+            if key in normalized:
+                normalized[key] = self._to_rfc3339(normalized[key])
+        return normalized
+
     def add_narrative(self, narrative_data: Dict[str, Any]) -> str:
         vector = self.embed_text(narrative_data.get("text", ""))
         payload = {k: v for k, v in narrative_data.items() if k != "id"}
+        payload = self._normalize_date_fields(NARRATIVES_CONFIG, payload)
         object_id = self.client.data_object.create(
             data_object=payload,
             class_name=NARRATIVES_CONFIG.name,
@@ -146,6 +194,7 @@ class WeaviateClient:
     def add_regulation(self, regulation_data: Dict[str, Any]) -> str:
         vector = self.embed_text(regulation_data.get("text", ""))
         payload = {k: v for k, v in regulation_data.items() if k != "id"}
+        payload = self._normalize_date_fields(REGULATIONS_CONFIG, payload)
         object_id = self.client.data_object.create(
             data_object=payload,
             class_name=REGULATIONS_CONFIG.name,
@@ -224,5 +273,5 @@ class WeaviateClient:
         return response.get("data", {}).get("Get", {}).get(NARRATIVES_CONFIG.name, [])
 
     def delete_collection(self, collection_name: str) -> None:
-        self.client.schema.delete_collection(collection_name)
-        logger.info("Deleted collection %s", collection_name)
+        self.client.schema.delete_class(collection_name)
+        logger.info("Deleted collection {}", collection_name)

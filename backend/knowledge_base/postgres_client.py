@@ -167,8 +167,17 @@ class PostgreSQLClient:
         Base.metadata.create_all(bind=self.engine)
         logger.info("PostgreSQL schema created/verified")
 
+    @contextmanager
     def _session(self):
-        return self.SessionLocal()
+        session = self.SessionLocal()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
     def get_schema(self, report_type: str) -> Optional[Dict[str, Any]]:
         with self._session() as session:
@@ -177,30 +186,55 @@ class PostgreSQLClient:
 
     def add_schema(self, report_type: str, version: str, schema_json: Dict[str, Any], effective_date: str, is_active: bool = True) -> uuid.UUID:
         with self._session() as session:
-            record = ReportSchema(
-                report_type=report_type,
-                version=version,
-                schema_json=schema_json,
-                effective_date=datetime.fromisoformat(effective_date).date(),
-                is_active=is_active,
-            )
+            record = session.query(ReportSchema).filter_by(report_type=report_type).one_or_none()
+            if record:
+                record.version = version
+                record.schema_json = schema_json
+                record.effective_date = datetime.fromisoformat(effective_date).date()
+                record.is_active = is_active
+            else:
+                record = ReportSchema(
+                    report_type=report_type,
+                    version=version,
+                    schema_json=schema_json,
+                    effective_date=datetime.fromisoformat(effective_date).date(),
+                    is_active=is_active,
+                )
             session.add(record)
             session.flush()
-            logger.info("Schema stored for report_type=%s", report_type)
+            logger.info("Schema stored for report_type={}", report_type)
             return record.id
 
     def add_validation_rule(self, rule: Dict[str, Any]) -> uuid.UUID:
         with self._session() as session:
-            record = ValidationRule(
-                report_type=rule["report_type"],
-                rule_id=rule["rule_id"],
-                rule_json=rule["rule_json"],
-                severity=Severity(rule["severity"]),
-                description=rule.get("description"),
+            schema_exists = (
+                session.query(ReportSchema.id)
+                .filter_by(report_type=rule["report_type"])
+                .first()
+                is not None
             )
+            if not schema_exists:
+                raise ValueError(
+                    f"Cannot add validation rule for unknown report_type={rule['report_type']}"
+                )
+
+            record = session.query(ValidationRule).filter_by(rule_id=rule["rule_id"]).one_or_none()
+            if record:
+                record.report_type = rule["report_type"]
+                record.rule_json = rule["rule_json"]
+                record.severity = Severity(rule["severity"])
+                record.description = rule.get("description")
+            else:
+                record = ValidationRule(
+                    report_type=rule["report_type"],
+                    rule_id=rule["rule_id"],
+                    rule_json=rule["rule_json"],
+                    severity=Severity(rule["severity"]),
+                    description=rule.get("description"),
+                )
             session.add(record)
             session.flush()
-            logger.debug("Validation rule %s stored", record.rule_id)
+            logger.debug("Validation rule {} stored", record.rule_id)
             return record.id
 
     def get_validation_rules(self, report_type: str) -> List[Dict[str, Any]]:
