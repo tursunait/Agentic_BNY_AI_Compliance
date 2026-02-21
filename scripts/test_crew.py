@@ -1,5 +1,6 @@
-"""Test the complete CrewAI workflow with sample transaction data"""
+"""Test the complete CrewAI workflow with sample transaction data."""
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -25,16 +26,32 @@ sample_transaction = {
 }
 
 
+def _load_input(path: str | None) -> dict:
+    if not path:
+        return sample_transaction
+    with open(path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--input",
+        default="",
+        help="Optional path to case JSON file. If omitted, built-in sample is used.",
+    )
+    args = parser.parse_args()
+    payload = _load_input(args.input or None)
+
     print("=" * 60)
     print("TESTING COMPLIANCE CREW WORKFLOW")
     print("=" * 60)
     print("\nInput Transaction Data:")
-    print(json.dumps(sample_transaction, indent=2))
+    print(json.dumps(payload, indent=2))
     print("\n" + "=" * 60)
     print("STARTING CREW EXECUTION...")
     print("=" * 60 + "\n")
-    result = create_compliance_crew(sample_transaction)
+    result = create_compliance_crew(payload)
     print("\n" + "=" * 60)
     print("FINAL RESULT:")
     print("=" * 60)

@@ -1,0 +1,143 @@
+{
+  "document_id": "FINCEN-SAR-INSTRUCTIONS-2025",
+  "document_title": "FinCEN Suspicious Activity Report Instructions",
+  "document_type": "regulatory_guidance",
+  "issuing_authority": "FinCEN",
+  "effective_date": "2025-10-09",
+  "report_types": ["SAR"],
+  "version": "2025",
+  "source_url": "https://www.fincen.gov/resources/filing-information",
+  "sections": [
+    {
+      "section_id": "safe-harbor",
+      "section_title": "Safe Harbor Provisions",
+      "section_number": "1",
+      "category": "legal_protections",
+      "keywords": ["safe harbor", "civil liability", "protection", "disclosure"],
+      "text": "Federal law (31 U.S.C. 5318(g)(3)) provides complete protection from civil liability for all reports of suspicious transactions made to appropriate authorities, including supporting documentation, regardless of whether such reports are filed pursuant to this report's instructions or are filed on a voluntary basis. Specifically, the law provides that a financial institution, and its directors, officers, employees and agents, that make a disclosure of any possible violation of law or regulation, including in connection with the preparation of suspicious activity reports, \"shall not be liable to any person under any law or regulation of the United States, any constitution, law, or regulation of any State or political subdivision of any State, or under any contract or other legally enforceable agreement (including any arbitration agreement), for such disclosure or for any failure to provide notice of such disclosure to the person who is the subject of such disclosure or any other person identified in the disclosure\".",
+      "practical_guidance": "Financial institutions and their employees are fully protected from lawsuits when filing SARs in good faith",
+      "agent_usage_notes": "Reference this when explaining legal protections in narratives"
+    },
+    {
+      "section_id": "notification-prohibited",
+      "section_title": "Notification Prohibited",
+      "section_number": "2",
+      "category": "legal_requirements",
+      "keywords": ["notification", "prohibited", "confidentiality", "tipping off"],
+      "text": "Federal law (31 U.S.C. 5318(g)(2)) requires that a financial institution, and its directors, officers, employees and agents who, voluntarily or by means of a suspicious activity report, report suspected or known criminal violations or suspicious activities may not notify any person involved in the transaction that the transaction has been reported.",
+      "practical_guidance": "It is illegal to inform a customer that a SAR has been filed about them",
+      "agent_usage_notes": "Never include language in narratives suggesting the customer will be notified"
+    },
+    {
+      "section_id": "when-insider-abuse",
+      "section_title": "When to File SAR - Insider Abuse",
+      "section_number": "3.1.a",
+      "category": "filing_thresholds",
+      "keywords": ["insider abuse", "employee", "director", "officer", "no threshold"],
+      "text": "Insider abuse involving any amount. Whenever the financial institution detects any known or suspected Federal criminal violation, or pattern of criminal violations, committed or attempted against the financial institution or involving a transaction or transactions conducted through the financial institution, where the financial institution believes that it was either an actual or potential victim of a criminal violation, or series of criminal violations, or that the financial institution was used to facilitate a criminal transaction, and the financial institution has a substantial basis for identifying one of its directors, officers, employees, agents or other institution-affiliated parties as having committed or aided in the commission of a criminal act regardless of the amount involved in the violation.",
+      "filing_threshold": 0.0,
+      "requires_suspect_identified": true,
+      "practical_guidance": "Must file SAR for any amount if insider is involved",
+      "agent_usage_notes": "Check if subject is an insider (employee, officer, director, agent) - if yes, amount threshold does NOT apply"
+    },
+    {
+      "section_id": "when-5000-suspect-identified",
+      "section_title": "When to File SAR - $5,000+ with Suspect",
+      "section_number": "3.1.b",
+      "category": "filing_thresholds",
+      "keywords": ["5000", "suspect identified", "threshold"],
+      "text": "Violations aggregating $5,000 or more where a suspect can be identified. Whenever the financial institution detects any known or suspected Federal criminal violation, or pattern of criminal violations, committed or attempted against the financial institution or involving a transaction or transactions conducted through the financial institution and involving or aggregating $5,000 or more in funds or other assets, where the financial institution believes that it was either an actual or potential victim of a criminal violation, or series of criminal violations, or that the financial institution was used to facilitate a criminal transaction, and the financial institution has a substantial basis for identifying a possible suspect or group of suspects.",
+      "filing_threshold": 5000.0,
+      "requires_suspect_identified": true,
+      "practical_guidance": "File SAR when amount ≥ $5,000 AND you can identify a suspect",
+      "agent_usage_notes": "Validator should check: amount ≥ $5,000 AND subject identified"
+    },
+    {
+      "section_id": "when-25000-no-suspect",
+      "section_title": "When to File SAR - $25,000+ No Suspect Required",
+      "section_number": "3.1.c",
+      "category": "filing_thresholds",
+      "keywords": ["25000", "no suspect", "threshold"],
+      "text": "Violations aggregating $25,000 or more regardless of a potential suspect. Whenever the financial institution detects any known or suspected Federal criminal violation, or pattern of criminal violations, committed or attempted against the financial institution or involving a transaction or transactions conducted through the financial institution and involving or aggregating $25,000 or more in funds or other assets, where the financial institution believes that it was either an actual or potential victim of a criminal violation, or series of criminal violations, or that the financial institution was used to facilitate a criminal transaction, even though there is no substantial basis for identifying a possible suspect or group of suspects.",
+      "filing_threshold": 25000.0,
+      "requires_suspect_identified": false,
+      "practical_guidance": "File SAR when amount ≥ $25,000 even if you cannot identify the suspect",
+      "agent_usage_notes": "Validator should allow SAR with no suspect if amount ≥ $25,000"
+    },
+    {
+      "section_id": "when-money-laundering",
+      "section_title": "When to File SAR - Money Laundering ($5,000+)",
+      "section_number": "3.1.d",
+      "category": "filing_thresholds",
+      "keywords": ["money laundering", "5000", "BSA", "suspicious"],
+      "text": "Transactions aggregating $5,000 or more that involve potential money laundering or violations of the Bank Secrecy Act. Any transaction (which for purposes of this subsection means a deposit, withdrawal, transfer between accounts, exchange of currency, loan, extension of credit, purchase or sale of any stock, bond, certificate of deposit, or other monetary instrument or investment security, or any other payment, transfer, or delivery by, through, or to a financial institution, by whatever means effected) conducted or attempted by, at or through the financial institution and involving or aggregating $5,000 or more in funds or other assets, if the financial institution knows, suspects, or has reason to suspect that:\n\n(i) The transaction involves funds derived from illegal activities or is intended or conducted in order to hide or disguise funds or assets derived from illegal activities (including, without limitation, the ownership, nature, source, location, or control of such funds or assets) as part of a plan to violate or evade any law or regulation or to avoid any transaction reporting requirement under Federal law;\n\n(ii) The transaction is designed to evade any regulations promulgated under the Bank Secrecy Act; or\n\n(iii) The transaction has no business or apparent lawful purpose or is not the sort in which the particular customer would normally be expected to engage, and the financial institution knows of no reasonable explanation for the transaction after examining the available facts, including the background and possible purpose of the transaction.",
+      "filing_threshold": 5000.0,
+      "requires_suspect_identified": false,
+      "practical_guidance": "File SAR for suspicious transactions ≥ $5,000 even without identifying a specific suspect",
+      "agent_usage_notes": "This is the most common SAR trigger - focus on suspicious nature, not just amount"
+    },
+    {
+      "section_id": "ctr-and-sar-relationship",
+      "section_title": "Relationship Between CTR and SAR",
+      "section_number": "3.1.d.note",
+      "category": "filing_requirements",
+      "keywords": ["CTR", "currency transaction report", "10000", "suspicious"],
+      "text": "The Bank Secrecy Act requires all financial institutions to file currency transaction reports (CTRs) in accordance with the Department of the Treasury's implementing regulations (31 CFR Part 103). These regulations require a financial institution to file a CTR whenever a currency transaction exceeds $10,000. If a currency transaction exceeds $10,000 and is suspicious, the institution must file both a CTR (reporting the currency transaction) and a suspicious activity report (reporting the suspicious or criminal aspects of the transaction). If a currency transaction equals or is below $10,000 and is suspicious, the institution should only file a suspicious activity report.",
+      "practical_guidance": "Cash > $10K + suspicious = File BOTH CTR and SAR. Cash < $10K + suspicious = File SAR only",
+      "agent_usage_notes": "Router agent should check for BOTH filing requirements when cash ≥ $10,000"
+    },
+    {
+      "section_id": "timeline-30-days",
+      "section_title": "Filing Timeline - 30 Days",
+      "section_number": "3.3",
+      "category": "filing_deadlines",
+      "keywords": ["30 days", "deadline", "timeline", "filing requirement"],
+      "text": "A financial institution is required to file a suspicious activity report no later than 30 calendar days after the date of initial detection of facts that may constitute a basis for filing a suspicious activity report. If no suspect was identified on the date of detection of the incident requiring the filing, a financial institution may delay filing a suspicious activity report for an additional 30 calendar days to identify a suspect. In no case shall reporting be delayed more than 60 calendar days after the date of initial detection of a reportable transaction.",
+      "filing_deadline_days": 30,
+      "extension_allowed": true,
+      "extension_days": 30,
+      "maximum_delay_days": 60,
+      "practical_guidance": "File within 30 days. Can extend to 60 days if trying to identify suspect",
+      "agent_usage_notes": "Validator should check if filing is timely based on detection date"
+    },
+    {
+      "section_id": "faq-structuring-2025",
+      "section_title": "FAQ - Structuring (October 2025 Update)",
+      "section_number": "FAQ-1",
+      "category": "recent_guidance",
+      "keywords": ["structuring", "10000", "CTR threshold", "evasion", "2025"],
+      "text": "Is a financial institution required to file a SAR for a transaction or a series of transactions with a value at or near the currency transaction reporting (CTR) threshold (i.e., over $10,000) absent information that the transaction or series of transactions is designed to evade BSA reporting requirements?\n\nNo. The mere presence of a transaction or series of transactions by or on behalf of the same person at or near the $10,000 CTR threshold is not information sufficient to require the filing of a SAR. Financial institutions are only required to file a SAR if the institution knows, suspects, or has reason to suspect that the transaction or series of transactions are designed to evade CTR reporting requirements. Absent this knowledge, suspicion, or reason to suspect, financial institutions are not required to file a SAR.",
+      "effective_date": "2025-10-09",
+      "supersedes_prior_guidance": true,
+      "practical_guidance": "Do NOT file structuring SAR just because transactions are near $10K - need evidence of evasion intent",
+      "agent_usage_notes": "Router/Validator: Check for EVIDENCE of structuring intent (multiple branches, evasive behavior), not just amount pattern",
+      "compliance_relief": true
+    },
+    {
+      "section_id": "faq-continuing-activity-2025",
+      "section_title": "FAQ - No Mandatory Continuing Activity Reviews",
+      "section_number": "FAQ-2",
+      "category": "recent_guidance",
+      "keywords": ["continuing activity", "90 day review", "monitoring", "2025"],
+      "text": "Is a financial institution required to conduct a review of a customer or account following the filing of a SAR to determine whether suspicious activity has continued?\n\nNo. A financial institution is not required to conduct a separate review—manual or otherwise—of a customer or account following the filing of a SAR to determine whether suspicious activity has continued. Financial institutions instead may rely on risk-based internal policies, procedures, and controls to monitor and report suspicious activity as appropriate, provided those internal policies, procedures, and controls are reasonably designed to identify and report such activity.",
+      "effective_date": "2025-10-09",
+      "supersedes_prior_guidance": true,
+      "practical_guidance": "No requirement to manually review accounts after every SAR filing",
+      "agent_usage_notes": "System does not need special 90-day review logic",
+      "compliance_relief": true
+    },
+    {
+      "section_id": "faq-no-sar-documentation-2025",
+      "section_title": "FAQ - No Documentation Required for No-SAR Decisions",
+      "section_number": "FAQ-4",
+      "category": "recent_guidance",
+      "keywords": ["no SAR", "documentation", "decision", "2025"],
+      "text": "Is a financial institution required to document the decision not to file a SAR?\n\nNo. There is no requirement or expectation under the BSA or its implementing regulations for a financial institution to document its decision not to file a SAR. Should a financial institution choose to document its decision not to file a SAR, the level of appropriate documentation may vary based on the specifics of the activity being reviewed and need not exceed that which is necessary for the institution's internal policies, procedures, and controls, which should be risk-based and reasonably designed to identify and report suspicious activity. In most cases, a short, concise statement documenting a financial institution's SAR decision will likely suffice.",
+      "effective_date": "2025-10-09",
+      "supersedes_prior_guidance": true,
+      "practical_guidance": "No need to document why you did NOT file a SAR. If you choose to, keep it brief.",
+      "agent_usage_notes": "System logs can be minimal for no-SAR decisions",
+      "compliance_relief": true
+    }
+  ]
+}

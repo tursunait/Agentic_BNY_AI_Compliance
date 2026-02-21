@@ -1,9 +1,10 @@
-"""Seed the knowledge base with initial data"""
+"""Seed the knowledge base with initial data."""
 
 import json
 import sys
 from datetime import date
 from pathlib import Path
+from typing import Any, Dict
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -12,42 +13,42 @@ if str(ROOT) not in sys.path:
 from backend.knowledge_base.kb_manager import KBManager
 from backend.knowledge_base.postgres_client import PostgreSQLClient
 
+SAR_SCHEMA_PATH = ROOT / "knowledge_base" / "schemas" / "sar_schema.json"
+
+
+def load_schema(schema_path: Path) -> Dict[str, Any]:
+    """Load a report schema JSON file from disk."""
+    if not schema_path.exists():
+        raise FileNotFoundError(f"Schema file not found: {schema_path}")
+
+    with schema_path.open("r", encoding="utf-8") as handle:
+        schema = json.load(handle)
+
+    if not isinstance(schema, dict):
+        raise ValueError(f"Schema file must contain a JSON object: {schema_path}")
+
+    return schema
+
 
 def seed_postgres(db: PostgreSQLClient) -> None:
     db.create_tables()
-    sar_schema = {
-        "report_type": "SAR",
-        "version": "2.0",
-        "form_number": "FinCEN Form 112",
-        "sections": [
-            {
-                "section_id": "1",
-                "section_name": "Subject Information",
-                "fields": [
-                    {
-                        "field_id": "1a",
-                        "field_name": "last_name",
-                        "data_type": "string",
-                        "required": True,
-                        "max_length": 50,
-                    },
-                ],
-            }
-        ],
-    }
+    sar_schema = load_schema(SAR_SCHEMA_PATH)
+    report_type = sar_schema.get("report_type", "SAR")
+    version = sar_schema.get("version", "1.0")
+    effective_date = sar_schema.get("effective_date", date.today().isoformat())
 
     db.add_schema(
-        report_type="SAR",
-        version="2.0",
+        report_type=report_type,
+        version=version,
         schema_json=sar_schema,
-        effective_date=date.today().isoformat(),
+        effective_date=effective_date,
     )
-    print("✓ Added SAR schema")
+    print(f"✓ Added {report_type} schema from {SAR_SCHEMA_PATH}")
 
     rules = [
         {
             "rule_id": "SAR-C001",
-            "report_type": "SAR",
+            "report_type": report_type,
             "severity": "critical",
             "rule_json": {
                 "condition": "subject.last_name IS NOT NULL OR subject.ssn IS NOT NULL",

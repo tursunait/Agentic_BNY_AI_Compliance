@@ -1,0 +1,257 @@
+[
+  {
+    "case_id": "CASE-2025-850001",
+    "scenario": "Blocked wire to sanctioned industrial firm (EO 14024)",
+    "applicable_reports": [
+      "initial_blocking_10day",
+      "annual_blocked_property"
+    ],
+    "screening_hit": {
+      "target_name": "Nordic Steel LLC",
+      "sdn_id": "Z1234567890",
+      "entity_type": "Entity",
+      "nationality": "Russian",
+      "aliases": [
+        "Nordic Steel Incorporated",
+        "NSI"
+      ],
+      "sanctions_program": "RUSSIA-EO14024",
+      "reason": "Payment beneficiary listed under EO 14024 for supplying steel to prohibited military projects.",
+      "screening_system": "ASF-PATROL",
+      "match_score": 98.2
+    },
+    "transaction": {
+      "transaction_id": "TX-2025-1001",
+      "transaction_date": "2025-01-08",
+      "amount": 250000,
+      "currency": "EUR",
+      "exchange_rate": 1.07,
+      "transaction_type": "Wire Transfer",
+      "swift_message": "SWIFT MT103\n:20:REF123456\n:23B:CRED\n:32A:250108EUR250000,\n:50K:/12345678\nABC BANK USA\n:59:/987654321\nNORDIC STEEL LLC\n:70:Invoice 4581",
+      "blocking_date": "2025-01-09"
+    },
+    "institution": {
+      "name": "Atlas Bank, N.A.",
+      "ein": "98-7654321"
+    },
+    "contact": {
+      "name": "Marina Ellis",
+      "phone": "+1-202-555-0147",
+      "email": "marina.ellis@atlasbank.com"
+    },
+    "attachments": {
+      "preferred": "SWIFT Message"
+    },
+    "annual_blocked_properties": [
+      {
+        "property_description": "Wire transfer to steel supplier Nordic Steel LLC",
+        "sdn_name": "Nordic Steel LLC",
+        "sdn_id": "Z1234567890",
+        "blocking_date": "2025-01-09",
+        "amount_usd": 267500.0,
+        "legal_authority": "RUSSIA-EO14024",
+        "institution_name": "Atlas Bank, N.A.",
+        "institution_ein": "98-7654321",
+        "contact_name": "Marina Ellis",
+        "contact_phone": "+1-202-555-0147",
+        "contact_email": "marina.ellis@atlasbank.com"
+      },
+      {
+        "property_description": "Suspicious reserve holding for Nordica Metals",
+        "sdn_name": "Nordica Metals",
+        "sdn_id": "Z0987654321",
+        "blocking_date": "2025-06-11",
+        "amount_usd": 182400.0,
+        "legal_authority": "RUSSIA-EO14024",
+        "institution_name": "Atlas Bank, N.A.",
+        "institution_ein": "98-7654321",
+        "contact_name": "Marina Ellis",
+        "contact_phone": "+1-202-555-0147",
+        "contact_email": "marina.ellis@atlasbank.com"
+      }
+    ],
+    "reporting_year": "2025",
+    "annual_narrative": "Nordic Steel, an SDN listed entity under EO 14024, maintains blocked wire transfers per the blocked property ledger."
+  },
+  {
+    "case_id": "CASE-2025-850002",
+    "scenario": "Rejected documentary credit for Iranian shipping provider",
+    "applicable_reports": [
+      "rejected_transaction_10day",
+      "annual_blocked_property"
+    ],
+    "screening_hit": {
+      "target_name": "Tormex Freight Ltd.",
+      "sdn_id": "G987654321",
+      "entity_type": "Entity",
+      "nationality": "Iranian",
+      "aliases": [
+        "Tormex Logistics"
+      ],
+      "sanctions_program": "IRAN",
+      "reason": "SDN-listed shipping line tied to energy shipment to Iran.",
+      "screening_system": "LYNX-OFAC",
+      "match_score": 94.5
+    },
+    "transaction": {
+      "transaction_id": "TX-2025-2002",
+      "transaction_date": "2025-02-02",
+      "amount": 50000,
+      "currency": "EUR",
+      "exchange_rate": 1.11,
+      "transaction_type": "Documentary Credit",
+      "iso20022_message": "<Document><CstmrCdtTrfInitn><GrpHdr><NbOfTxs>1</NbOfTxs></GrpHdr></CstmrCdtTrfInitn></Document>",
+      "rejection_date": "2025-02-03"
+    },
+    "institution": {
+      "name": "Harbor Trust Bank",
+      "ein": "23-4567890"
+    },
+    "contact": {
+      "name": "Alicia Romero",
+      "phone": "+1-305-555-0183",
+      "email": "alicia.romero@harbortrust.com"
+    },
+    "attachments": {
+      "preferred": "ISO 20022 Message"
+    },
+    "annual_blocked_properties": [
+      {
+        "property_description": "Rejected guarantee for Tormex Freight Ltd.",
+        "sdn_name": "Tormex Freight Ltd.",
+        "sdn_id": "G987654321",
+        "blocking_date": "2025-06-30",
+        "amount_usd": 55500.0,
+        "legal_authority": "IRAN",
+        "institution_name": "Harbor Trust Bank",
+        "institution_ein": "23-4567890",
+        "contact_name": "Alicia Romero",
+        "contact_phone": "+1-305-555-0183",
+        "contact_email": "alicia.romero@harbortrust.com"
+      }
+    ],
+    "reporting_year": "2025",
+    "annual_narrative": "Harbor Trust Bank flags a rejected documentary credit for Tormex Freight Ltd. and monitors the related blocked guarantee."
+  },
+  {
+    "case_id": "CASE-2025-850003",
+    "scenario": "Annual review of blocked Cuban freight receivables",
+    "applicable_reports": [
+      "annual_blocked_property"
+    ],
+    "screening_hit": {
+      "target_name": "Caribe Shipping Holdings",
+      "sdn_id": "C555333111",
+      "entity_type": "Entity",
+      "nationality": "Cuban",
+      "aliases": [
+        "Caribe Freight",
+        "Caribe Logistics"
+      ],
+      "sanctions_program": "CUBA",
+      "reason": "Multiple blocked receivables tied to state-owned cargomaster.",
+      "screening_system": "ORCHESTRA-OFAC",
+      "match_score": 92.0
+    },
+    "institution": {
+      "name": "Crescent Financial Services",
+      "ein": "41-9087654"
+    },
+    "contact": {
+      "name": "Andre Gonzalez",
+      "phone": "+1-305-555-0199",
+      "email": "andre.gonzalez@crescentfs.com"
+    },
+    "annual_blocked_properties": [
+      {
+        "property_description": "Blocked receivable for Caribe Shipping Holdings – cargo manifest 2025-041",
+        "sdn_name": "Caribe Shipping Holdings",
+        "sdn_id": "C555333111",
+        "blocking_date": "2025-03-01",
+        "amount_usd": 92000.0,
+        "legal_authority": "CUBA",
+        "institution_name": "Crescent Financial Services",
+        "institution_ein": "41-9087654",
+        "contact_name": "Andre Gonzalez",
+        "contact_phone": "+1-305-555-0199",
+        "contact_email": "andre.gonzalez@crescentfs.com"
+      },
+      {
+        "property_description": "Blocked return payment from Caribe Freight – trade ledger 2025-076",
+        "sdn_name": "Caribe Freight",
+        "sdn_id": "C555333112",
+        "blocking_date": "2025-07-22",
+        "amount_usd": 43120.0,
+        "legal_authority": "CUBA",
+        "institution_name": "Crescent Financial Services",
+        "institution_ein": "41-9087654",
+        "contact_name": "Andre Gonzalez",
+        "contact_phone": "+1-305-555-0199",
+        "contact_email": "andre.gonzalez@crescentfs.com"
+      }
+    ],
+    "reporting_year": "2025",
+    "annual_narrative": "Crescent Financial Services summarizes the year’s Cuban freight and receivable blocks with supporting documentation."
+  }
+,
+  {
+    "case_id": "CASE-2025-850004",
+    "scenario": "Blocked precision parts transfer to DPRK manufacturing supplier",
+    "applicable_reports": [
+      "initial_blocking_10day",
+      "annual_blocked_property"
+    ],
+    "screening_hit": {
+      "target_name": "Han River Precision",
+      "sdn_id": "N400123456",
+      "entity_type": "Entity",
+      "nationality": "North Korean",
+      "aliases": [
+        "Han River Machining",
+        "HR Precision"
+      ],
+      "sanctions_program": "DPRK",
+      "reason": "SDN-listed supplier of precision bearings for prohibited missile projects.",
+      "screening_system": "ORBIT-OFAC",
+      "match_score": 96.1
+    },
+    "transaction": {
+      "transaction_id": "TX-2025-3003",
+      "transaction_date": "2025-03-14",
+      "amount": 180000,
+      "currency": "GBP",
+      "exchange_rate": 1.24,
+      "transaction_type": "SWIFT MT103 transfer",
+      "swift_message": "SWIFT MT103\n:20:REF880044\n:32A:250314GBP180000,\n:50K:/32145678\nNORTHWIND BANK CORP\n:59:/147852963\nHAN RIVER PRECISION\n:70:Precision parts invoice 2025-221"
+    },
+    "institution": {
+      "name": "Northwind Bank Corp.",
+      "ein": "12-3456789"
+    },
+    "contact": {
+      "name": "Lena Ortiz",
+      "phone": "+1-212-555-0115",
+      "email": "lena.ortiz@northwindbank.com"
+    },
+    "attachments": {
+      "preferred": "SWIFT Message"
+    },
+    "annual_blocked_properties": [
+      {
+        "property_description": "Blocked precision parts payment for Han River Precision – ord. 2025-221",
+        "sdn_name": "Han River Precision",
+        "sdn_id": "N400123456",
+        "blocking_date": "2025-03-15",
+        "amount_usd": 223200.0,
+        "legal_authority": "NORTH_KOREA",
+        "institution_name": "Northwind Bank Corp.",
+        "institution_ein": "12-3456789",
+        "contact_name": "Lena Ortiz",
+        "contact_phone": "+1-212-555-0115",
+        "contact_email": "lena.ortiz@northwindbank.com"
+      }
+    ],
+    "reporting_year": "2025",
+    "annual_narrative": "Northwind Bank Corp. maintains the blocked property ledger for the DPRK legacy order 2025-221 while continuing to monitor related counterparties."
+  }
+]

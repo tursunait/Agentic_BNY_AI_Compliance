@@ -1,0 +1,66 @@
+{
+  "case_id": "CASE-CTR-TEST-001",
+  "report_type": "CTR",
+  "generated_at": "2025-02-16T10:00:00Z",
+  "subject": {
+    "subject_id": "C-50001",
+    "name": "Jane Customer",
+    "type": "Individual",
+    "country": "US",
+    "industry_or_occupation": "Business Owner"
+  },
+  "institution": {
+    "name": "Example Bank",
+    "ein": "12-3456789",
+    "address": "123 Main St",
+    "branch_city": "Los Angeles",
+    "branch_state": "CA",
+    "contact_officer": "John Compliance",
+    "contact_phone": "+1-555-123-4567",
+    "primary_federal_regulator": "FDIC"
+  },
+  "SuspiciousActivityInformation": {
+    "26_AmountInvolved": {
+      "amount_usd": 15000.0,
+      "no_amount": false
+    },
+    "27_DateOrDateRange": {
+      "from": "02/15/2025",
+      "to": "02/15/2025"
+    },
+    "29_Structuring": [],
+    "30_TerroristFinancing": [],
+    "31_Fraud": [],
+    "33_MoneyLaundering": [],
+    "35_OtherSuspiciousActivities": [],
+    "39_ProductTypesInvolved": ["Deposit"],
+    "40_InstrumentTypesInvolved": ["U.S. Currency"]
+  },
+  "transactions": [
+    {
+      "tx_id": "tx-ctr-001",
+      "timestamp": "02/15/2025 14:30:00",
+      "amount_usd": 15000.0,
+      "origin_account": "N/A",
+      "destination_account": "XXXX5678",
+      "location": "Los Angeles, CA",
+      "product_type": "Deposit",
+      "instrument_type": "U.S. Currency",
+      "notes": "Cash deposit $15,000. Customer stated purpose: business proceeds."
+    }
+  ],
+  "alert": {
+    "alert_id": "ALRT-CTR-001",
+    "alert_date": "2025-02-15",
+    "model_name": "Amount Threshold Detector",
+    "trigger_reasons": ["Cash transaction exceeds $10,000"],
+    "risk_score": 0.1,
+    "red_flags": []
+  },
+  "external_signals": {
+    "adverse_media": [],
+    "law_enforcement_contacted": {
+      "contacted": false
+    }
+  }
+}

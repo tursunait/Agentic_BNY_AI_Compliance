@@ -1,0 +1,2817 @@
+[
+  {
+    "case_id": "CASE-2023-383233",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:17Z",
+    "subject": {
+      "subject_id": "C-19886",
+      "name": "Acme LLC",
+      "type": "Business",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2022-04-05",
+      "industry_or_occupation": "Consultant",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-454475"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "FL",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FRB"
+    },
+    "alert": {
+      "alert_id": "ALRT-87761",
+      "alert_date": "2024-09-25",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.77,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 15500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "03/15/2024",
+        "to": "03/20/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose",
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "03/15/2024 09:15:30",
+        "amount_usd": 4500.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX8901",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Initial cash deposit followed by immediate wire transfer."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-678901bcdef0",
+        "timestamp": "03/16/2024 14:05:10",
+        "amount_usd": 5000.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX2345",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Second cash deposit, consistent with the pattern."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-789012cdef01",
+        "timestamp": "03/18/2024 11:22:45",
+        "amount_usd": 6000.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX6789",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer initiated shortly after the second deposit."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-425659",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:19Z",
+    "subject": {
+      "subject_id": "C-72530",
+      "name": "Global Trade Corp",
+      "type": "Business",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2017-10-25",
+      "industry_or_occupation": "Import/Export",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-636221"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-68434",
+      "alert_date": "2024-04-13",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.7,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "02/20/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious structuring",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 9000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Cash deposit, just below CTR threshold."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+        "timestamp": "01/20/2024 14:15:00",
+        "amount_usd": 8500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Cash deposit, just below CTR threshold."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
+        "timestamp": "01/25/2024 11:00:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Cash deposit, just below CTR threshold."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef012",
+        "timestamp": "02/10/2024 09:00:00",
+        "amount_usd": 18000.0,
+        "origin_account": "XXXXXX5678",
+        "destination_account": "XXXXXX9876",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an unrelated offshore entity."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-416536",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:22Z",
+    "subject": {
+      "subject_id": "C-22359",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2018-07-19",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-708440"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-50660",
+      "alert_date": "2025-09-10",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.44,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/25/2024"
+      },
+      "28_CumulativeAmount": "45000.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Suspicious use of multiple accounts",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer",
+        "Money orders"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 9000.0,
+        "origin_account": "XXXXXX5678",
+        "destination_account": "XXXXXX1234",
+        "location": "Anytown, CA",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit of multiple cash bundles below CTR threshold."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "01/18/2024 11:45:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX5678",
+        "destination_account": "XXXXXX9876",
+        "location": "Anytown, CA",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an offshore account with no clear business purpose."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "01/25/2024 09:15:00",
+        "amount_usd": 21000.0,
+        "origin_account": "XXXXXX5678",
+        "destination_account": "XXXXXX0000",
+        "location": "Anytown, CA",
+        "product_type": "Cash withdrawals",
+        "instrument_type": "U.S. Currency",
+        "notes": "Multiple cash withdrawals from the account, depleting the balance."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2023-420279",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:24Z",
+    "subject": {
+      "subject_id": "C-66150",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "High",
+      "country": "US",
+      "onboarding_date": "2016-10-24",
+      "industry_or_occupation": "Import/Export",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2023-449239"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "NC",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-45536",
+      "alert_date": "2023-07-20",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.31,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 25500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/18/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose",
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 4500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Structuring a large cash deposit into multiple smaller ones to avoid CTR."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "01/16/2024 11:45:00",
+        "amount_usd": 12000.0,
+        "origin_account": "XXXXXX2222",
+        "destination_account": "XXXXXX3333",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Rapid movement of funds to an unrelated offshore account with no clear business purpose."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "01/17/2024 14:00:00",
+        "amount_usd": 5000.0,
+        "origin_account": "XXXXXX3333",
+        "destination_account": "XXXXXX4444",
+        "location": "Miami, FL",
+        "product_type": "Cash withdrawals",
+        "instrument_type": "U.S. Currency",
+        "notes": "Customer withdrew funds shortly after receipt, inconsistent with typical activity."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "01/18/2024 09:00:00",
+        "amount_usd": 4000.0,
+        "origin_account": "XXXXXX2222",
+        "destination_account": "XXXXXX5555",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Another seemingly unrelated funds transfer to a different account, continuing pattern of rapid movement."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-456266",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:27Z",
+    "subject": {
+      "subject_id": "C-73658",
+      "name": "Jane Smith",
+      "type": "Individual",
+      "risk_rating": "High",
+      "country": "US",
+      "onboarding_date": "2020-11-02",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-977269"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Miami",
+      "branch_state": "NY",
+      "contact_officer": "Alice Johnson",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-75360",
+      "alert_date": "2023-09-04",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.8,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 75000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "09/01/2024",
+        "to": "09/30/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious EFT/wire transfers",
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "09/15/2024 10:30:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "First of several rapid transfers to a new foreign beneficiary"
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "09/16/2024 11:00:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Second rapid transfer to a different foreign beneficiary, below CTR threshold"
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "09/17/2024 09:45:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Third rapid transfer to a third foreign beneficiary, structured to avoid reporting"
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "09/18/2024 14:00:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX5555",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Fourth rapid transfer to a fourth foreign beneficiary, suspicious pattern continues"
+      },
+      {
+        "tx_id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+        "timestamp": "09/19/2024 16:15:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX6666",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Fifth rapid transfer to a fifth foreign beneficiary, completing the suspicious transaction sequence"
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-381798",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:29Z",
+    "subject": {
+      "subject_id": "C-27607",
+      "name": "Acme LLC",
+      "type": "Individual",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2018-07-25",
+      "industry_or_occupation": "Import/Export",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-453507"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Dallas",
+      "branch_state": "NY",
+      "contact_officer": "Alice Johnson",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-50384",
+      "alert_date": "2024-06-25",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.51,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 19500.5,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "05/01/2024",
+        "to": "05/15/2024"
+      },
+      "28_CumulativeAmount": "19500.50",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "05/02/2024 10:30:00",
+        "amount_usd": 4500.5,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit made shortly after large cash withdrawal from another account."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-678901bcdef0",
+        "timestamp": "05/05/2024 14:00:00",
+        "amount_usd": 5000.0,
+        "origin_account": "XXXXXX2222",
+        "destination_account": "XXXXXX3333",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an unrelated third party with no clear business relationship."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-789012cdef01",
+        "timestamp": "05/10/2024 09:15:00",
+        "amount_usd": 6000.0,
+        "origin_account": "XXXXXX4444",
+        "destination_account": "XXXXXX5555",
+        "location": "Los Angeles, CA",
+        "product_type": "Cash withdrawals",
+        "instrument_type": "U.S. Currency",
+        "notes": "Large cash withdrawal followed by multiple smaller deposits across different accounts."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890123def012",
+        "timestamp": "05/14/2024 11:45:00",
+        "amount_usd": 4000.0,
+        "origin_account": "XXXXXX5555",
+        "destination_account": "XXXXXX6666",
+        "location": "Chicago, IL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Funds immediately moved to another account shortly after deposit."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-260566",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:32Z",
+    "subject": {
+      "subject_id": "C-24370",
+      "name": "Global Trade Corp",
+      "type": "Business",
+      "risk_rating": "High",
+      "country": "US",
+      "onboarding_date": "2021-09-28",
+      "industry_or_occupation": "Import/Export",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2024-607953"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "NC",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FRB"
+    },
+    "alert": {
+      "alert_id": "ALRT-37108",
+      "alert_date": "2025-12-02",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.88,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 48500.5,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "07/15/2023",
+        "to": "09/01/2023"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose",
+        "Layering"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer",
+        "Cash deposits"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "07/18/2023 10:30:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an unfamiliar international beneficiary."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+        "timestamp": "08/01/2023 09:00:00",
+        "amount_usd": 5000.5,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX9012",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to a different international beneficiary."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
+        "timestamp": "08/15/2023 14:00:00",
+        "amount_usd": 10000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX3456",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to yet another international beneficiary."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef012",
+        "timestamp": "08/20/2023 11:00:00",
+        "amount_usd": 24000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX7890",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to a final international beneficiary."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-129226",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:35Z",
+    "subject": {
+      "subject_id": "C-11846",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2023-07-18",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-603625"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Miami",
+      "branch_state": "FL",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FDIC"
+    },
+    "alert": {
+      "alert_id": "ALRT-67231",
+      "alert_date": "2023-10-07",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.42,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "10/01/2024",
+        "to": "10/31/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "10/05/2024 09:15:30",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit of cash below CTR threshold."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "10/08/2024 14:20:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "Los Angeles, CA",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer with no clear business purpose."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "10/15/2024 11:00:00",
+        "amount_usd": 9000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Rapid movement of funds to a new, unrelated account."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "10/20/2024 16:45:10",
+        "amount_usd": 9000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX5555",
+        "location": "Chicago, IL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Multiple wire transfers totaling a significant amount with no clear economic rationale."
+      },
+      {
+        "tx_id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+        "timestamp": "10/25/2024 10:30:00",
+        "amount_usd": 2500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX6666",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Final cash deposit, consistent with structuring pattern."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-334009",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:41Z",
+    "subject": {
+      "subject_id": "C-38784",
+      "name": "Acme LLC",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2023-08-19",
+      "industry_or_occupation": "Tech services",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-802229"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Dallas",
+      "branch_state": "FL",
+      "contact_officer": "Alice Johnson",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FDIC"
+    },
+    "alert": {
+      "alert_id": "ALRT-66120",
+      "alert_date": "2025-02-12",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.49,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 55000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/22/2024"
+      },
+      "28_CumulativeAmount": "55000.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious structuring",
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose",
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:00:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit structured below CTR threshold"
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-678901bcdef0",
+        "timestamp": "01/17/2024 11:30:00",
+        "amount_usd": 10000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit structured below CTR threshold"
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-789012cdef01",
+        "timestamp": "01/19/2024 09:15:00",
+        "amount_usd": 9000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit structured below CTR threshold"
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890123def012",
+        "timestamp": "01/20/2024 14:00:00",
+        "amount_usd": 12000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer of funds from structured deposits"
+      },
+      {
+        "tx_id": "e5f6a7b8-c9d0-1234-5678-901234ef0123",
+        "timestamp": "01/22/2024 16:45:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Final wire transfer of remaining funds"
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-232896",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:47Z",
+    "subject": {
+      "subject_id": "C-90988",
+      "name": "Global Trade Corp",
+      "type": "Business",
+      "risk_rating": "High",
+      "country": "US",
+      "onboarding_date": "2018-04-03",
+      "industry_or_occupation": "Tech services",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-489871"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Dallas",
+      "branch_state": "FL",
+      "contact_officer": "Alice Johnson",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FRB"
+    },
+    "alert": {
+      "alert_id": "ALRT-74871",
+      "alert_date": "2024-08-11",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.81,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 75500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "02/20/2024"
+      },
+      "28_CumulativeAmount": "75500.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer",
+        "Cash deposits"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "Funds transfer",
+        "U.S. Currency"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 4500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Initial large wire transfer to an unknown beneficiary."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "01/18/2024 14:00:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX3333",
+        "destination_account": "XXXXXX4444",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Second wire transfer to a different but similar beneficiary."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "01/25/2024 09:15:00",
+        "amount_usd": 5000.0,
+        "origin_account": "XXXXXX5555",
+        "destination_account": "XXXXXX6666",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Third wire transfer, amount slightly reduced."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "02/01/2024 11:00:00",
+        "amount_usd": 30000.0,
+        "origin_account": "XXXXXX7777",
+        "destination_account": "XXXXXX8888",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Fourth wire transfer, significant amount."
+      },
+      {
+        "tx_id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+        "timestamp": "02/20/2024 16:45:00",
+        "amount_usd": 21500.0,
+        "origin_account": "XXXXXX9999",
+        "destination_account": "XXXXXX0000",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Fifth wire transfer, completing the suspicious pattern."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-549256",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:50Z",
+    "subject": {
+      "subject_id": "C-84150",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2023-04-01",
+      "industry_or_occupation": "Consultant",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2023-924790"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "FL",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-97341",
+      "alert_date": "2025-08-23",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.3,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "03/01/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/18/2024 10:30:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Multiple cash deposits made on the same day, just below the CTR threshold."
+      },
+      {
+        "tx_id": "b2c3d4e5-f678-9012-3456-7890abcdef12",
+        "timestamp": "01/22/2024 14:00:00",
+        "amount_usd": 30000.0,
+        "origin_account": "XXXXXX2222",
+        "destination_account": "XXXXXX3333",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Large wire transfer to an offshore account shortly after the deposits."
+      },
+      {
+        "tx_id": "c3d4e5f6-7890-1234-5678-90abcdef1234",
+        "timestamp": "02/15/2024 09:15:00",
+        "amount_usd": 5500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "Miami, FL",
+        "product_type": "Cash withdrawals",
+        "instrument_type": "U.S. Currency",
+        "notes": "Another series of cash withdrawals just below the CTR threshold, inconsistent with account history."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-499498",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:52Z",
+    "subject": {
+      "subject_id": "C-85798",
+      "name": "John Doe",
+      "type": "Business",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2017-11-11",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2021-410407"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "TX",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FDIC"
+    },
+    "alert": {
+      "alert_id": "ALRT-93954",
+      "alert_date": "2025-07-08",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.4,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 75000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/20/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 4500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Multiple cash deposits below CTR threshold made across several days."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "01/17/2024 14:00:00",
+        "amount_usd": 3000.0,
+        "origin_account": "XXXXXX5678",
+        "destination_account": "XXXXXX9012",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Funds quickly transferred to another account shortly after deposit."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "01/19/2024 09:15:00",
+        "amount_usd": 2500.0,
+        "origin_account": "XXXXXX9012",
+        "destination_account": "XXXXXX3456",
+        "location": "Miami, FL",
+        "product_type": "Cash withdrawals",
+        "instrument_type": "U.S. Currency",
+        "notes": "Cash withdrawal from the receiving account, indicating a potential exit strategy."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "01/20/2024 11:00:00",
+        "amount_usd": 10000.0,
+        "origin_account": "XXXXXX3456",
+        "destination_account": "XXXXXX7890",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Another funds transfer to a different account for further layering."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2025-380469",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:55Z",
+    "subject": {
+      "subject_id": "C-75154",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2021-02-16",
+      "industry_or_occupation": "Tech services",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-770772"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "TX",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-74599",
+      "alert_date": "2023-10-04",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.82,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "03/15/2024",
+        "to": "04/15/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "03/18/2024 10:30:15",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Cash deposit followed by immediate wire transfer, unusual for this customer."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "03/25/2024 14:05:00",
+        "amount_usd": 9800.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Second large cash deposit and wire transfer within a week."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "04/02/2024 09:15:45",
+        "amount_usd": 9700.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Another cash deposit and wire transfer, structured to avoid CTR."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "04/10/2024 11:00:00",
+        "amount_usd": 9900.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX5555",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Fourth transaction of similar pattern, funds immediately wired out to different beneficiaries."
+      },
+      {
+        "tx_id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+        "timestamp": "04/15/2024 16:40:20",
+        "amount_usd": 6200.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX6666",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Final cash deposit and wire transfer, completing the suspicious pattern."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-485144",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:41:58Z",
+    "subject": {
+      "subject_id": "C-49450",
+      "name": "Jane Smith",
+      "type": "Business",
+      "risk_rating": "High",
+      "country": "US",
+      "onboarding_date": "2016-02-27",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-633257"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Miami",
+      "branch_state": "NC",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-86408",
+      "alert_date": "2024-04-05",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.45,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 55000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/20/2024"
+      },
+      "28_CumulativeAmount": "55000.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Initial deposit below CTR threshold"
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+        "timestamp": "01/17/2024 14:00:00",
+        "amount_usd": 20000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to unrelated entity"
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
+        "timestamp": "01/19/2024 09:15:00",
+        "amount_usd": 20000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Second wire transfer to another unrelated entity, totaling over 50k in short period"
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-170507",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:00Z",
+    "subject": {
+      "subject_id": "C-34505",
+      "name": "Acme LLC",
+      "type": "Individual",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2023-02-24",
+      "industry_or_occupation": "Consultant",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2024-724943"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Miami",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-21016",
+      "alert_date": "2025-05-24",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.43,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 45000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "07/01/2023",
+        "to": "07/15/2023"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "07/01/2023 09:30:00",
+        "amount_usd": 8500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit of cash from unknown source."
+      },
+      {
+        "tx_id": "b2c3d4e5-f678-9012-3456-7890abcdef12",
+        "timestamp": "07/05/2023 11:15:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "Los Angeles, CA",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an unrelated offshore entity."
+      },
+      {
+        "tx_id": "c3d4e5f6-7890-1234-5678-90abcdef1234",
+        "timestamp": "07/10/2023 14:00:00",
+        "amount_usd": 7000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "Chicago, IL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Multiple cash deposits over a short period, totaling below CTR threshold."
+      },
+      {
+        "tx_id": "d4e5f678-9012-3456-7890-abcdef123456",
+        "timestamp": "07/15/2023 10:00:00",
+        "amount_usd": 20000.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX5555",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Large wire transfer to a newly opened account with no clear business purpose."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-677021",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:03Z",
+    "subject": {
+      "subject_id": "C-94926",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2022-05-09",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-372022"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FDIC"
+    },
+    "alert": {
+      "alert_id": "ALRT-78051",
+      "alert_date": "2025-01-11",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.41,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 25500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "03/15/2024",
+        "to": "03/22/2024"
+      },
+      "28_CumulativeAmount": "null",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "f7e1b2a4-3c9d-4e8b-8f1a-5c2d9e6b8a0f",
+        "timestamp": "03/15/2024 10:30:00",
+        "amount_usd": 9500.0,
+        "origin_account": "XXXXXX0001",
+        "destination_account": "XXXXXX0002",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Large cash deposit followed by immediate wire transfer."
+      },
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "03/18/2024 14:00:00",
+        "amount_usd": 8000.0,
+        "origin_account": "XXXXXX0001",
+        "destination_account": "XXXXXX0003",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Another significant cash deposit, smaller wire transfer."
+      },
+      {
+        "tx_id": "09876543-21fe-dcba-9876-543210fedcba",
+        "timestamp": "03/22/2024 09:15:00",
+        "amount_usd": 8000.0,
+        "origin_account": "XXXXXX0001",
+        "destination_account": "XXXXXX0004",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Final wire transfer, amounts totaling just under CTR threshold."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-311995",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:05Z",
+    "subject": {
+      "subject_id": "C-14355",
+      "name": "Global Trade Corp",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2016-09-11",
+      "industry_or_occupation": "Import/Export",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2022-487535"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "TX",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "FRB"
+    },
+    "alert": {
+      "alert_id": "ALRT-40631",
+      "alert_date": "2024-10-23",
+      "model_name": "ML Risk Model v2",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.53,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 15500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "03/15/2024",
+        "to": "03/20/2024"
+      },
+      "28_CumulativeAmount": "15500.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious EFT/wire transfers"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose",
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "03/15/2024 10:30:00",
+        "amount_usd": 4900.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX2222",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to a newly opened account with no apparent business purpose."
+      },
+      {
+        "tx_id": "f6e5d4c3-b2a1-0987-6543-210fedcba987",
+        "timestamp": "03/17/2024 14:15:00",
+        "amount_usd": 5100.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX3333",
+        "location": "Los Angeles, CA",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Second large wire transfer within days, destination account unknown."
+      },
+      {
+        "tx_id": "1a2b3c4d-5e6f-7890-abcd-ef0123456789",
+        "timestamp": "03/20/2024 09:00:00",
+        "amount_usd": 5500.0,
+        "origin_account": "XXXXXX1111",
+        "destination_account": "XXXXXX4444",
+        "location": "Chicago, IL",
+        "product_type": "Funds transfer",
+        "instrument_type": "U.S. Currency",
+        "notes": "Large cash deposit followed by wire transfer, pattern suggests structuring."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-779340",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:08Z",
+    "subject": {
+      "subject_id": "C-85929",
+      "name": "Acme LLC",
+      "type": "Business",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2022-08-23",
+      "industry_or_occupation": "Tech services",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2020-371109"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "NC",
+      "contact_officer": "Alice Johnson",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-21388",
+      "alert_date": "2023-08-18",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.4,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 15500.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/22/2024"
+      },
+      "28_CumulativeAmount": "15500.00",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious structuring",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 09:30:00",
+        "amount_usd": 4800.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit below CTR threshold"
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-678901bcdefa",
+        "timestamp": "01/17/2024 11:15:00",
+        "amount_usd": 5200.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit below CTR threshold"
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-789012cdefab",
+        "timestamp": "01/20/2024 14:00:00",
+        "amount_usd": 5500.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Transfer to a new external account, pattern unusual"
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2024-627129",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:10Z",
+    "subject": {
+      "subject_id": "C-56522",
+      "name": "John Doe",
+      "type": "Business",
+      "risk_rating": "Medium",
+      "country": "US",
+      "onboarding_date": "2019-12-09",
+      "industry_or_occupation": "Consultant",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2024-609366"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "Charlotte",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "OCC"
+    },
+    "alert": {
+      "alert_id": "ALRT-91579",
+      "alert_date": "2024-12-07",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.41,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 55000.0,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "01/15/2024",
+        "to": "01/20/2024"
+      },
+      "28_CumulativeAmount": null,
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [
+        "Wire"
+      ],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern",
+        "Suspicious use of multiple accounts"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Funds transfer",
+        "Cash deposits"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "01/15/2024 10:30:00",
+        "amount_usd": 9900.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer below CTR threshold to a newly opened account."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+        "timestamp": "01/16/2024 11:45:00",
+        "amount_usd": 9900.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Second wire transfer below CTR threshold to the same account."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
+        "timestamp": "01/17/2024 14:00:00",
+        "amount_usd": 9900.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Third wire transfer below CTR threshold to the same account."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef012",
+        "timestamp": "01/18/2024 09:00:00",
+        "amount_usd": 25300.0,
+        "origin_account": "XXXXXX1234",
+        "destination_account": "XXXXXX5678",
+        "location": "New York, NY",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Large wire transfer to the same account, bringing total to 55000.00."
+      }
+    ]
+  },
+  {
+    "case_id": "CASE-2023-687870",
+    "report_type": "Initial",
+    "generated_at": "2025-11-18T03:42:12Z",
+    "subject": {
+      "subject_id": "C-90235",
+      "name": "Jane Smith",
+      "type": "Individual",
+      "risk_rating": "Low",
+      "country": "US",
+      "onboarding_date": "2022-06-04",
+      "industry_or_occupation": "Retail",
+      "beneficial_owners": [
+        "Owner A (60%)",
+        "Owner B (40%)"
+      ],
+      "prior_sars": [
+        "2024-457709"
+      ]
+    },
+    "institution": {
+      "name": "Example Community Bank",
+      "branch_city": "New York",
+      "branch_state": "NY",
+      "contact_officer": "Brian Lee",
+      "contact_phone": "+1-800-XXX-XXXX",
+      "primary_federal_regulator": "NCUA"
+    },
+    "alert": {
+      "alert_id": "ALRT-15102",
+      "alert_date": "2023-03-01",
+      "model_name": "Rule 230-Structuring",
+      "trigger_reasons": [
+        "Unusual cash pattern",
+        "Multiple day deposits"
+      ],
+      "risk_score": 0.74,
+      "red_flags": [
+        "Structuring"
+      ]
+    },
+    "external_signals": {
+      "adverse_media": [
+        "News report: subject under investigation"
+      ],
+      "law_enforcement_contacted": {
+        "contacted": false,
+        "agency": null,
+        "contact_name": null,
+        "date": null
+      }
+    },
+    "data_quality": {
+      "missing_subject_tin": false,
+      "missing_counterparty": false,
+      "notes": "Subject declined to explain large cash deposits."
+    },
+    "SuspiciousActivityInformation": {
+      "26_AmountInvolved": {
+        "amount_usd": 48500.75,
+        "no_amount": false
+      },
+      "27_DateOrDateRange": {
+        "from": "03/15/2024",
+        "to": "03/29/2024"
+      },
+      "28_CumulativeAmount": "null",
+      "29_Structuring": [
+        "Multiple transactions below CTR threshold"
+      ],
+      "30_TerroristFinancing": [],
+      "31_Fraud": [],
+      "32_Casinos": [],
+      "33_MoneyLaundering": [
+        "Suspicious rapid movement of funds",
+        "Transaction(s) out of pattern"
+      ],
+      "34_IdentificationDocumentation": [],
+      "35_OtherSuspiciousActivities": [
+        "No apparent business purpose",
+        "No apparent lawful purpose"
+      ],
+      "36_Insurance": [],
+      "37_SecuritiesFuturesOptions": [],
+      "38_MortgageFraud": [],
+      "39_ProductTypesInvolved": [
+        "Cash deposits",
+        "Funds transfer",
+        "Cash withdrawals"
+      ],
+      "40_InstrumentTypesInvolved": [
+        "U.S. Currency",
+        "Funds transfer"
+      ]
+    },
+    "transactions": [
+      {
+        "tx_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+        "timestamp": "03/15/2024 10:15:30",
+        "amount_usd": 4500.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX8901",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Deposit to quickly followed by wire transfer."
+      },
+      {
+        "tx_id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+        "timestamp": "03/18/2024 14:05:00",
+        "amount_usd": 15000.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX2345",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Wire transfer to an unknown offshore entity."
+      },
+      {
+        "tx_id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+        "timestamp": "03/22/2024 09:00:00",
+        "amount_usd": 5000.75,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX6789",
+        "location": "Miami, FL",
+        "product_type": "Cash deposits",
+        "instrument_type": "U.S. Currency",
+        "notes": "Small cash deposit followed by another wire transfer."
+      },
+      {
+        "tx_id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+        "timestamp": "03/29/2024 11:45:00",
+        "amount_usd": 24000.0,
+        "origin_account": "XXXXXX4567",
+        "destination_account": "XXXXXX0123",
+        "location": "Miami, FL",
+        "product_type": "Funds transfer",
+        "instrument_type": "Funds transfer",
+        "notes": "Final large wire transfer to a different unknown entity."
+      }
+    ]
+  }
+]

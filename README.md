@@ -261,3 +261,31 @@ git branch -M main
 git remote add origin https://github.com/tursunait/Agentic_BNY_AI_Compliance.git
 git push -u origin main
 ```
+
+Example runs: 
+
+
+curl http://localhost:8001/health    
+
+
+```bash
+source .venv/bin/activate
+python scripts/test_pdf_filer.py --input data/CASE-2023-687870__CAT-29-33-35.json --report-type SAR
+```
+
+```bash
+source .venv/bin/activate
+python scripts/test_pdf_filer.py --input data/CASE-2024-170507__CAT-29-33-35.json --report-type SAR
+```
+
+```bash
+source .venv/bin/activate
+python scripts/test_pdf_filer.py --input data/CASE-2025-456266__CAT-29-31-33-35.json --report-type SAR
+```
+
+```bash
+source .venv/bin/activate
+python scripts/test_pdf_filer.py --input data/ctr_test_case.json --report-type CTR
+```
+
+ctr_report.pdf
