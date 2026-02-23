@@ -1,0 +1,112 @@
+{
+  "document_id": "FINCEN-SAR-NARRATIVE-GUIDANCE",
+  "document_title": "Guidance on Preparing a Complete and Sufficient Suspicious Activity Report Narrative",
+  "document_type": "regulatory_guidance",
+  "issuing_authority": "FinCEN",
+  "effective_date": "2003-01-01",
+  "report_types": ["SAR"],
+  "version": "1.0",
+  "source_url": "https://www.fincen.gov/resources/filing-information",
+  "sections": [
+    {
+      "section_id": "overview-purpose",
+      "section_title": "Purpose of SAR Narrative Quality",
+      "section_number": "Overview",
+      "category": "narrative_guidance",
+      "keywords": ["SAR narrative", "quality", "complete", "sufficient", "timely"],
+      "text": "The SAR narrative is the primary free-text explanation of suspicious activity and is often critical to law enforcement investigations. Filings must be complete, sufficient, and timely. Incomplete, disorganized, or blank narratives reduce investigative value. The narrative should be clear, concise, and thorough, and institutions must file within regulatory deadlines.",
+      "practical_guidance": "Narrative quality is not optional. Write for investigators who were not present for internal review.",
+      "agent_usage_notes": "Use this as the baseline objective for every generated narrative."
+    },
+    {
+      "section_id": "five-w-plus-how",
+      "section_title": "Core Information Model: Who, What, When, Where, Why, and How",
+      "section_number": "1",
+      "category": "narrative_structure",
+      "keywords": ["who", "what", "when", "where", "why", "how", "modus operandi"],
+      "text": "A sufficient SAR narrative should explicitly cover who conducted the activity, what instruments or mechanisms were used, when the activity occurred, where it occurred (including branches and foreign jurisdictions), why it is suspicious relative to expected customer behavior, and how the activity was carried out (method of operation).",
+      "practical_guidance": "Always include all six elements. Missing one usually creates investigative ambiguity.",
+      "agent_usage_notes": "Narrative Agent should verify all six elements are present before final output."
+    },
+    {
+      "section_id": "who-details",
+      "section_title": "Who: Describe Suspects and Relationships",
+      "section_number": "1.1",
+      "category": "narrative_content",
+      "keywords": ["suspect", "identity", "relationship", "occupation", "address"],
+      "text": "Beyond structured suspect fields, the narrative should further describe each suspect, including occupation, role in business, known relationships among parties, and additional identifiers (for example passport, alien registration, or driver license). Include known addresses, including apartment and PO box details where relevant. If full identifying detail is unavailable, include all information reasonably available.",
+      "practical_guidance": "Name all known actors and connections among them.",
+      "agent_usage_notes": "When multiple parties exist, explicitly state their linkage and transaction roles."
+    },
+    {
+      "section_id": "what-mechanisms",
+      "section_title": "What: Instruments and Transaction Mechanisms",
+      "section_number": "1.2",
+      "category": "narrative_content",
+      "keywords": ["wire transfer", "structuring", "trade finance", "account flow", "funds movement"],
+      "text": "Identify instruments and mechanisms used in the suspicious activity, such as wire transfers, trade instruments, correspondent accounts, structuring, shell entities, monetary instruments, cards, or digital currency services. Explain the flow of funds from source/origination to destination/beneficiary and identify all relevant accounts at the reporting institution, plus known external institutions and account references.",
+      "practical_guidance": "Trace money end-to-end across accounts and entities.",
+      "agent_usage_notes": "Always include origin account, destination account, amount, and mechanism."
+    },
+    {
+      "section_id": "when-timing",
+      "section_title": "When: Dates, Duration, and Sequence",
+      "section_number": "1.3",
+      "category": "narrative_content",
+      "keywords": ["dates", "duration", "chronology", "sequence", "aggregation"],
+      "text": "State when suspicious activity began, over what period it continued, and key transaction dates and amounts in chronological order. Avoid relying only on aggregate totals. Do not use embedded tables or spreadsheets in SAR narrative text; express details directly in narrative form.",
+      "practical_guidance": "Chronology and per-transaction detail are required for traceability.",
+      "agent_usage_notes": "Prefer date-by-date sentence flow over aggregate-only summaries."
+    },
+    {
+      "section_id": "where-locations",
+      "section_title": "Where: Locations and Jurisdiction",
+      "section_number": "1.4",
+      "category": "narrative_content",
+      "keywords": ["branch", "jurisdiction", "foreign institution", "location"],
+      "text": "Describe where suspicious activity occurred, including all involved branches/offices and relevant addresses. If activity involves foreign jurisdictions, identify jurisdiction names, institutions, locations, and known account identifiers connected to the activity.",
+      "practical_guidance": "Include domestic and cross-border location context explicitly.",
+      "agent_usage_notes": "If multiple branches are involved, name each one."
+    },
+    {
+      "section_id": "why-suspicious-patterns",
+      "section_title": "Why: Explain Suspicion Using Facts and Red Flags",
+      "section_number": "1.5",
+      "category": "suspicion_rationale",
+      "keywords": ["red flags", "layering", "shell company", "unexpected activity", "structuring"],
+      "text": "Explain why activity is suspicious for this customer and business profile. Common indicators include no clear lawful purpose, activity inconsistent with stated business, complex layering across accounts/jurisdictions, repetitive or unusually high wire patterns, mixed instrument deposits, short burst activity in dormant accounts, possible shell entities, and transactions designed to evade reporting requirements.",
+      "practical_guidance": "Tie each red flag to specific observed transactions and customer context.",
+      "agent_usage_notes": "Avoid conclusory statements without transaction-level support."
+    },
+    {
+      "section_id": "how-modus-operandi",
+      "section_title": "How: Method of Operation (Modus Operandi)",
+      "section_number": "1.6",
+      "category": "narrative_content",
+      "keywords": ["modus operandi", "flow of funds", "structuring", "outbound transfers"],
+      "text": "Describe how the suspicious pattern was executed in a logical sequence. If multiple suspicious mechanisms are linked (for example structured cash deposits followed by outbound wires), include both elements and connect them through dates, amounts, destinations, accounts, frequencies, and beneficiaries.",
+      "practical_guidance": "Describe mechanism, then evidence, then linkage.",
+      "agent_usage_notes": "Narrative should let investigators reconstruct the pattern without external context."
+    },
+    {
+      "section_id": "organization-intro-body-conclusion",
+      "section_title": "Organize Narrative as Introduction, Body, Conclusion",
+      "section_number": "2",
+      "category": "narrative_structure",
+      "keywords": ["introduction", "body", "conclusion", "chronological format"],
+      "text": "Use a concise chronological structure: Introduction (purpose of SAR, prior SAR references, OFAC/government-list context, internal case references, initial red flags), Body (facts about parties, account/transaction details, origin and destination of funds, relationships, branch/channel details, incriminating statements), Conclusion (institution follow-up actions, contacts for law enforcement, available additional records, involved law-enforcement personnel if known).",
+      "practical_guidance": "Keep paragraphs short and logically ordered; prioritize actionable facts.",
+      "agent_usage_notes": "Output should follow this 3-part pattern unless case simplicity warrants a compact variant."
+    },
+    {
+      "section_id": "important-reminder-no-attachments",
+      "section_title": "Important Reminder: No Attachments in Narrative",
+      "section_number": "3",
+      "category": "filing_requirements",
+      "keywords": ["no attachments", "see attached", "supporting documentation", "records retention"],
+      "text": "Do not include supporting documentation in the SAR filing and do not write 'see attached' in the narrative. The SAR system processes explicit narrative text; attachments and pre-formatted objects may not be ingested in the same way. Retain supporting documents internally for five years and provide them to law enforcement when requested.",
+      "practical_guidance": "Narrative must be self-contained and independently understandable.",
+      "agent_usage_notes": "Narrative Agent should never output attachment references."
+    }
+  ]
+}

@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = Field(default="postgres")
     WEAVIATE_URL: str = Field(default="http://localhost:8080")
     WEAVIATE_API_KEY: str = Field(default="")
+    WEAVIATE_STARTUP_PERIOD: int = Field(default=20)
     REDIS_URL: str = Field(default="redis://localhost:6379/0")
     GEMINI_API_KEY: str = Field(default="")
     OPENAI_API_KEY: str = Field(default="")

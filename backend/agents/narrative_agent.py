@@ -39,12 +39,12 @@ def create_narrative_task(agent: Agent, aggregator_output: dict) -> Task:
         {json.dumps(aggregator_output, indent=2)}
 
         Steps:
-        1. Use "Search Knowledge Base" to find 5 similar high-quality narrative examples
-        2. Study the style and structure of those examples
-        3. Write a narrative that covers who, what, when, where, why, how
+        1. Use "Search Knowledge Base" with collection="regulations" to retrieve SAR narrative writing guidance
+        2. Use "Search Knowledge Base" with collection="narratives" to find 5 similar high-quality narrative examples
+        3. Apply the guidance structure (who, what, when, where, why, how + clear chronology)
         4. Keep length between 200-5000 characters
         5. Be factual, specific, and professional
-        6. Cite relevant regulations where applicable
+        6. Cite relevant regulations/guidance where applicable
         """,
         expected_output="""JSON object with:
     {

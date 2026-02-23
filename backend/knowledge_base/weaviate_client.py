@@ -67,6 +67,7 @@ class WeaviateClient:
             url=self.url,
             auth_client_secret=auth,
             timeout_config=(5, 30),
+            startup_period=settings.WEAVIATE_STARTUP_PERIOD,
         )
         logger.debug("Weaviate client initialized at {}", self.url)
 

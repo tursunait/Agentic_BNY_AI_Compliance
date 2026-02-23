@@ -64,6 +64,101 @@ Weaviate collections:
 - `Regulations`
 - `Definitions`
 
+## How Agents Access KB Content
+
+Use this flow for any teammate/agent that needs knowledge base reads/writes.
+
+1. Start from project root and use the project virtualenv (not Conda):
+
+```bash
+cd Agentic_BNY_AI_Compliance
+conda deactivate 2>/dev/null || true
+source .venv/bin/activate
+```
+
+2. Load environment variables and confirm connectivity:
+
+```bash
+set -a
+source .env
+set +a
+python scripts/preflight.py
+```
+
+3. Initialize collections and seed baseline KB content:
+
+```bash
+python scripts/init_weaviate.py
+python scripts/seed_kb.py
+python scripts/ingest_regulation_json.py --input knowledge_base/regulations/sar_filing_instructions.json
+```
+
+4. Start API and confirm all KB components are healthy:
+
+```bash
+uvicorn backend.api.main:app --host 0.0.0.0 --port 8001 --reload
+curl http://localhost:8001/health
+```
+
+Expected:
+
+```json
+{"status":"healthy","services":{"postgres":true,"weaviate":true,"redis":true}}
+```
+
+5. Agent-level access (recommended): use CrewAI KB tools from `backend/tools/kb_tools.py`.
+
+- `Search Knowledge Base`:
+  - Inputs: `query`, `collection` (`narratives|regulations|definitions`), optional `filters`, `limit`
+- `Get Report Schema`:
+  - Input: `report_type` (`SAR|CTR|...`)
+- `Get Validation Rules`:
+  - Input: `report_type`
+- `Get Field Mappings`:
+  - Input: `report_type`
+- `Add to Knowledge Base`:
+  - Inputs: `collection` (`narratives|regulations`), `data` (JSON string)
+- `Convert Structured Data to Narrative`:
+  - Input: `transaction_data` (JSON string)
+
+6. Programmatic access (Python, no CrewAI prompt needed):
+
+```python
+from backend.knowledge_base.kb_manager import KBManager
+
+kb = KBManager()
+print(kb.search_regulations("CTR and SAR relationship", top_k=3))
+print(kb.find_similar_narratives("multiple cash deposits below threshold", top_k=3))
+print(kb.get_schema("SAR"))
+```
+
+7. API access (for external services/UI):
+
+```bash
+curl "http://localhost:8001/api/v1/kb/search?q=structuring&collection=regulations&limit=5"
+curl "http://localhost:8001/api/v1/kb/search?q=wire+fraud&collection=narratives&limit=5"
+```
+
+8. Add new regulation documents safely (dedupe on by default):
+
+```bash
+python scripts/ingest_regulation_json.py --input knowledge_base/regulations/<your_file>.json
+```
+
+Use `--force` only when you intentionally want duplicates:
+
+```bash
+python scripts/ingest_regulation_json.py --input knowledge_base/regulations/<your_file>.json --force
+```
+
+9. If a KB call fails, check in this order:
+
+- wrong Python (`which python` must point to `.venv/bin/python`)
+- `.env` not loaded in current shell
+- stale Weaviate URL or missing scheme (`https://...`)
+- invalid/missing `WEAVIATE_API_KEY` for cloud
+- `OPENAI_API_KEY` missing (required for embeddings on insert/search)
+
 ## Configuration
 
 Runtime settings are loaded from environment variables (`backend/config/settings.py`).
@@ -76,6 +171,7 @@ Key variables:
 - `POSTGRES_PASSWORD`
 - `WEAVIATE_URL`
 - `WEAVIATE_API_KEY`
+- `WEAVIATE_STARTUP_PERIOD` (optional, default `20`; increase if cloud readiness checks are slow)
 - `REDIS_URL`
 - `OPENAI_API_KEY`
 - `GEMINI_API_KEY`
