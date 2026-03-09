@@ -280,5 +280,3 @@ The category mapping is handled in `scoring.py` by the `categorize_rule(rule_id)
 
 ### Changing the LLM Provider
 Update the `.env` variables and modify `llm_evaluator.py` to match the new API endpoint and expected response format.
-
----
