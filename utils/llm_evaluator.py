@@ -1,43 +1,20 @@
 import os
 import json
+import time
 import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
-def evaluate_narrative(narrative_text: str) -> dict:
-    """
-    Evaluate SAR narrative quality using ZhiPu GLM-5 API.
-    Returns a dict with keys: score, missing_elements, comments.
-    """
+def call_llm(prompt: str, max_retries: int = 3) -> dict:
+    """Call ZhiPu GLM-5 API with retry and return parsed JSON."""
     api_key = os.getenv("DEFAULT_LLM_API_KEY")
     base_url = os.getenv("DEFAULT_LLM_BASE_URL")
     model = os.getenv("DEFAULT_LLM_MODEL_NAME", "glm-5")
+    timeout = int(os.getenv("DEFAULT_LLM_TIMEOUT", 300))
 
     if not api_key:
         raise ValueError("LLM API key not found in environment")
-
-    prompt = f"""You are a BSA/AML compliance expert. Assess the following SAR narrative according to FinCEN guidelines.
-The narrative should clearly include:
-- Who (subject identification)
-- What (description of suspicious transactions, including amounts and instruments)
-- When (date range of activity)
-- Where (locations, including branch and foreign jurisdictions)
-- Why (reasons for suspicion, e.g., structuring, unusual patterns)
-- How (method of operation, e.g., funds flow, account usage)
-
-Additionally, check for:
-- Prohibited phrases like "see attached"
-- Clear description of funds flow (origination and destination)
-
-Provide a JSON output with:
-- "score": an integer from 0 to 100
-- "missing_elements": a list of missing elements (as strings)
-- "comments": a brief comment on quality
-
-Narrative:
-{narrative_text}
-"""
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -46,19 +23,79 @@ Narrative:
     payload = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.1,
         "response_format": {"type": "json_object"}
     }
 
-    try:
-        response = requests.post(f"{base_url}/chat/completions", json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
-        result = response.json()
-        content = result["choices"][0]["message"]["content"]
-        return json.loads(content)
-    except Exception as e:
-        # Fallback in case of API failure
-        return {
-            "score": 50,
-            "missing_elements": ["LLM evaluation failed"],
-            "comments": f"API call error: {str(e)}"
-        }
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                f"{base_url}/chat/completions",
+                json=payload,
+                headers=headers,
+                timeout=timeout
+            )
+            response.raise_for_status()
+            result = response.json()
+            content = result["choices"][0]["message"]["content"]
+            return json.loads(content)
+        except requests.exceptions.Timeout:
+            if attempt < max_retries - 1:
+                wait = 2 ** attempt
+                print(f"Timeout on attempt {attempt+1}, retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                raise RuntimeError(f"LLM API call timed out after {max_retries} attempts")
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait = 2 ** attempt
+                print(f"Error on attempt {attempt+1}: {e}, retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                raise RuntimeError(f"LLM API call failed: {str(e)}")
+
+def validate_with_llm(report: dict, rules: list, legal_requirements: list) -> dict:
+    """
+    Send report, rules, and legal requirements to LLM and get validation result.
+    Expected LLM output JSON with fields:
+        completeness_score (float 0-100)
+        compliance_score (float 0-100)
+        accuracy_score (float 0-100)
+        narrative_score (float 0-100)
+        status (str, either "APPROVED" or "NEEDS_REVIEW")
+        validation_report (str, detailed text report)
+    """
+    prompt = f"""You are a BSA/AML compliance expert. Validate the following financial report against the provided rules and legal requirements.
+
+**Instructions**:
+1. Analyze the report carefully.
+2. For each rule, determine if the report violates it.
+3. Based on the violations, assign scores (0-100) for four categories:
+   - completeness: presence of all required fields (names, addresses, IDs, etc.)
+   - compliance: adherence to BSA, AML, OFAC, anti‑structuring rules
+   - accuracy: correct data formats, amounts, dates, consistency
+   - narrative: quality of SAR narrative (for CTR, always 100 if not applicable)
+4. Provide a detailed textual validation report summarizing findings and recommendations.
+5. Determine overall status:
+   - If the average of the four scores is ≥ 80, status = "APPROVED".
+   - Otherwise, status = "NEEDS_REVIEW".
+6. Output ONLY a valid JSON object with exactly these keys:
+   {{
+       "completeness_score": float,
+       "compliance_score": float,
+       "accuracy_score": float,
+       "narrative_score": float,
+       "status": "APPROVED" or "NEEDS_REVIEW",
+       "validation_report": "detailed multi-line string"
+   }}
+
+**Report**:
+{json.dumps(report, indent=2)}
+
+**Validation Rules**:
+{json.dumps(rules, indent=2)}
+
+**Legal Requirements (for context)**:
+{json.dumps(legal_requirements, indent=2)}
+"""
+    return call_llm(prompt)
