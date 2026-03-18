@@ -1,0 +1,74 @@
+## SAR Sample Case 1 — Structuring / Money Laundering
+
+**PART I – TYPE OF FILING**
+- 1. Type: **a. Initial report**
+
+**PART I – SUBJECT INFORMATION**
+- 3. Last name: **Martinez**
+- 4. First name: **Carlos**
+- 5. Middle initial: **R**
+- 5a. Gender: **Male**
+- 6. AKA/DBA: *(none)*
+- 7. Occupation: **Used Car Dealer**
+- 7a. NAICS Code: **441120**
+- 8. Address: **4521 Westover Ave**
+- 9. City: **Miami**
+- 10. State: **FL**
+- 11. ZIP: **33101**
+- 12. Country: **US**
+- 13. TIN: **XXX-XX-4872**
+- 14. TIN type: **b. SSN-ITIN**
+- 15. ID form: **b. Driver's license** — Number: **FL-D400-221-87-291-0**, Issuing State: **FL**
+- **16. Date of birth: 03/14/1978**
+- 17. Phone type: **a. Home**
+- **18. Phone: 305-555-0174**
+- 19. Email: cmartinez.cars@gmail.com
+- 20. Corroborative statement: **b. No**
+- 21. Relationship to institution: **g. Customer**
+- 22. Status: **a. Relationship continues**
+- 24. Financial inst. TIN: **59-1234567** — Acct #: **7812-003-441**
+- 25. Subject role: **a. Purchaser/Sender**
+
+**PART II – SUSPICIOUS ACTIVITY**
+- **26. Amount involved: $47,500.00**
+- **27. Date range: From 06/01/2024 To 09/15/2024**
+- 29. Structuring:
+  - **b. Alters transaction to avoid CTR requirement**
+  - **e. Multiple transactions below CTR threshold**
+- 33. Money laundering:
+  - **h. Suspicious use of multiple accounts**
+  - **l. Transaction out of pattern for customer**
+- 40. Instruments: **i. US Currency**
+
+**PART III – FINANCIAL INSTITUTION WHERE ACTIVITY OCCURRED**
+- 47. Type: **b. Depository institution**
+- 48. Primary federal regulator: **OCC**
+- **51. Financial institution ID: RSSD number — 483921**
+- 53. Legal name: **First National Bank of Florida**
+- 54. AKA/DBA: **FNB Florida**
+- 55. TIN: **59-1234567**
+- 56. TIN type: **a. EIN**
+- 57. Address: **1200 Brickell Ave**
+- 58. City: **Miami**
+- 59. State: **FL**
+- 60. ZIP: **33131**
+- **61. Country: US**
+- 62. Internal control #: **SAR-2024-00142**
+- 63. Loss to FI: **$0.00**
+- 65. Branch address: **789 SW 8th St, Miami, FL 33130**
+- 67. Branch city: **Miami** | 68. State: **FL** | 69. ZIP: **33130** | 70. Country: **US**
+
+**PART IV – FILING INSTITUTION CONTACT**
+- 78. Primary federal regulator: **OCC**
+- 79. Filer name: **First National Bank of Florida**
+- 80. TIN: **59-1234567**
+- 81. TIN type: **a. EIN**
+- 82. Type: **b. Depository institution**
+- 85. Address: **1200 Brickell Ave**
+- 86. City: **Miami** | 87. State: **FL** | 88. ZIP: **33131** | 89. Country: **US**
+- 96. Contact office: **BSA Compliance Department**
+- 97. Contact phone: **305-555-0192**
+- 98. Date filed: **10/01/2024**
+
+
+

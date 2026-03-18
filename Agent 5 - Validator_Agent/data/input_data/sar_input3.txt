@@ -1,0 +1,74 @@
+## SAR Sample Case 2 — Wire Fraud / Account Takeover
+
+**PART I – TYPE OF FILING**
+- 1. Type: **a. Initial report**
+
+**PART I – SUBJECT INFORMATION**
+- 3. Last name: **Nguyen**
+- 4. First name: **Linh**
+- 5. Middle initial: **T**
+- 5a. Gender: **Female**
+- 6. AKA/DBA: *(none)*
+- 7. Occupation: **Freelance Consultant**
+- 7a. NAICS Code: **541611**
+- 8. Address: **882 Oak Canyon Rd, Apt 5**
+- 9. City: **Houston**
+- 10. State: **TX**
+- 11. ZIP: **77002**
+- 12. Country: **US**
+- 13. TIN: **XXX-XX-7731**
+- 14. TIN type: **b. SSN-ITIN**
+- 15. ID form: **b. Driver's license** — Number: **TX-39471822**, Issuing State: **TX**
+- **16. Date of birth: 08/22/1990**
+- 17. Phone type: **c. Mobile**
+- **18. Phone: 713-555-0284**
+- 19. Email: linh.nguyen.consult@yahoo.com
+- 20. Corroborative statement: **b. No**
+- 21. Relationship to institution: **g. Customer**
+- 22. Status: **a. Relationship continues**
+- 24. Financial inst. TIN: **74-9876543** — Acct #: **3301-887-002**
+- 25. Subject role: **b. Payee/Receiver**
+
+**PART II – SUSPICIOUS ACTIVITY**
+- **26. Amount involved: $23,150.00**
+- **27. Date range: From 08/05/2024 To 08/19/2024**
+- 31. Fraud:
+  - **j. Wire**
+  - **g. Mail**
+- 35. Other suspicious activity:
+  - **a. Account takeover**
+  - **g. Identity theft**
+- 40. Instruments:
+  - **c. Funds transfer**
+  - **e. Debit card**
+
+**PART III – FINANCIAL INSTITUTION WHERE ACTIVITY OCCURRED**
+- 47. Type: **b. Depository institution**
+- 48. Primary federal regulator: **NCUA**
+- **51. Financial institution ID: RSSD number — 712044**
+- 53. Legal name: **Lone Star Community Credit Union**
+- 54. AKA/DBA: **LSCCU**
+- 55. TIN: **74-9876543**
+- 56. TIN type: **a. EIN**
+- 57. Address: **500 Travis St, Suite 100**
+- 58. City: **Houston**
+- 59. State: **TX**
+- 60. ZIP: **77002**
+- **61. Country: US**
+- 62. Internal control #: **SAR-2024-00289**
+- 63. Loss to FI: **$23,150.00**
+- 65. Branch address: **1400 Main St, Houston, TX 77002**
+- 67. Branch city: **Houston** | 68. State: **TX** | 69. ZIP: **77002** | 70. Country: **US**
+
+**PART IV – FILING INSTITUTION CONTACT**
+- 78. Primary federal regulator: **NCUA**
+- 79. Filer name: **Lone Star Community Credit Union**
+- 80. TIN: **74-9876543**
+- 81. TIN type: **a. EIN**
+- 82. Type: **b. Depository institution**
+- 85. Address: **500 Travis St, Suite 100**
+- 86. City: **Houston** | 87. State: **TX** | 88. ZIP: **77002** | 89. Country: **US**
+- 96. Contact office: **Fraud Investigation Unit**
+- 97. Contact phone: **713-555-0347**
+- 98. Date filed: **09/02/2024**
+
