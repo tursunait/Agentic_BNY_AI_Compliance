@@ -301,7 +301,7 @@ def _monitor_job(api_client: APIClient) -> None:
             summary_rows.append({"Field": "Final Message", "Value": str(final_payload.get("message", ""))})
         st.table(summary_rows)
 
-    if auto_refresh and str(details.get("status", "")).lower() in {"submitted", "processing"}:
+    if auto_refresh and str(details.get("status", "")).lower() in {"pending", "submitted", "processing"}:
         time.sleep(max(int(st.session_state.get("notifications_refresh_seconds", 5)), 2))
         st.rerun()
 

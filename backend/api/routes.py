@@ -35,7 +35,7 @@ async def submit_report(submission: ReportSubmission, background_tasks: Backgrou
     db = SupabaseClient()
     db.create_job(job_id=job_id, input_data=submission.transaction_data)
     background_tasks.add_task(run_crew_workflow, job_id, submission.transaction_data)
-    return {"job_id": job_id, "status": "submitted", "message": "Report generation started"}
+    return {"job_id": job_id, "status": "pending", "message": "Report generation started"}
 
 
 @router.get("/reports/{job_id}/status")
