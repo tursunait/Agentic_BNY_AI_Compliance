@@ -1,0 +1,592 @@
+[
+  {
+    "rule_id": "CTR-REQ-001",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The total cash-in amount or total cash-out amount must exceed $10,000.",
+      "message": "Transaction amount does not exceed the $10,000 reporting threshold."
+    },
+    "legal_refs": ["LEG-CTR-001"]
+  },
+  {
+    "rule_id": "CTR-REQ-002",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The transaction date must be provided in YYYY-MM-DD format.",
+      "message": "Transaction date is missing or invalid."
+    },
+    "legal_refs": ["LEG-CTR-004"]
+  },
+  {
+    "rule_id": "CTR-REQ-003",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The filing date must be within 15 calendar days after the transaction date.",
+      "message": "CTR was not filed within the required 15-day window."
+    },
+    "legal_refs": ["LEG-CTR-004"]
+  },
+  {
+    "rule_id": "CTR-REQ-004",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The person involved in the transaction must have a last name (or entity name) or the unknown flag must be set.",
+      "message": "Last name or entity name is missing for the primary person."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-005",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "If the person is an individual, the first name must be provided or the unknown flag must be set.",
+      "message": "First name is missing for individual."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-006",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The street address of the person must be provided or the unknown flag must be set.",
+      "message": "Street address is missing for the person."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-007",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The city of the person must be provided or the unknown flag must be set.",
+      "message": "City is missing for the person."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-008",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The state of the person must be provided if the country is US, CA, or MX, or the unknown flag must be set.",
+      "message": "State is missing for a person in US, CA, or MX."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-009",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The ZIP or postal code of the person must be provided or the unknown flag must be set.",
+      "message": "ZIP/Postal code is missing for the person."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-010",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The country code of the person must be provided or the unknown flag must be set.",
+      "message": "Country code is missing for the person."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-011",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The TIN of the person must be provided or the unknown flag must be set.",
+      "message": "TIN is missing for the person."
+    },
+    "legal_refs": ["LEG-CTR-011"]
+  },
+  {
+    "rule_id": "CTR-REQ-012",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "If a U.S. TIN is provided, it must be 9 digits and not all zeros, all nines, or 123456789. Foreign TINs may be up to 25 alphanumeric characters.",
+      "message": "TIN format is invalid."
+    },
+    "legal_refs": ["LEG-CTR-011"]
+  },
+  {
+    "rule_id": "CTR-REQ-013",
+    "report_type": "CTR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "The TIN type (EIN, SSN-ITIN, Foreign) must be provided if TIN is known.",
+      "message": "TIN type is missing."
+    },
+    "legal_refs": ["LEG-CTR-011"]
+  },
+  {
+    "rule_id": "CTR-REQ-014",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "For individuals, the date of birth must be provided or the unknown flag must be set.",
+      "message": "Date of birth is missing for individual."
+    },
+    "legal_refs": ["LEG-CTR-010"]
+  },
+  {
+    "rule_id": "CTR-REQ-015",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "Identification information (type, number, issuing country) must be provided or the unknown flag must be set.",
+      "message": "Identification details are missing."
+    },
+    "legal_refs": ["LEG-CTR-003"]
+  },
+  {
+    "rule_id": "CTR-REQ-016",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's legal name must be provided.",
+      "message": "Financial institution legal name is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "CTR-REQ-017",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's EIN must be provided and be a valid 9-digit number (not all zeros, all nines, or 123456789).",
+      "message": "Financial institution EIN is missing or invalid."
+    },
+    "legal_refs": ["LEG-CTR-012"]
+  },
+  {
+    "rule_id": "CTR-REQ-018",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's street address must be provided.",
+      "message": "Financial institution street address is missing."
+    },
+    "legal_refs": ["LEG-CTR-016"]
+  },
+  {
+    "rule_id": "CTR-REQ-019",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's city must be provided.",
+      "message": "Financial institution city is missing."
+    },
+    "legal_refs": ["LEG-CTR-016"]
+  },
+  {
+    "rule_id": "CTR-REQ-020",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's state must be provided.",
+      "message": "Financial institution state is missing."
+    },
+    "legal_refs": ["LEG-CTR-016"]
+  },
+  {
+    "rule_id": "CTR-REQ-021",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's ZIP code must be provided.",
+      "message": "Financial institution ZIP code is missing."
+    },
+    "legal_refs": ["LEG-CTR-016"]
+  },
+  {
+    "rule_id": "CTR-REQ-022",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The primary federal regulator code must be provided and be one of the valid codes (A-G or equivalent numeric mapping).",
+      "message": "Primary federal regulator code is missing or invalid."
+    },
+    "legal_refs": ["LEG-CTR-015"]
+  },
+  {
+    "rule_id": "CTR-REQ-023",
+    "report_type": "CTR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The type of financial institution must be provided (e.g., depository, casino, MSB, securities/futures, or other).",
+      "message": "Financial institution type is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "CTR-REQ-024",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The contact office name must be provided.",
+      "message": "Contact office is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "CTR-REQ-025",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The contact phone number must be provided and be a valid numeric string.",
+      "message": "Contact phone number is missing or invalid."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "CTR-REQ-026",
+    "report_type": "CTR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "All text fields must not contain prohibited words or phrases such as 'AKA', 'COMPUTER GENERATED', 'CUSTOMER', 'N/A', 'NOT APPLICABLE', 'XX', or their variants.",
+      "message": "Prohibited word or phrase detected."
+    },
+    "legal_refs": ["LEG-CTR-009"]
+  },
+  {
+    "rule_id": "CTR-REQ-027",
+    "report_type": "CTR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "If multiple persons are indicated (multiple_persons = true), then section_b must contain valid person information (not blank).",
+      "message": "Multiple persons flag is set but second person information is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "CTR-REQ-028",
+    "report_type": "CTR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "If foreign cash-in or foreign cash-out amounts are present, the corresponding foreign country code must be provided.",
+      "message": "Foreign currency amount present but country code missing."
+    },
+    "legal_refs": ["LEG-CTR-014"]
+  },
+  {
+    "rule_id": "CTR-REQ-029",
+    "report_type": "CTR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "Account numbers involved in the transaction should be recorded if available.",
+      "message": "No account numbers provided for the transaction."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-001",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The SAR filing type (initial, correct/amend, etc.) must be provided.",
+      "message": "Filing type is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-002",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "If the filing type is corrective or amended, the prior report number must be provided.",
+      "message": "Prior report number missing for corrective/amended filing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-003",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The subject's last name must be provided.",
+      "message": "Subject last name is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-004",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The subject's first name must be provided.",
+      "message": "Subject first name is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-005",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's occupation or type of business must be provided.",
+      "message": "Subject occupation is missing."
+    },
+    "legal_refs": ["LEG-OCCUPATION-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-006",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's street address must be provided.",
+      "message": "Subject address is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-007",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's city must be provided.",
+      "message": "Subject city is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-008",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's state must be provided (if US).",
+      "message": "Subject state is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-009",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's ZIP code must be provided.",
+      "message": "Subject ZIP code is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-010",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's country must be provided.",
+      "message": "Subject country is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-011",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The subject's TIN must be provided or the unknown flag set.",
+      "message": "Subject TIN is missing."
+    },
+    "legal_refs": ["LEG-IDS-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-012",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's date of birth must be provided (if individual) or the unknown flag set.",
+      "message": "Subject date of birth is missing."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-013",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The subject's identification type, number, and issuing authority must be provided if available.",
+      "message": "Subject identification details are incomplete."
+    },
+    "legal_refs": ["LEG-CIP-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-014",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The total suspicious amount must be provided and be at least $5,000 (or other applicable threshold).",
+      "message": "Suspicious amount is missing or below threshold."
+    },
+    "legal_refs": ["LEG-BSA-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-015",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The activity date range must have both start and end dates.",
+      "message": "Activity date range is incomplete."
+    },
+    "legal_refs": ["LEG-DATE-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-016",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "If structuring is indicated, the narrative must mention structuring or transactions below CTR threshold.",
+      "message": "Structuring flag present but not explained in narrative."
+    },
+    "legal_refs": ["LEG-BSA-002", "LEG-REDFLAG-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-017",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's name must be provided.",
+      "message": "Financial institution name is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-018",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The financial institution's TIN must be provided.",
+      "message": "Financial institution TIN is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-019",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The filing institution's contact office must be provided.",
+      "message": "Filing institution contact office is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-020",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The filing institution's contact phone number must be provided.",
+      "message": "Filing institution contact phone is missing."
+    },
+    "legal_refs": []
+  },
+  {
+    "rule_id": "SAR-REQ-021",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "The date filed must be provided.",
+      "message": "Filing date is missing."
+    },
+    "legal_refs": ["LEG-TIMELY-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-022",
+    "report_type": "SAR",
+    "severity": "critical",
+    "rule_json": {
+      "condition": "If narrative is required (narrative_required = true), the narrative text must not be null or empty.",
+      "message": "Narrative is required but missing."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-023",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative must not contain the phrase 'see attached' or references to attachments.",
+      "message": "Narrative contains prohibited attachment reference."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-024",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative should include the identity of the subject(s) (who).",
+      "message": "Narrative does not clearly identify the subject(s)."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-025",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative should describe the suspicious transactions (what), including amounts and instruments.",
+      "message": "Narrative lacks description of transactions."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-026",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative should specify when the suspicious activity occurred (when), including dates.",
+      "message": "Narrative missing timing information."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-027",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative should indicate where the activity took place (where), including branch locations and any foreign jurisdictions.",
+      "message": "Narrative missing location information."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-028",
+    "report_type": "SAR",
+    "severity": "high",
+    "rule_json": {
+      "condition": "The narrative should explain why the activity is suspicious (why), referencing specific red flags.",
+      "message": "Narrative lacks justification for suspicion."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-029",
+    "report_type": "SAR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "The narrative should describe the method of operation (how), such as structuring, wire transfers, etc.",
+      "message": "Narrative missing modus operandi."
+    },
+    "legal_refs": ["LEG-NARR-001"]
+  },
+  {
+    "rule_id": "SAR-REQ-030",
+    "report_type": "SAR",
+    "severity": "medium",
+    "rule_json": {
+      "condition": "The narrative should describe the flow of funds, including origination and destination.",
+      "message": "Narrative does not clearly trace funds flow."
+    },
+    "legal_refs": ["LEG-NARR-002"]
+  }
+]

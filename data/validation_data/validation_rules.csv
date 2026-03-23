@@ -1,0 +1,60 @@
+rule_id,report_type,severity,condition,message,legal_refs
+CTR-REQ-001,CTR,critical,"The total cash-in amount or total cash-out amount must exceed $10,000.","Transaction amount does not exceed the $10,000 reporting threshold.",LEG-CTR-001
+CTR-REQ-002,CTR,critical,The transaction date must be provided in YYYY-MM-DD format.,Transaction date is missing or invalid.,LEG-CTR-004
+CTR-REQ-003,CTR,high,The filing date must be within 15 calendar days after the transaction date.,CTR was not filed within the required 15-day window.,LEG-CTR-004
+CTR-REQ-004,CTR,critical,The person involved in the transaction must have a last name (or entity name) or the unknown flag must be set.,Last name or entity name is missing for the primary person.,LEG-CTR-003
+CTR-REQ-005,CTR,high,"If the person is an individual, the first name must be provided or the unknown flag must be set.",First name is missing for individual.,LEG-CTR-003
+CTR-REQ-006,CTR,high,The street address of the person must be provided or the unknown flag must be set.,Street address is missing for the person.,LEG-CTR-003
+CTR-REQ-007,CTR,high,The city of the person must be provided or the unknown flag must be set.,City is missing for the person.,LEG-CTR-003
+CTR-REQ-008,CTR,high,"The state of the person must be provided if the country is US, CA, or MX, or the unknown flag must be set.","State is missing for a person in US, CA, or MX.",LEG-CTR-003
+CTR-REQ-009,CTR,high,The ZIP or postal code of the person must be provided or the unknown flag must be set.,ZIP/Postal code is missing for the person.,LEG-CTR-003
+CTR-REQ-010,CTR,high,The country code of the person must be provided or the unknown flag must be set.,Country code is missing for the person.,LEG-CTR-003
+CTR-REQ-011,CTR,critical,The TIN of the person must be provided or the unknown flag must be set.,TIN is missing for the person.,LEG-CTR-011
+CTR-REQ-012,CTR,high,"If a U.S. TIN is provided, it must be 9 digits and not all zeros, all nines, or 123456789. Foreign TINs may be up to 25 alphanumeric characters.",TIN format is invalid.,LEG-CTR-011
+CTR-REQ-013,CTR,medium,"The TIN type (EIN, SSN-ITIN, Foreign) must be provided if TIN is known.",TIN type is missing.,LEG-CTR-011
+CTR-REQ-014,CTR,high,"For individuals, the date of birth must be provided or the unknown flag must be set.",Date of birth is missing for individual.,LEG-CTR-010
+CTR-REQ-015,CTR,critical,"Identification information (type, number, issuing country) must be provided or the unknown flag must be set.",Identification details are missing.,LEG-CTR-003
+CTR-REQ-016,CTR,critical,The financial institution's legal name must be provided.,Financial institution legal name is missing.,
+CTR-REQ-017,CTR,critical,"The financial institution's EIN must be provided and be a valid 9-digit number (not all zeros, all nines, or 123456789).",Financial institution EIN is missing or invalid.,LEG-CTR-012
+CTR-REQ-018,CTR,critical,The financial institution's street address must be provided.,Financial institution street address is missing.,LEG-CTR-016
+CTR-REQ-019,CTR,critical,The financial institution's city must be provided.,Financial institution city is missing.,LEG-CTR-016
+CTR-REQ-020,CTR,critical,The financial institution's state must be provided.,Financial institution state is missing.,LEG-CTR-016
+CTR-REQ-021,CTR,critical,The financial institution's ZIP code must be provided.,Financial institution ZIP code is missing.,LEG-CTR-016
+CTR-REQ-022,CTR,critical,The primary federal regulator code must be provided and be one of the valid codes (A-G or equivalent numeric mapping).,Primary federal regulator code is missing or invalid.,LEG-CTR-015
+CTR-REQ-023,CTR,critical,"The type of financial institution must be provided (e.g., depository, casino, MSB, securities/futures, or other).",Financial institution type is missing.,
+CTR-REQ-024,CTR,high,The contact office name must be provided.,Contact office is missing.,
+CTR-REQ-025,CTR,high,The contact phone number must be provided and be a valid numeric string.,Contact phone number is missing or invalid.,
+CTR-REQ-026,CTR,medium,"All text fields must not contain prohibited words or phrases such as 'AKA', 'COMPUTER GENERATED', 'CUSTOMER', 'N/A', 'NOT APPLICABLE', 'XX', or their variants.",Prohibited word or phrase detected.,LEG-CTR-009
+CTR-REQ-027,CTR,high,"If multiple persons are indicated (multiple_persons = true), then section_b must contain valid person information (not blank).",Multiple persons flag is set but second person information is missing.,
+CTR-REQ-028,CTR,medium,"If foreign cash-in or foreign cash-out amounts are present, the corresponding foreign country code must be provided.",Foreign currency amount present but country code missing.,LEG-CTR-014
+CTR-REQ-029,CTR,medium,Account numbers involved in the transaction should be recorded if available.,No account numbers provided for the transaction.,
+SAR-REQ-001,SAR,critical,"The SAR filing type (initial, correct/amend, etc.) must be provided.",Filing type is missing.,
+SAR-REQ-002,SAR,critical,"If the filing type is corrective or amended, the prior report number must be provided.",Prior report number missing for corrective/amended filing.,
+SAR-REQ-003,SAR,critical,The subject's last name must be provided.,Subject last name is missing.,LEG-CIP-001
+SAR-REQ-004,SAR,critical,The subject's first name must be provided.,Subject first name is missing.,LEG-CIP-001
+SAR-REQ-005,SAR,high,The subject's occupation or type of business must be provided.,Subject occupation is missing.,LEG-OCCUPATION-001
+SAR-REQ-006,SAR,high,The subject's street address must be provided.,Subject address is missing.,LEG-CIP-001
+SAR-REQ-007,SAR,high,The subject's city must be provided.,Subject city is missing.,LEG-CIP-001
+SAR-REQ-008,SAR,high,The subject's state must be provided (if US).,Subject state is missing.,LEG-CIP-001
+SAR-REQ-009,SAR,high,The subject's ZIP code must be provided.,Subject ZIP code is missing.,LEG-CIP-001
+SAR-REQ-010,SAR,high,The subject's country must be provided.,Subject country is missing.,LEG-CIP-001
+SAR-REQ-011,SAR,critical,The subject's TIN must be provided or the unknown flag set.,Subject TIN is missing.,LEG-IDS-001
+SAR-REQ-012,SAR,high,The subject's date of birth must be provided (if individual) or the unknown flag set.,Subject date of birth is missing.,LEG-CIP-001
+SAR-REQ-013,SAR,high,"The subject's identification type, number, and issuing authority must be provided if available.",Subject identification details are incomplete.,LEG-CIP-001
+SAR-REQ-014,SAR,critical,"The total suspicious amount must be provided and be at least $5,000 (or other applicable threshold).",Suspicious amount is missing or below threshold.,LEG-BSA-001
+SAR-REQ-015,SAR,critical,The activity date range must have both start and end dates.,Activity date range is incomplete.,LEG-DATE-001
+SAR-REQ-016,SAR,high,"If structuring is indicated, the narrative must mention structuring or transactions below CTR threshold.",Structuring flag present but not explained in narrative.,"LEG-BSA-002, LEG-REDFLAG-001"
+SAR-REQ-017,SAR,critical,The financial institution's name must be provided.,Financial institution name is missing.,
+SAR-REQ-018,SAR,critical,The financial institution's TIN must be provided.,Financial institution TIN is missing.,
+SAR-REQ-019,SAR,critical,The filing institution's contact office must be provided.,Filing institution contact office is missing.,
+SAR-REQ-020,SAR,critical,The filing institution's contact phone number must be provided.,Filing institution contact phone is missing.,
+SAR-REQ-021,SAR,critical,The date filed must be provided.,Filing date is missing.,LEG-TIMELY-001
+SAR-REQ-022,SAR,critical,"If narrative is required (narrative_required = true), the narrative text must not be null or empty.",Narrative is required but missing.,LEG-NARR-001
+SAR-REQ-023,SAR,high,The narrative must not contain the phrase 'see attached' or references to attachments.,Narrative contains prohibited attachment reference.,LEG-NARR-001
+SAR-REQ-024,SAR,high,The narrative should include the identity of the subject(s) (who).,Narrative does not clearly identify the subject(s).,LEG-NARR-001
+SAR-REQ-025,SAR,high,"The narrative should describe the suspicious transactions (what), including amounts and instruments.",Narrative lacks description of transactions.,LEG-NARR-001
+SAR-REQ-026,SAR,high,"The narrative should specify when the suspicious activity occurred (when), including dates.",Narrative missing timing information.,LEG-NARR-001
+SAR-REQ-027,SAR,high,"The narrative should indicate where the activity took place (where), including branch locations and any foreign jurisdictions.",Narrative missing location information.,LEG-NARR-001
+SAR-REQ-028,SAR,high,"The narrative should explain why the activity is suspicious (why), referencing specific red flags.",Narrative lacks justification for suspicion.,LEG-NARR-001
+SAR-REQ-029,SAR,medium,"The narrative should describe the method of operation (how), such as structuring, wire transfers, etc.",Narrative missing modus operandi.,LEG-NARR-001
+SAR-REQ-030,SAR,medium,"The narrative should describe the flow of funds, including origination and destination.",Narrative does not clearly trace funds flow.,LEG-NARR-002

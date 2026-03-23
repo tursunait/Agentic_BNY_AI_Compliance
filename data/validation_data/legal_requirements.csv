@@ -1,0 +1,36 @@
+report_type_code,rule_code,rule_description,rule_type,threshold_amount,time_limit_days,is_mandatory
+CTR,CTR-THRESHOLD-001,"A Currency Transaction Report (CTR) must be filed for each deposit, withdrawal, exchange of currency, or other payment or transfer involving currency exceeding $10,000.",threshold,10000,,True
+CTR,CTR-AGGREGATION-001,"Multiple currency transactions by or on behalf of the same person in a single business day must be aggregated and treated as a single transaction if the total exceeds $10,000.",threshold,10000,,True
+CTR,CTR-TIMING-001,CTR must be filed electronically within 15 calendar days after the transaction date.,timing,,15,True
+CTR,CTR-IDENTIFICATION-001,"All individuals conducting reportable transactions must be identified using an official document, and the identification type, number, and issuing authority must be recorded on the CTR. Statements such as 'known customer' or 'signature card on file' are prohibited.",documentation,,,True
+CTR,CTR-RETENTION-001,A copy of the CTR and all supporting documentation must be retained for five years from the date of filing.,retention,,1825,True
+CTR,CTR-AMENDMENT-001,"When correcting or amending a previously filed CTR, the 'Correct/amend prior report' box must be checked and the prior report's Document Control Number (DCN) or BSA Identifier must be provided.",documentation,,,True
+CTR,CTR-PROHIBITED-WORDS-001,"The use of prohibited words or phrases such as 'AKA', 'COMPUTER GENERATED', 'CUSTOMER', 'N/A', 'NOT APPLICABLE', 'XX', and their variants in any field is not allowed.",compliance,,,True
+CTR,CTR-FOREIGN-CURRENCY-001,"If foreign currency is involved, the amount must be recorded in the foreign currency (not converted to USD) in Items 26 or 28, and the two-letter country code must be provided.",format,,,True
+CTR,CTR-AMOUNT-CONSISTENCY-001,Total cash-in (Item 25) must equal the sum of all cash-in subcategories (Items 25a-25z); total cash-out (Item 27) must equal the sum of all cash-out subcategories (Items 27a-27z).,accuracy,,,True
+CTR,CTR-TIN-FORMAT-001,"U.S. TINs must be 9 digits and cannot be all zeros, all nines, or 123456789. Foreign TINs may be up to 25 digits and must contain no formatting (spaces, hyphens, periods).",format,,,True
+CTR,CTR-DATEOFBIRTH-001,"For individuals, date of birth must be provided or the 'Unknown' box must be checked. For entities, date of birth must be blank.",completeness,,,True
+CTR,CTR-FI-EIN-001,The financial institution's Employer Identification Number (EIN) must be provided and must be a valid 9-digit number.,completeness,,,True
+CTR,CTR-CONTACT-001,Contact office name (Item 40) and contact phone number (Item 41) must be provided.,completeness,,,True
+CTR,CTR-FILING-TYPE-001,"The filing type (Item 1) must be specified (initial, correct/amend, or FinCEN directed backfiling).",completeness,,,True
+CTR,CTR-TRANSACTION-DATE-001,The transaction date (Item 23) must be provided.,completeness,,,True
+CTR,CTR-PERSON-NAME-001,"For each person involved, either the individual's last name or entity's legal name must be provided, or the 'Unknown' box must be checked.",completeness,,,True
+CTR,CTR-PERSON-ADDRESS-001,"For each person involved, the street address must be provided or the 'Unknown' box checked.",completeness,,,True
+CTR,CTR-PERSON-CITY-001,"For each person involved, the city must be provided or the 'Unknown' box checked.",completeness,,,True
+CTR,CTR-PERSON-COUNTRY-001,"For each person involved, the country code must be provided or the 'Unknown' box checked.",completeness,,,True
+CTR,CTR-PERSON-ID-001,"For each person involved, identification information (type, number, issuing country) must be provided or the 'Unknown' box checked.",completeness,,,True
+CTR,CTR-FI-NAME-001,The financial institution's legal name (Item 30) must be provided.,completeness,,,True
+CTR,CTR-FI-ADDRESS-001,"The financial institution's street address (Item 33), city (Item 34), state (Item 35), and ZIP code (Item 36) must be provided.",completeness,,,True
+CTR,CTR-FI-TYPE-001,The financial institution type (Item 37) must be provided.,completeness,,,True
+CTR,CTR-FI-REGULATOR-001,The primary federal regulator code (Item 29) must be provided.,completeness,,,True
+CTR,CTR-FILE-STRUCTURE-001,"The electronic file must contain all required record types: 1A, 2A, 2B, 3A, 4A, 9A, 9B, and 9Z in the correct order.",completeness,,,True
+CTR,CTR-TRANSACTION-SEQ-001,Each Transaction Summary (3A) record must have a unique transaction sequence number.,format,,,True
+CTR,CTR-TIN-TYPE-001,"If a TIN is provided, the TIN type (Item 16) must be specified (EIN, SSN-ITIN, or Foreign).",completeness,,,True
+CTR,CTR-FOREIGN-AMOUNT-FORMAT-001,Foreign cash-in and foreign cash-out amounts must be numeric and rounded up to the next whole amount.,format,,,True
+CTR,CTR-AMOUNT-GT-10000-001,"The total cash-in or total cash-out amount must be greater than $10,000 for the CTR to be filed.",threshold,10000,,True
+CTR,CTR-FI-ZIP-FORMAT-001,"U.S. ZIP codes must be five or nine digits, and a nine-digit ZIP cannot end with four zeros or four nines.",format,,,True
+SAR,SAR-NARRATIVE-FIVEW-001,"The SAR narrative must include the five essential elements: who, what, when, where, and why, as well as the method of operation (how).",quality,,,True
+SAR,SAR-NARRATIVE-NOATTACH-001,"The SAR narrative must not contain the phrase 'see attached' or refer to attachments, and must not include tables or spreadsheets. All relevant information must be described in the narrative text.",completeness,,,True
+SAR,SAR-RETENTION-001,A copy of the SAR and all supporting documentation must be retained for five years from the date of filing.,retention,,1825,True
+SAR,SAR-NARRATIVE-FUNDSFLOW-001,"The SAR narrative must describe the flow of funds, including origination and destination, account numbers, and any involved financial institutions.",quality,,,True
+SAR,SAR-NARRATIVE-REDFLAGS-001,"The SAR narrative must explain why the activity is suspicious, referencing specific red flags such as structuring, unusual patterns, lack of lawful purpose, etc.",quality,,,True

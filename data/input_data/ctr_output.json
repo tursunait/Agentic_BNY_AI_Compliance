@@ -1,0 +1,83 @@
+{
+  "report_type": "CTR",
+  "case_id": "CTR-2024-00001",
+  "amends_prior": false,
+  "multiple_persons": false,
+  "multiple_transactions": false,
+  "section_a": {
+    "last_name": "Johnson",
+    "first_name": "Michael",
+    "middle_initial": "R",
+    "dba": null,
+    "ssn_or_ein": "456-78-9012",
+    "address": "1234 Elm Street",
+    "dob": "1970-05-10",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60601",
+    "country": "US",
+    "occupation": "Small Business Owner - Auto Repair",
+    "id_type": "drivers_license",
+    "id_issued_by": "IL",
+    "id_number": "J1234567890"
+  },
+  "section_b": {
+    "blank_reason": "conducted_on_own_behalf",
+    "last_name": null,
+    "first_name": null,
+    "middle_initial": null,
+    "address": null,
+    "ssn": null,
+    "city": null,
+    "state": null,
+    "zip": null,
+    "country": null,
+    "dob": null,
+    "id_type": null,
+    "id_issued_by": null,
+    "id_number": null
+  },
+  "transaction": {
+    "cash_in": 12500.0,
+    "foreign_cash_in": null,
+    "cash_out": 0.0,
+    "foreign_cash_out": null,
+    "date": "2024-03-15",
+    "foreign_country": null,
+    "wire_transfer": null,
+    "negotiable_purchased": null,
+    "negotiable_cashed": null,
+    "currency_exchange": null,
+    "deposit_withdrawal": true,
+    "account_numbers": [
+      "CHK-7890123"
+    ],
+    "other_description": null
+  },
+  "institution": {
+    "name": "Chicago Community Bank",
+    "regulator_code": "2",
+    "address": "789 Michigan Avenue",
+    "ein_or_ssn": "36-1234567",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60602",
+    "routing_number": "071000013"
+  },
+  "signature": {
+    "approving_title": "Branch Manager",
+    "date": "2024-03-15",
+    "preparer_name": "Sarah Williams",
+    "contact_name": "James Peterson",
+    "contact_phone": "312-555-0150"
+  },
+  "created_at": "2026-03-02 10:14:30.430927",
+  "data_sources": [
+    "core_banking_system",
+    "teller_system",
+    "customer_database"
+  ],
+  "missing_required_fields": [],
+  "data_quality_issues": [],
+  "risk_score": 0.0
+}

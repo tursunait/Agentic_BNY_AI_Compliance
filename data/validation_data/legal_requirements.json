@@ -1,0 +1,352 @@
+[
+  {
+    "id": 1,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-THRESHOLD-001",
+    "rule_description": "A Currency Transaction Report (CTR) must be filed for each deposit, withdrawal, exchange of currency, or other payment or transfer involving currency exceeding $10,000.",
+    "rule_type": "threshold",
+    "threshold_amount": 10000,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 2,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-AGGREGATION-001",
+    "rule_description": "Multiple currency transactions by or on behalf of the same person in a single business day must be aggregated and treated as a single transaction if the total exceeds $10,000.",
+    "rule_type": "threshold",
+    "threshold_amount": 10000,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 3,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-TIMING-001",
+    "rule_description": "CTR must be filed electronically within 15 calendar days after the transaction date.",
+    "rule_type": "timing",
+    "threshold_amount": null,
+    "time_limit_days": 15,
+    "is_mandatory": true
+  },
+  {
+    "id": 4,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-IDENTIFICATION-001",
+    "rule_description": "All individuals conducting reportable transactions must be identified using an official document, and the identification type, number, and issuing authority must be recorded on the CTR. Statements such as 'known customer' or 'signature card on file' are prohibited.",
+    "rule_type": "documentation",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 5,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-RETENTION-001",
+    "rule_description": "A copy of the CTR and all supporting documentation must be retained for five years from the date of filing.",
+    "rule_type": "retention",
+    "threshold_amount": null,
+    "time_limit_days": 1825,
+    "is_mandatory": true
+  },
+  {
+    "id": 6,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-AMENDMENT-001",
+    "rule_description": "When correcting or amending a previously filed CTR, the 'Correct/amend prior report' box must be checked and the prior report's Document Control Number (DCN) or BSA Identifier must be provided.",
+    "rule_type": "documentation",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 7,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PROHIBITED-WORDS-001",
+    "rule_description": "The use of prohibited words or phrases such as 'AKA', 'COMPUTER GENERATED', 'CUSTOMER', 'N/A', 'NOT APPLICABLE', 'XX', and their variants in any field is not allowed.",
+    "rule_type": "compliance",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 8,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FOREIGN-CURRENCY-001",
+    "rule_description": "If foreign currency is involved, the amount must be recorded in the foreign currency (not converted to USD) in Items 26 or 28, and the two-letter country code must be provided.",
+    "rule_type": "format",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 9,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-AMOUNT-CONSISTENCY-001",
+    "rule_description": "Total cash-in (Item 25) must equal the sum of all cash-in subcategories (Items 25a-25z); total cash-out (Item 27) must equal the sum of all cash-out subcategories (Items 27a-27z).",
+    "rule_type": "accuracy",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 10,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-TIN-FORMAT-001",
+    "rule_description": "U.S. TINs must be 9 digits and cannot be all zeros, all nines, or 123456789. Foreign TINs may be up to 25 digits and must contain no formatting (spaces, hyphens, periods).",
+    "rule_type": "format",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 11,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-DATEOFBIRTH-001",
+    "rule_description": "For individuals, date of birth must be provided or the 'Unknown' box must be checked. For entities, date of birth must be blank.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 12,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-EIN-001",
+    "rule_description": "The financial institution's Employer Identification Number (EIN) must be provided and must be a valid 9-digit number.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 13,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-CONTACT-001",
+    "rule_description": "Contact office name (Item 40) and contact phone number (Item 41) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 14,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FILING-TYPE-001",
+    "rule_description": "The filing type (Item 1) must be specified (initial, correct/amend, or FinCEN directed backfiling).",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 15,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-TRANSACTION-DATE-001",
+    "rule_description": "The transaction date (Item 23) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 16,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PERSON-NAME-001",
+    "rule_description": "For each person involved, either the individual's last name or entity's legal name must be provided, or the 'Unknown' box must be checked.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 17,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PERSON-ADDRESS-001",
+    "rule_description": "For each person involved, the street address must be provided or the 'Unknown' box checked.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 18,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PERSON-CITY-001",
+    "rule_description": "For each person involved, the city must be provided or the 'Unknown' box checked.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 19,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PERSON-COUNTRY-001",
+    "rule_description": "For each person involved, the country code must be provided or the 'Unknown' box checked.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 20,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-PERSON-ID-001",
+    "rule_description": "For each person involved, identification information (type, number, issuing country) must be provided or the 'Unknown' box checked.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 21,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-NAME-001",
+    "rule_description": "The financial institution's legal name (Item 30) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 22,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-ADDRESS-001",
+    "rule_description": "The financial institution's street address (Item 33), city (Item 34), state (Item 35), and ZIP code (Item 36) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 23,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-TYPE-001",
+    "rule_description": "The financial institution type (Item 37) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 24,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-REGULATOR-001",
+    "rule_description": "The primary federal regulator code (Item 29) must be provided.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 25,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FILE-STRUCTURE-001",
+    "rule_description": "The electronic file must contain all required record types: 1A, 2A, 2B, 3A, 4A, 9A, 9B, and 9Z in the correct order.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 26,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-TRANSACTION-SEQ-001",
+    "rule_description": "Each Transaction Summary (3A) record must have a unique transaction sequence number.",
+    "rule_type": "format",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 27,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-TIN-TYPE-001",
+    "rule_description": "If a TIN is provided, the TIN type (Item 16) must be specified (EIN, SSN-ITIN, or Foreign).",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 28,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FOREIGN-AMOUNT-FORMAT-001",
+    "rule_description": "Foreign cash-in and foreign cash-out amounts must be numeric and rounded up to the next whole amount.",
+    "rule_type": "format",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 29,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-AMOUNT-GT-10000-001",
+    "rule_description": "The total cash-in or total cash-out amount must be greater than $10,000 for the CTR to be filed.",
+    "rule_type": "threshold",
+    "threshold_amount": 10000,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 30,
+    "report_type_code": "CTR",
+    "rule_code": "CTR-FI-ZIP-FORMAT-001",
+    "rule_description": "U.S. ZIP codes must be five or nine digits, and a nine-digit ZIP cannot end with four zeros or four nines.",
+    "rule_type": "format",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 31,
+    "report_type_code": "SAR",
+    "rule_code": "SAR-NARRATIVE-FIVEW-001",
+    "rule_description": "The SAR narrative must include the five essential elements: who, what, when, where, and why, as well as the method of operation (how).",
+    "rule_type": "quality",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 32,
+    "report_type_code": "SAR",
+    "rule_code": "SAR-NARRATIVE-NOATTACH-001",
+    "rule_description": "The SAR narrative must not contain the phrase 'see attached' or refer to attachments, and must not include tables or spreadsheets. All relevant information must be described in the narrative text.",
+    "rule_type": "completeness",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 33,
+    "report_type_code": "SAR",
+    "rule_code": "SAR-RETENTION-001",
+    "rule_description": "A copy of the SAR and all supporting documentation must be retained for five years from the date of filing.",
+    "rule_type": "retention",
+    "threshold_amount": null,
+    "time_limit_days": 1825,
+    "is_mandatory": true
+  },
+  {
+    "id": 34,
+    "report_type_code": "SAR",
+    "rule_code": "SAR-NARRATIVE-FUNDSFLOW-001",
+    "rule_description": "The SAR narrative must describe the flow of funds, including origination and destination, account numbers, and any involved financial institutions.",
+    "rule_type": "quality",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  },
+  {
+    "id": 35,
+    "report_type_code": "SAR",
+    "rule_code": "SAR-NARRATIVE-REDFLAGS-001",
+    "rule_description": "The SAR narrative must explain why the activity is suspicious, referencing specific red flags such as structuring, unusual patterns, lack of lawful purpose, etc.",
+    "rule_type": "quality",
+    "threshold_amount": null,
+    "time_limit_days": null,
+    "is_mandatory": true
+  }
+]

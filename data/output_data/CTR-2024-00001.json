@@ -1,0 +1,16 @@
+{
+  "case_id": "CTR-2024-00001",
+  "report_type": "CTR",
+  "status": "REJECTED",
+  "pass_or_not": "No",
+  "validation_score": 98.33,
+  "scores": {
+    "completeness": 93.33,
+    "compliance": 100.0,
+    "accuracy": 100.0,
+    "narrative": 100.0
+  },
+  "validation_report": "============================================================\nVALIDATION REPORT\n============================================================\nReport Type: CTR\nTotal Violations: 3\n\nCATEGORY SCORES:\n  - Completeness: 93.33%\n  - Compliance: 100.0%\n  - Accuracy: 100.0%\n  - Narrative: 100.0%\n\nVIOLATIONS:\n  CRITICAL (1):\n    - CTR-REQ-023: Financial institution type missing\n  MEDIUM (2):\n    - CTR-REQ-013: TIN type missing (EIN/SSN-ITIN/Foreign)\n    - CTR-REQ-026: Prohibited word 'CUSTOMER' detected\n\nRECOMMENDATIONS:\n  - Complete missing field: Financial institution type missing\n  - Complete missing field: TIN type missing (EIN/SSN-ITIN/Foreign)\n  - Remove prohibited words: Prohibited word 'CUSTOMER' detected\n============================================================",
+  "generate_times": 1,
+  "current_best_score": 0.0
+}

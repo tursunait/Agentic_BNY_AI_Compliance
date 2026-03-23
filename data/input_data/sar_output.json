@@ -1,0 +1,104 @@
+{
+  "report_type": "SAR",
+  "case_id": "SAR-2024-00001",
+  "filing_type": "initial",
+  "prior_report_number": null,
+  "subject": {
+    "last_name": "Martinez",
+    "first_name": "Roberto",
+    "middle_initial": "J",
+    "gender": "Male",
+    "alternate_name": null,
+    "occupation": "Restaurant Owner",
+    "naics_code": "722511",
+    "address": "4521 Oak Street Apt 3B",
+    "city": "Miami",
+    "state": "FL",
+    "zip": "33130",
+    "country": "US",
+    "tin": "123-45-6789",
+    "tin_type": "SSN",
+    "id_type": "drivers_license",
+    "dob": "1978-03-15",
+    "phone_type": "mobile",
+    "phone": "305-555-0142",
+    "phone_ext": null,
+    "email": "rmartinez@email.com",
+    "website": null,
+    "relationship_to_institution": [
+      "account_holder"
+    ],
+    "role_in_activity": [
+      "conductor"
+    ]
+  },
+  "activity": {
+    "amount": 47500.0,
+    "activity_date_range": {
+      "start": "2024-01-15",
+      "end": "2024-01-19"
+    },
+    "cumulative_amount": null,
+    "structuring": [
+      "structuring"
+    ],
+    "terrorist_financing": [],
+    "fraud": [],
+    "money_laundering": [],
+    "identification_issues": [],
+    "other_suspicious": [
+      "unusual_patterns"
+    ],
+    "product_types": [],
+    "instrument_types": [],
+    "ip_address": null
+  },
+  "financial_institution": {
+    "type": "depository",
+    "federal_regulator": "FDIC",
+    "name": "First National Bank",
+    "alternate_name": null,
+    "tin": "12-3456789",
+    "tin_type": "EIN",
+    "address": "100 Main Street",
+    "city": "Miami",
+    "state": "FL",
+    "zip": "33131",
+    "country": "US",
+    "internal_control_number": "FNB-SAR-2024-0123",
+    "loss_amount": null,
+    "branch_address": "100 Main Street, Branch 001",
+    "branch_city": "Miami",
+    "branch_state": "FL",
+    "branch_zip": "33131",
+    "branch_country": "US"
+  },
+  "filing_institution": {
+    "federal_regulator": "FDIC",
+    "name": "First National Bank",
+    "tin": "12-3456789",
+    "tin_type": "EIN",
+    "type": "depository",
+    "address": "100 Main Street",
+    "city": "Miami",
+    "state": "FL",
+    "zip": "33131",
+    "country": "US",
+    "contact_office": "BSA/AML Compliance Department",
+    "contact_phone": "305-555-0100",
+    "contact_phone_ext": "4523",
+    "date_filed": "2024-02-15"
+  },
+  "narrative": null,
+  "created_at": "2026-03-02 10:14:30.419448",
+  "data_sources": [
+    "core_banking_system",
+    "aml_monitoring_system",
+    "kyc_database",
+    "transaction_monitoring"
+  ],
+  "missing_required_fields": [],
+  "data_quality_issues": [],
+  "risk_score": 50.0,
+  "narrative_required": true
+}
