@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-011",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Belarus — E.O. 13405 / 14038",
+  "institution": {
+    "name": "Lakeside Community Bank",
+    "type": "Bank",
+    "address": "800 N Michigan Ave",
+    "city": "Chicago",
+    "state": "IL",
+    "postal_code": "60611",
+    "country": "United States",
+    "contact_person": "Elena Novak",
+    "telephone": "312-555-1001",
+    "email": "enovak@lakesidebank.com"
+  },
+  "transaction": {
+    "amount_rejected": "28500.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-12",
+    "date_of_rejection": "2026-03-12",
+    "program_or_reason": "Belarus Sanctions, 31 C.F.R. Part 548 (E.O. 13405, 14038)",
+    "originator_name_address": "Eastern European Trading LLC, 1000 W Chicago Ave, Chicago, IL 60622, United States",
+    "originating_fi": "Lakeside Community Bank, 800 N Michigan Ave, Chicago, IL 60611, United States",
+    "intermediary_fi": "Raiffeisen Bank International, Vienna, Austria",
+    "beneficiary_fi": "Belarusbank, Minsk, Belarus",
+    "beneficiary_name_address": "Minsk Agricultural Export Co., 15 Independence Ave, Minsk, Belarus",
+    "additional_relevant_info": "Payment for fertilizer supply. Beneficiary country Belarus; sanctions in effect.",
+    "additional_data": "SWIFT MT103; Ref BEL-AGR-2026-01"
+  },
+  "preparer": {
+    "name": "Elena Novak",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-13"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Belarus",
+    "sanctions_nexus": "Beneficiary and beneficiary FI located in Belarus; U.S. sanctions prohibit certain dealings with Belarus",
+    "documents_reviewed": [
+      "Payment message",
+      "Commercial invoice and contract",
+      "Sanctions screening output",
+      "Customer account file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

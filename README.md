@@ -1,530 +1,171 @@
-# Agentic_BNY_AI_Compliance
+## Narrative Generator Agent (SAR & OFAC Rejected Transaction)
 
-Production-style multi-agent compliance reporting system for SAR/CTR workflows.
+A **CrewAI** agent that generates regulatory narratives from structured JSON input. It supports **SAR** (Suspicious Activity Reports) and **OFAC_REJECT** (sanctions rejected transaction reports) through a single entry point: report type is detected from the input or passed explicitly, then the correct knowledge-base guidance is retrieved and the narrative is generated and validated.
 
-This repository contains:
-- FastAPI backend (`backend/`) with CrewAI orchestration
-- Streamlit UI (`streamlit_app/`) for analyst workflows
-- Knowledge layer using Supabase + Weaviate + Redis
-- PDF filing tools for SAR/CTR templates
+The agent is designed to **not hallucinate**: it uses only the provided input and follows narrative instructions and examples from a Supabase knowledge base (or local fallback for OFAC_REJECT).
 
----
+### Features
 
-## Table of Contents
+- **Report types**: **SAR** and **OFAC_REJECT**. Routing by `report_type_code` in the input (or argument); same API for both.
+- **Input**:  
+  - **SAR**: `case_id`, `subject`, `SuspiciousActivityInformation`, plus optional alert, transactions, institution, etc.  
+  - **OFAC_REJECT**: `case_id`, `transaction`, `case_facts`, plus optional institution, preparer, `report_type_code`.
+- **Output**: Same structure as input with one new field `narrative` (input JSON + `{"narrative": "..."}`).
+- **Knowledge base**: Fetches narrative instructions and examples from Supabase `report_types` and `narrative_examples` by `report_type_code`. For **OFAC_REJECT**, if the KB has no row (or Supabase is unavailable), built-in local guidance and an example are used so the flow works without Supabase.
+- **Narrative validation**: Optional checks per report type (structure, tone, completeness). See `validate_narrative()` and `docs/NARRATIVE_VALIDATION.md`; OFAC_REJECT checks include rejection stated, no blocking language, sanctions nexus and documents reviewed.
+- **CrewAI**: One agent per run (role/goal from report type registry); one task; uses OpenAI `gpt-4o-mini`.
+- **Tests**: Pytest for schemas, agent, KB fallback, OFAC_REJECT routing and validation (mocked so no API key needed for unit tests).
+- **Demo**: Jupyter notebook (SAR + OFAC sections) from input JSON → generate → validate → display.
 
-1. [What the System Does](#what-the-system-does)
-2. [Current Agent Workflow](#current-agent-workflow)
-3. [Architecture and Data Stores](#architecture-and-data-stores)
-4. [Repository Layout](#repository-layout)
-5. [Prerequisites](#prerequisites)
-6. [Environment Variables](#environment-variables)
-7. [Local Setup (Step-by-Step)](#local-setup-step-by-step)
-8. [Initialize and Seed Knowledge Base](#initialize-and-seed-knowledge-base)
-9. [Run Backend and Frontend](#run-backend-and-frontend)
-10. [How to Test End-to-End](#how-to-test-end-to-end)
-11. [UI Usage Guide](#ui-usage-guide)
-12. [API Reference (Current)](#api-reference-current)
-13. [PDF Filing Behavior and Field Mapping Notes](#pdf-filing-behavior-and-field-mapping-notes)
-14. [Troubleshooting](#troubleshooting)
-15. [Operational Notes for Teammates](#operational-notes-for-teammates)
-16. [Security Notes](#security-notes)
+### Setup
 
----
+From the project root:
 
-## What the System Does
+```bash
+python -m venv .venv
+source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt   # or pip install -e .
+```
 
-Given a transaction case (JSON or text input converted to JSON), the system:
-1. Classifies filing type (`SAR`, `CTR`, `BOTH`, or none)
-2. Aggregates and maps case fields into report-ready structures
-3. Generates SAR narrative only when required
-4. Validates quality/compliance (or bypasses in testing mode)
-5. Fills PDF templates and returns downloadable report(s)
+Set your OpenAI and (for SAR) Supabase environment variables:
 
-Output artifacts include:
-- Job status and progress per stage
-- Aggregated case payload(s)
-- Narrative payload (SAR path)
-- Validation outcome
-- Final filed PDF path(s)
+```bash
+export OPENAI_API_KEY=sk-...
+export SUPABASE_URL="https://ggxnbctgyiitfwxharjt.supabase.co"
+export SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
 
----
+The Supabase URL and anon key must have read access to:
 
-## Current Agent Workflow
+- `report_types` (including `narrative_instructions`, `json_schema`, `validation_rules`, `pdf_template_path`, and `pdf_field_mapping`)
+- `narrative_examples` (including `summary`, `narrative_text`, `effectiveness_notes`, and `example_order`)
 
-### Active orchestration path (current runtime)
+### Running the agent
 
-- Agent 1: **Router** (CrewAI)
-- Agent 2: **Researcher** is intentionally skipped
-- Agent 3: **Aggregator** (schema-aware mapper, Supabase-backed schema lookup)
-- Agent 4: **Narrative** (only when `narrative_required=true`)
-- Agent 5: **Validator** (CrewAI), or bypassed with `SKIP_VALIDATOR_FOR_TESTING=true`
-- Agent 6: **Filer** (deterministic PDF filling)
+From the project root, with `src` on the Python path:
 
-### Execution flow
+**SAR** (pass `report_type_code` or omit; SAR is default when not in input):
 
-1. `POST /api/v1/reports/submit`
-2. Job record is created in DB (`job_status` table)
-3. Background task starts Crew workflow
-4. Router classifies report types
-5. Aggregator maps per report type (`aggregator_by_type`)
-6. Narrative runs only for SAR when required
-7. Validator runs unless bypassed
-8. Filer generates PDF(s) on approved path
-9. Job status is updated (`processing` -> `completed`/`failed`)
+```bash
+cd narrative_agent   # or project root
+PYTHONPATH=src python -c "
+from narrative_agent import generate_narrative
+import json
+with open('examples/input_example.json') as f:
+    data = json.load(f)
+out = generate_narrative(data, report_type_code='SAR')
+print(json.dumps(out, indent=2))
+"
+```
 
----
+**OFAC rejected transaction** (include `report_type_code` in input or pass it):
 
-## Architecture and Data Stores
+```bash
+PYTHONPATH=src python -c "
+from narrative_agent import generate_narrative, validate_narrative
+import json
+with open('examples/ofac_reject_example.json') as f:
+    data = json.load(f)
+out = generate_narrative(data)   # routes by data['report_type_code']
+v = validate_narrative(out['narrative'], out, report_type_code='OFAC_REJECT')
+print('Valid:', v.passed)
+print(out['narrative'][:300], '...')
+"
+```
 
-### Backend
-- FastAPI (`backend/api/main.py`, `backend/api/routes.py`)
-- Crew orchestration (`backend/orchestration/crew.py`)
-- Agents (`backend/agents/*.py`)
-- PDF tools and field mapping (`backend/tools/pdf_tools.py`, `backend/tools/field_mapper.py`)
+Or use the class:
 
-### Data services
+```python
+from narrative_agent import NarrativeGeneratorCrew
 
-- **Supabase/Postgres (SQLAlchemy client in `supabase_client.py`)**
-  - Job lifecycle (`job_status`)
-  - Audit logs (`audit_log`)
-  - Optional schema/rules/mappings persistence tables
+crew = NarrativeGeneratorCrew(verbose=True)
+result = crew.kickoff(inputs=<your_input_dict>)  # SAR or OFAC_REJECT shape
+# result is input JSON + {'narrative': '...'}
+```
 
-- **Supabase REST (via `SUPABASE_URL` + `SUPABASE_ANON_KEY`)**
-  - `report_types` table (schema/rules/mapping/narrative config)
-  - `narrative_examples` table
+Internally, the agent:
 
-- **Weaviate**
-  - semantic retrieval for regulations/narratives/definitions
+- Resolves `report_type_code` from the input (e.g. `report_type_code` or `report_type`) or the argument; default is `SAR`.
+- Fetches narrative instructions and examples from Supabase `report_types` and `narrative_examples` for that code. For **OFAC_REJECT**, if the KB has no row or Supabase is unavailable, local guidance from the report type registry is used.
+- Builds the prompt from retrieved (or local) instructions, examples, and the full structured input, then generates one narrative paragraph and returns input + `narrative`.
 
-- **Redis**
-  - cache for schema/rules/mappings/lookups
+### Running tests
 
----
+```bash
+cd narrative_agent   # or project root
+PYTHONPATH=src pytest tests/ -v
+```
 
-## Repository Layout
+Tests cover schema validation (SAR and OFAC_REJECT required keys), agent orchestration and routing, KB fallback for OFAC_REJECT, and narrative validation. Agent and KB calls are mocked so no API keys are required for unit tests.
+
+### Jupyter notebook demo
+
+From the project root:
+
+```bash
+PYTHONPATH=src jupyter notebook notebooks/sar_narrative_demo.ipynb
+```
+
+Run all cells. The notebook includes:
+
+- **SAR**: Load example input, run the agent, validate the narrative, display result (Sections 1–7).
+- **OFAC_REJECT** (Section 8): Load `examples/ofac_reject_example.json`, generate narrative (routing by `report_type_code`), validate, and display. Set `OPENAI_API_KEY` before running agent cells.
+
+### Project structure
 
 ```text
-backend/
-  agents/
-  api/
-  config/
-  knowledge_base/
-  orchestration/
-  tools/
-
-streamlit_app/
-  app.py
-  pages/
-  components/
-  styles/
-  utils/
-
-knowledge_base/
-  schemas/
-  regulations/
-  narratives/
-  documents/pdf_templates/
-
-scripts/
-  preflight.py
-  init_weaviate.py
-  seed_kb.py
-  e2e_submit_check.py
-  test_pdf_filer.py
-  test_ctr_filer.py
-  test_crew.py
+Agentic_BNY_AI_Compliance/   # or narrative_agent/
+  README.md
+  requirements.txt
+  examples/
+    input_example.json        # SAR input
+    input_example2.json
+    input_example3.json
+    ofac_reject_example.json  # OFAC_REJECT input
+  docs/
+    NARRATIVE_VALIDATION.md   # Narrative quality criteria and process
+    OFAC_REJECT.md            # OFAC_REJECT routing, KB, validation, example
+  src/
+    narrative_agent/
+      __init__.py
+      agent.py                # generate_narrative(), create_crew(); report-type routing
+      schemas.py              # NarrativeOutput, validate_input (report-type-aware)
+      report_types.py         # Registry: SAR, OFAC_REJECT (required keys, agent role, local guidance)
+      knowledge_base.py       # Supabase report_types + narrative_examples; OFAC_REJECT fallback
+      narrative_validation.py # validate_narrative() per report type (SAR / OFAC_REJECT)
+      examples.py             # Local few-shot (legacy)
+      narrative_reference.py  # Local SAR guidelines (legacy)
+  tests/
+    test_schemas.py
+    test_agent.py
+    test_knowledge_base.py
+    test_ofac_reject.py       # OFAC_REJECT routing, validation, sample JSON
+  notebooks/
+    sar_narrative_demo.ipynb  # SAR (1–7) + OFAC_REJECT (8), validation
 ```
 
----
+### Verifying Supabase connectivity
 
-## Prerequisites
-
-- Python 3.11+ (3.12 tested)
-- `pip`
-- Local Redis (unless using remote Redis)
-- Weaviate (local or cloud)
-- Postgres-compatible DB for job storage (local Postgres or Supabase DB)
-- OpenAI API key for embedding/LLM operations
-
----
-
-## Environment Variables
-
-Use `.env.example` as base.
-
-### Required in practice
-
-- `OPENAI_API_KEY`
-- `WEAVIATE_URL`
-- `REDIS_URL`
-- A working DB DSN path via one of:
-  - `SUPABASE_DB_URL`
-  - or `SUPABASE_DB_HOST` + `SUPABASE_DB_PASSWORD` (+ related components)
-  - or fallback `DATABASE_URL`
-
-### Required for Supabase REST-backed KB reads
-
-- `SUPABASE_URL` (HTTP URL, e.g. `https://<project_ref>.supabase.co`)
-- `SUPABASE_ANON_KEY`
-
-### Important URL distinction
-
-- `SUPABASE_URL` must be **HTTP(S)** for REST API access.
-- DB connection must be **PostgreSQL DSN** (`postgresql://...`) via DB vars.
-- Do not put HTTP URL into DB DSN fields.
-
-### Validator bypass toggle
-
-- `SKIP_VALIDATOR_FOR_TESTING=true`
-  - bypasses Agent 5
-  - auto-approves for filing
-  - useful for integration tests and PDF mapping iteration
-
----
-
-## Local Setup (Step-by-Step)
-
-From repo root:
+To verify the knowledge base for SAR:
 
 ```bash
-cd Agentic_BNY_AI_Compliance
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+PYTHONPATH=src python -c "
+from narrative_agent.knowledge_base import fetch_report_type_config, fetch_narrative_examples
+cfg = fetch_report_type_config('SAR')
+examples = fetch_narrative_examples('SAR')
+print('Report type:', cfg.report_type_code, '-', cfg.display_name)
+print('Instructions snippet:', (cfg.narrative_instructions or '')[:200])
+print('Loaded examples:', len(examples))
+"
 ```
 
-If you use Conda, deactivate first to avoid interpreter/package mismatch:
+If this succeeds, the agent uses Supabase-hosted instructions and examples for SAR. **OFAC_REJECT** works without Supabase: if no row exists for that code, local guidance from `report_types.py` is used.
 
-```bash
-conda deactivate 2>/dev/null || true
-source .venv/bin/activate
-which python
-```
+### Documentation
 
-Expected `which python` -> `.venv/bin/python`
+- **`docs/NARRATIVE_VALIDATION.md`** — Narrative quality criteria, validation process, and pass/fail checks.
+- **`docs/OFAC_REJECT.md`** — OFAC_REJECT routing, KB retrieval, required input, validation, and example narrative.
 
----
+### License
 
-## Initialize and Seed Knowledge Base
-
-### 1) Preflight checks
-
-```bash
-source .venv/bin/activate
-set -a; source .env; set +a
-python scripts/preflight.py
-```
-
-### 2) Init Weaviate classes
-
-```bash
-python scripts/init_weaviate.py
-```
-
-### 3) Seed KB
-
-```bash
-python scripts/seed_kb.py
-```
-
-Notes:
-- If no real DB DSN is configured, `seed_kb.py` enters REST-only mode and skips SQL table seeding.
-- Weaviate seeding still runs.
-
----
-
-## Run Backend and Frontend
-
-### Backend
-
-```bash
-source .venv/bin/activate
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-Health check:
-
-```bash
-curl http://127.0.0.1:8001/health
-```
-
-Expected shape:
-
-```json
-{"status":"healthy","services":{"database":true,"weaviate":true,"redis":true}}
-```
-
-### Frontend (Streamlit)
-
-Run in a separate terminal:
-
-```bash
-source .venv/bin/activate
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-Open:
-- `http://localhost:8501`
-
-Current sidebar navigation intentionally shows:
-- Home
-- Dashboard
-- Submit Case
-- Case Management
-- Settings
-
----
-
-## How to Test End-to-End
-
-### A) API E2E smoke test
-
-```bash
-source .venv/bin/activate
-python scripts/e2e_submit_check.py
-```
-
-This submits:
-- one SAR-only case (expects narrative path)
-- one CTR-only case (expects narrative skip)
-
-Expected final line:
-- `PASS: End-to-end checks succeeded.`
-
-### B) Direct PDF filer tests
-
-```bash
-source .venv/bin/activate
-python scripts/test_pdf_filer.py --input data/CASE-2024-677021.json --report-type SAR
-python scripts/test_pdf_filer.py --input data/ctr_test_case.json --report-type CTR
-```
-
-### C) Full orchestration test from script
-
-```bash
-source .venv/bin/activate
-python scripts/test_crew.py --input data/CASE-2024-677021.json
-```
-
----
-
-## UI Usage Guide
-
-## Home
-- KPI cards
-- recent activity
-- primary action: submit new case
-
-## Submit Case
-Input methods:
-- **Text Input**
-  - supports plain text extraction (amount/date heuristics)
-  - also supports pasted JSON (raw JSON, fenced JSON, embedded JSON)
-- **Upload JSON**
-  - recommended for exact field fidelity
-- **Manual Entry**
-  - builds structured payload from form fields
-- **Batch Upload**
-  - placeholder currently
-- **Direct PDF Filing**
-  - bypasses agent pipeline and directly fills PDF from JSON path
-
-## Case Management
-- list tracked cases
-- stage timeline
-- case details
-- download artifacts when completed
-
-## Dashboard
-- overview metrics and trend charts
-
-## Settings
-- API base URL, timeout, retry
-- user profile and display options
-
----
-
-## API Reference (Current)
-
-Router prefix: `/api/v1`
-
-### Implemented endpoints
-
-- `POST /api/v1/reports/submit`
-- `GET /api/v1/reports/{job_id}/status`
-- `GET /api/v1/reports/{job_id}/download`
-- `POST /api/v1/reports/file-direct`
-- `GET /api/v1/kb/search`
-
-Global health endpoint:
-- `GET /health`
-
-Note:
-- Some UI client methods include fallback behavior when optional endpoints are absent (`/cases/*`, `/reports/list`, `/dashboard/metrics`).
-
----
-
-## PDF Filing Behavior and Field Mapping Notes
-
-### Templates
-
-SAR filer auto-selects best template match between:
-- `knowledge_base/documents/pdf_templates/fincen_sar_form_acroform.pdf`
-- `knowledge_base/documents/pdf_templates/sar_report.pdf`
-
-CTR template:
-- `knowledge_base/documents/pdf_templates/ctr_report.pdf`
-
-### Key SAR mapping details
-
-- Field 34 (`Total dollar amount involved`) is dollar-only in legacy form:
-  - cents are not represented in the numeric boxes
-  - mapper fills both `item34` and `item34-1..item34-11`
-
-- Entity name handling:
-  - names like `LLC`, `INC`, `CORP` are treated as entity-style mapping even if `subject.type` is mislabeled
-
-- Address fallback:
-  - if address missing, mapper backfills from available `city/state/zip`
-  - transaction location is used as fallback source when needed
-
-- Item 35 summary characterization:
-  - mapping uses conservative category/keyword logic
-  - unmatched categories are preserved in `item35s-1` (other text)
-
-### PDF appearance and duplication fixes
-
-- `NeedAppearances` set to improve viewer rendering
-- duplicate-page writes were removed (no double page sets)
-
----
-
-## Troubleshooting
-
-### 1) `zsh: command not found: app.py`
-Use Streamlit runner, not direct python script execution:
-
-```bash
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-### 2) `ModuleNotFoundError: No module named 'streamlit_app'`
-Run from repository root:
-
-```bash
-cd Agentic_BNY_AI_Compliance
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-### 3) UUID parsing errors in status endpoint
-Do not pass placeholders like `<REAL_UUID>` literally.
-Use the actual `job_id` returned from submit.
-
-### 4) `jq: Unknown option --argfile`
-Use Python-based payload construction or a compatible jq invocation.
-
-### 5) DB connection errors (`password authentication failed`, `connection refused`)
-Validate DB env vars:
-- host/user/password/port/db
-- DSN format
-- whether local or Supabase DB is reachable from your machine
-
-### 6) Supabase REST 400 on `report_types`
-Check table schema and column names used by code:
-- `report_type`
-- `json_schema`
-- `narrative_required`
-- `narrative_instructions`
-- `validation_rules`
-- `pdf_template_path`
-- `pdf_field_mapping`
-
-### 7) UI styling looks inconsistent across pages
-After updates:
-- restart Streamlit
-- hard refresh browser (`Cmd+Shift+R`)
-
-### 8) Port already in use
-
-```bash
-lsof -ti tcp:8001 -sTCP:LISTEN
-kill -9 <pid>
-```
-
-### 9) Weaviate URL errors
-Always include scheme:
-- `http://localhost:8080` (local)
-- `https://<cluster>.weaviate.cloud` (cloud)
-
----
-
-## Operational Notes for Teammates
-
-### Standard daily run
-
-1. Activate venv and load env:
-
-```bash
-source .venv/bin/activate
-set -a; source .env; set +a
-```
-
-2. Start backend:
-
-```bash
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-3. Start frontend:
-
-```bash
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-4. Test with Upload JSON first for deterministic mapping.
-
-### Recommended testing mode during integration
-
-Set in `.env`:
-
-```env
-SKIP_VALIDATOR_FOR_TESTING=true
-```
-
-Use this while validating Router -> Aggregator -> Narrative -> Filer behavior.
-
----
-
-## Security Notes
-
-- Do not commit `.env` or credentials.
-- Rotate API keys if exposed.
-- Use least-privilege Supabase keys in shared environments.
-- Audit and sanitize case data before sharing externally.
-
----
-
-## Quick Start Commands (Copy/Paste)
-
-```bash
-cd Agentic_BNY_AI_Compliance
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-set -a; source .env; set +a
-python scripts/preflight.py
-python scripts/init_weaviate.py
-python scripts/seed_kb.py
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-New terminal:
-
-```bash
-cd Agentic_BNY_AI_Compliance
-source .venv/bin/activate
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
+Internal use / Capstone project.

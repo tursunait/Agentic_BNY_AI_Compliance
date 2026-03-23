@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-008",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR",
+  "institution": {
+    "name": "Great Lakes Bank",
+    "type": "Bank",
+    "address": "111 E Wacker Drive",
+    "city": "Chicago",
+    "state": "IL",
+    "postal_code": "60601",
+    "country": "United States",
+    "contact_person": "Michael Torres",
+    "telephone": "312-555-0777",
+    "email": "mtorres@greatlakesbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "42500.00",
+    "currency": "USD",
+    "transaction_type": "Letter of credit payment",
+    "date_of_transaction": "2026-02-20",
+    "date_of_rejection": "2026-02-20",
+    "program_or_reason": "Iran — ITSR (Iran Transactions and Sanctions Regulations), 31 C.F.R. Part 560",
+    "originator_name_address": "Midwest Machinery Corp., 500 W Madison St, Chicago, IL 60661, United States",
+    "originating_fi": "Great Lakes Bank, 111 E Wacker Drive, Chicago, IL 60601, United States",
+    "intermediary_fi": "HSBC Bank USA, New York, NY, United States",
+    "beneficiary_fi": "Bank Tejarat, Tehran, Iran",
+    "beneficiary_name_address": "Isfahan Industrial Equipment Co., Isfahan, Iran",
+    "additional_relevant_info": "LC payment against documents for machinery. Beneficiary bank in Iran; ITSR prohibits U.S. persons from facilitating such transactions.",
+    "additional_data": "LC number GLB-2026-LC-4421"
+  },
+  "preparer": {
+    "name": "Michael Torres",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-02-21"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary financial institution in Iran (Bank Tejarat)",
+    "sanctions_nexus": "Payment would have been processed through Iranian financial institution; ITSR prohibits dealings with Iranian banks and Iran-related transactions by U.S. persons",
+    "documents_reviewed": [
+      "Letter of credit and amendment",
+      "Presented documents (invoice, bill of lading)",
+      "Sanctions screening log",
+      "Customer trade application"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

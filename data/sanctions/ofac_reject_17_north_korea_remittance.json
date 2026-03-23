@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-017",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "North Korea — NKSR",
+  "institution": {
+    "name": "Pacific West Bank",
+    "type": "Bank",
+    "address": "600 Montgomery St",
+    "city": "San Francisco",
+    "state": "CA",
+    "postal_code": "94111",
+    "country": "United States",
+    "contact_person": "Nancy Liu",
+    "telephone": "415-555-1007",
+    "email": "nliu@pacificwestbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "2500.00",
+    "currency": "USD",
+    "transaction_type": "International remittance",
+    "date_of_transaction": "2026-02-10",
+    "date_of_rejection": "2026-02-10",
+    "program_or_reason": "North Korea Sanctions Regulations (NKSR), 31 C.F.R. Part 510",
+    "originator_name_address": "Kim Yong, 100 1st St, San Francisco, CA 94105, United States",
+    "originating_fi": "Pacific West Bank, 600 Montgomery St, San Francisco, CA 94111, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Foreign Trade Bank of DPRK, Pyongyang, North Korea",
+    "beneficiary_name_address": "Remittance recipient, Pyongyang, North Korea",
+    "additional_relevant_info": "Customer requested remittance to North Korea. NKSR prohibits virtually all financial transactions with DPRK.",
+    "additional_data": "Remittance REF-20260210-3344"
+  },
+  "preparer": {
+    "name": "Nancy Liu",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-02-10"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country North Korea",
+    "sanctions_nexus": "Remittance destined for DPRK; NKSR prohibits such transactions",
+    "documents_reviewed": [
+      "Remittance order",
+      "Customer ID and purpose form",
+      "OFAC screening result"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

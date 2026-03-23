@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-012",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Myanmar — E.O. 14014",
+  "institution": {
+    "name": "Pacific Rim Bank",
+    "type": "Bank",
+    "address": "1200 4th Avenue",
+    "city": "Seattle",
+    "state": "WA",
+    "postal_code": "98101",
+    "country": "United States",
+    "contact_person": "Jennifer Wong",
+    "telephone": "206-555-1002",
+    "email": "jwong@pacificrimbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "16500.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-02-25",
+    "date_of_rejection": "2026-02-25",
+    "program_or_reason": "Myanmar Sanctions, 31 C.F.R. Part 537 (E.O. 14014)",
+    "originator_name_address": "Asia Pacific Imports Inc., 500 Pike St, Seattle, WA 98101, United States",
+    "originating_fi": "Pacific Rim Bank, 1200 4th Avenue, Seattle, WA 98101, United States",
+    "intermediary_fi": "Standard Chartered Bank, Singapore",
+    "beneficiary_fi": "Myanmar Economic Bank, Yangon, Myanmar",
+    "beneficiary_name_address": "Yangon Textiles Ltd, 100 Sule Pagoda Rd, Yangon, Myanmar",
+    "additional_relevant_info": "Payment for garment shipment. Myanmar under sanctions; transaction rejected.",
+    "additional_data": "Invoice MYA-2026-4455"
+  },
+  "preparer": {
+    "name": "Jennifer Wong",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-26"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Myanmar",
+    "sanctions_nexus": "Beneficiary located in Myanmar; E.O. 14014 blocks property of persons operating in certain sectors or linked to Myanmar military",
+    "documents_reviewed": [
+      "Wire instruction",
+      "Bill of lading and invoice",
+      "OFAC screening log",
+      "Customer due diligence"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

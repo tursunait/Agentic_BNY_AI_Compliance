@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-030",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Ukraine/Russia — Donetsk/Luhansk (E.O. 13660, 14065)",
+  "institution": {
+    "name": "Midwest Commerce Bank",
+    "type": "Bank",
+    "address": "800 Nicollet Mall",
+    "city": "Minneapolis",
+    "state": "MN",
+    "postal_code": "55402",
+    "country": "United States",
+    "contact_person": "Paul Anderson",
+    "telephone": "612-555-1020",
+    "email": "panderson@midwestcommerce.com"
+  },
+  "transaction": {
+    "amount_rejected": "27500.00",
+    "currency": "EUR",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-14",
+    "date_of_rejection": "2026-03-14",
+    "program_or_reason": "Ukraine/Russia — Donetsk and Luhansk region sanctions, 31 C.F.R. Part 589 (E.O. 13660, 14065)",
+    "originator_name_address": "Northern Export LLC, 900 Nicollet Mall, Minneapolis, MN 55402, United States",
+    "originating_fi": "Midwest Commerce Bank, 800 Nicollet Mall, Minneapolis, MN 55402, United States",
+    "intermediary_fi": "UniCredit Bank, Vienna, Austria",
+    "beneficiary_fi": "VTB Bank (Donetsk branch), Donetsk, Ukraine (occupied)",
+    "beneficiary_name_address": "Donetsk Coal Trading Co., Donetsk, Ukraine",
+    "additional_relevant_info": "Payment for coal. Beneficiary in Donetsk region; E.O. 14065 prohibits new investment in so-called DNR/LNR.",
+    "additional_data": "SWIFT MT103; Ref DON-2026-001"
+  },
+  "preparer": {
+    "name": "Paul Anderson",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-15"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary location in Donetsk/Luhansk region",
+    "sanctions_nexus": "Beneficiary and FI in covered region; U.S. sanctions prohibit transactions in designated Ukraine regions",
+    "documents_reviewed": [
+      "Payment message and contract",
+      "Geographic and sanctions screening",
+      "Customer export file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

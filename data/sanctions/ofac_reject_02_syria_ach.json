@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-002",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Syria — SSR",
+  "institution": {
+    "name": "Midwest Commercial Bank",
+    "type": "Bank",
+    "address": "500 Main Plaza",
+    "city": "Chicago",
+    "state": "IL",
+    "postal_code": "60601",
+    "country": "United States",
+    "contact_person": "James Chen",
+    "telephone": "312-555-0198",
+    "email": "jchen@midwestcommercial.com"
+  },
+  "transaction": {
+    "amount_rejected": "52000.00",
+    "currency": "USD",
+    "transaction_type": "ACH credit",
+    "date_of_transaction": "2026-02-14",
+    "date_of_rejection": "2026-02-14",
+    "program_or_reason": "Syria — Syrian Sanctions Regulations (SSR), 31 C.F.R. Part 542",
+    "originator_name_address": "Global Parts Distributors LLC, 2200 W Higgins Rd, Chicago, IL 60618, United States",
+    "originating_fi": "Midwest Commercial Bank, 500 Main Plaza, Chicago, IL 60601, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Commercial Bank of Syria, Damascus, Syria",
+    "beneficiary_name_address": "Damascus Auto Supply, 45 Al-Majd Street, Damascus, Syria",
+    "additional_relevant_info": "Recurring ACH for parts supply; customer stated end-user in Jordan. Screening identified Syrian bank in chain.",
+    "additional_data": "Batch ACH 20260214-8842"
+  },
+  "preparer": {
+    "name": "James Chen",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-02-15"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary financial institution in sanctioned jurisdiction (Syria)",
+    "sanctions_nexus": "Beneficiary bank (Commercial Bank of Syria) is designated and located in Syria; payment would have facilitated trade with Syrian entity",
+    "documents_reviewed": [
+      "ACH batch file",
+      "Customer KYC and trade documentation",
+      "Sanctions screening alert and disposition log",
+      "Correspondent bank message"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

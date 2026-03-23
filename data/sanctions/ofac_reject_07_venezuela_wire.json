@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-007",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Venezuela — E.O. 13850",
+  "institution": {
+    "name": "Gulf Coast National Bank",
+    "type": "Bank",
+    "address": "300 Poydras Street",
+    "city": "New Orleans",
+    "state": "LA",
+    "postal_code": "70130",
+    "country": "United States",
+    "contact_person": "Patricia Williams",
+    "telephone": "504-555-0666",
+    "email": "pwilliams@gulfcoastnational.com"
+  },
+  "transaction": {
+    "amount_rejected": "75000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-01-15",
+    "date_of_rejection": "2026-01-15",
+    "program_or_reason": "Venezuela-related Sanctions, 31 C.F.R. Part 591 (E.O. 13850); PdVSA designation",
+    "originator_name_address": "Energy Services International, 400 Canal St, New Orleans, LA 70130, United States",
+    "originating_fi": "Gulf Coast National Bank, 300 Poydras Street, New Orleans, LA 70130, United States",
+    "intermediary_fi": "JP Morgan Chase N.A., New York, NY, United States",
+    "beneficiary_fi": "Banco de Venezuela, Caracas, Venezuela",
+    "beneficiary_name_address": "Petroleos de Venezuela S.A. (PdVSA), Caracas, Venezuela",
+    "additional_relevant_info": "Payment for crude oil shipment. PdVSA is a designated entity; transaction rejected at screening.",
+    "additional_data": "SWIFT MT103; contract PDV-2026-001"
+  },
+  "preparer": {
+    "name": "Patricia Williams",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-01-16"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary entity matched OFAC SDN list (PdVSA)",
+    "sanctions_nexus": "Beneficiary Petroleos de Venezuela S.A. (PdVSA) is a designated entity under Venezuela-related sanctions; payment would have been to a blocked person",
+    "documents_reviewed": [
+      "Wire instruction and commercial invoice",
+      "OFAC SDN and SSI list search results",
+      "Customer trade finance file",
+      "Sanctions compliance review memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

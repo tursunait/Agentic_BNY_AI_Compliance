@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-010",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "list_match",
+  "sanctions_program": "SDN List — Russia / E.O. 14024",
+  "institution": {
+    "name": "First Metro Bank",
+    "type": "Bank",
+    "address": "600 5th Avenue",
+    "city": "New York",
+    "state": "NY",
+    "postal_code": "10020",
+    "country": "United States",
+    "contact_person": "Anna Volkov",
+    "telephone": "212-555-0999",
+    "email": "avolkov@firstmetrobank.com"
+  },
+  "transaction": {
+    "amount_rejected": "98000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-02-05",
+    "date_of_rejection": "2026-02-05",
+    "program_or_reason": "OFAC SDN — Russia Harmful Foreign Activities (E.O. 14024); designated oligarch entity",
+    "originator_name_address": "US Investment Partners LLC, 600 5th Ave, New York, NY 10020, United States",
+    "originating_fi": "First Metro Bank, 600 5th Avenue, New York, NY 10020, United States",
+    "intermediary_fi": "UBS AG, Zurich, Switzerland",
+    "beneficiary_fi": "Bank GPB (JSC), Moscow, Russia",
+    "beneficiary_name_address": "StroyInvest Holding Ltd, 1 Red Square, Moscow, Russia",
+    "additional_relevant_info": "Structured as investment repayment. Beneficiary ownership chain linked to SDN; transaction rejected.",
+    "additional_data": "SWIFT MT103; Ref INV-RUS-2026-002"
+  },
+  "preparer": {
+    "name": "Anna Volkov",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-06"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary and/or beneficial owner matched OFAC SDN list (Russia-related designations)",
+    "sanctions_nexus": "Beneficiary entity identified as owned or controlled by designated person under E.O. 14024; property and interests in property of designated persons are blocked",
+    "documents_reviewed": [
+      "Wire instruction and supporting contract",
+      "OFAC SDN/SSI list search and ownership review",
+      "Customer KYC and beneficial ownership documentation",
+      "Legal/compliance escalation memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-026",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR / Petroleum",
+  "institution": {
+    "name": "Texas Commerce Bank",
+    "type": "Bank",
+    "address": "700 Rusk St",
+    "city": "Houston",
+    "state": "TX",
+    "postal_code": "77002",
+    "country": "United States",
+    "contact_person": "Laura Martinez",
+    "telephone": "713-555-1016",
+    "email": "lmartinez@texascommerce.com"
+  },
+  "transaction": {
+    "amount_rejected": "520000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer (trade finance)",
+    "date_of_transaction": "2026-02-08",
+    "date_of_rejection": "2026-02-08",
+    "program_or_reason": "Iran — ITSR; petroleum sector; NIOC-related",
+    "originator_name_address": "Gulf Energy Trading Co., 800 Rusk St, Houston, TX 77002, United States",
+    "originating_fi": "Texas Commerce Bank, 700 Rusk St, Houston, TX 77002, United States",
+    "intermediary_fi": "ING Bank, Amsterdam, Netherlands",
+    "beneficiary_fi": "Bank Mellat, Tehran, Iran",
+    "beneficiary_name_address": "National Iranian Oil Company (NIOC) affiliate, Tehran, Iran",
+    "additional_relevant_info": "Payment for crude oil. NIOC and Bank Mellat designated; transaction rejected.",
+    "additional_data": "SWIFT MT103; contract OIL-IRAN-2026-001"
+  },
+  "preparer": {
+    "name": "Laura Martinez",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-09"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary and FI matched Iran petroleum designations",
+    "sanctions_nexus": "Payment would have been to Iran oil sector designated entities; ITSR prohibits",
+    "documents_reviewed": [
+      "Wire and trade documents",
+      "OFAC SDN/SSI search",
+      "Customer and transaction due diligence"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

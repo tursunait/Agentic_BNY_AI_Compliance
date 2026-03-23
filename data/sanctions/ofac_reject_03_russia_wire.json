@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-003",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Russia — E.O. 14024 / CAPTA",
+  "institution": {
+    "name": "Northeast Trust Bank",
+    "type": "Bank",
+    "address": "200 Federal Street",
+    "city": "Boston",
+    "state": "MA",
+    "postal_code": "02110",
+    "country": "United States",
+    "contact_person": "Maria Ortiz",
+    "telephone": "617-555-0222",
+    "email": "mortiz@netrust.com"
+  },
+  "transaction": {
+    "amount_rejected": "125000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-01-22",
+    "date_of_rejection": "2026-01-22",
+    "program_or_reason": "Russia Harmful Foreign Activities Sanctions, 31 C.F.R. Part 587 (E.O. 14024); CAPTA",
+    "originator_name_address": "Atlantic Shipping Inc., 1 Harbor Drive, Boston, MA 02210, United States",
+    "originating_fi": "Northeast Trust Bank, 200 Federal Street, Boston, MA 02110, United States",
+    "intermediary_fi": "Deutsche Bank AG, Frankfurt, Germany",
+    "beneficiary_fi": "VTB Bank PJSC, Moscow, Russia",
+    "beneficiary_name_address": "Baltic Cargo Services, 10 Nevsky Prospekt, St. Petersburg, Russia",
+    "additional_relevant_info": "Payment for vessel charter services. VTB Bank is a designated SDN; transaction blocked at screening.",
+    "additional_data": "SWIFT MT103; reference CHARTER-2026-0044"
+  },
+  "preparer": {
+    "name": "Maria Ortiz",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-01-23"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary bank matched OFAC SDN list (VTB Bank PJSC)",
+    "sanctions_nexus": "Beneficiary financial institution VTB Bank PJSC is a designated entity under E.O. 14024; payment would have been to a blocked person",
+    "documents_reviewed": [
+      "SWIFT payment message",
+      "Charter agreement",
+      "Customer account and due diligence file",
+      "OFAC SDN list match report"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-015",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR",
+  "institution": {
+    "name": "Southwest National Bank",
+    "type": "Bank",
+    "address": "200 N Central Ave",
+    "city": "Phoenix",
+    "state": "AZ",
+    "postal_code": "85004",
+    "country": "United States",
+    "contact_person": "Linda Martinez",
+    "telephone": "602-555-1005",
+    "email": "lmartinez@southwestnational.com"
+  },
+  "transaction": {
+    "amount_rejected": "8900.00",
+    "currency": "USD",
+    "transaction_type": "ACH debit (international)",
+    "date_of_transaction": "2026-02-18",
+    "date_of_rejection": "2026-02-18",
+    "program_or_reason": "Iran — ITSR (Iran Transactions and Sanctions Regulations), 31 C.F.R. Part 560",
+    "originator_name_address": "Desert Tech Solutions, 300 E Van Buren St, Phoenix, AZ 85004, United States",
+    "originating_fi": "Southwest National Bank, 200 N Central Ave, Phoenix, AZ 85004, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Bank Sepah Iran, Tehran, Iran",
+    "beneficiary_name_address": "Tehran Software Development Co., Tehran, Iran",
+    "additional_relevant_info": "Recurring ACH for software license. Payee bank in Iran; ITSR violation.",
+    "additional_data": "ACH batch 20260218-9921"
+  },
+  "preparer": {
+    "name": "Linda Martinez",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-02-19"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary financial institution in Iran",
+    "sanctions_nexus": "Payment would have been processed to Iranian bank; ITSR prohibits U.S. persons from facilitating Iran-related transactions",
+    "documents_reviewed": [
+      "ACH authorization and batch file",
+      "Customer contract and invoice",
+      "Sanctions screening output"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

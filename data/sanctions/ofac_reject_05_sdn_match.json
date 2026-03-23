@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-005",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "list_match",
+  "sanctions_program": "SDN List — Global",
+  "institution": {
+    "name": "Metro United Bank",
+    "type": "Bank",
+    "address": "1 Metro Center",
+    "city": "Washington",
+    "state": "DC",
+    "postal_code": "20001",
+    "country": "United States",
+    "contact_person": "Rachel Kim",
+    "telephone": "202-555-0444",
+    "email": "rkim@metrounited.com"
+  },
+  "transaction": {
+    "amount_rejected": "33000.00",
+    "currency": "EUR",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-02-28",
+    "date_of_rejection": "2026-02-28",
+    "program_or_reason": "OFAC SDN List; Specially Designated Nationals and Blocked Persons",
+    "originator_name_address": "Tech Solutions GmbH (US account), 1 Metro Center, Washington, DC 20001, United States",
+    "originating_fi": "Metro United Bank, 1 Metro Center, Washington, DC 20001, United States",
+    "intermediary_fi": "Commerzbank AG, Frankfurt, Germany",
+    "beneficiary_fi": "Bank of Cyprus, Nicosia, Cyprus",
+    "beneficiary_name_address": "Mediterranean Holdings Ltd, 5 Makarios Ave, Nicosia, Cyprus",
+    "additional_relevant_info": "Payment for software license. Beneficiary name matched OFAC SDN list (fuzzy match); confirmed positive match after review.",
+    "additional_data": "SWIFT MT103; Ref SW-2026-8892"
+  },
+  "preparer": {
+    "name": "Rachel Kim",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-28"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary name matched OFAC SDN list (potential match); manual review confirmed identity",
+    "sanctions_nexus": "Beneficiary identified as designated party on OFAC SDN list; transaction would have involved a blocked person",
+    "documents_reviewed": [
+      "Payment message and customer wire instruction",
+      "OFAC SDN search and match report",
+      "Beneficiary verification and adverse media check",
+      "Customer account profile"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

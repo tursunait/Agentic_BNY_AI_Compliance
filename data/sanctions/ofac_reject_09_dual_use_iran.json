@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-009",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR / Export controls",
+  "institution": {
+    "name": "Tech Valley Bank",
+    "type": "Bank",
+    "address": "100 State Street",
+    "city": "Albany",
+    "state": "NY",
+    "postal_code": "12207",
+    "country": "United States",
+    "contact_person": "Susan Lee",
+    "telephone": "518-555-0888",
+    "email": "slee@techvalleybank.com"
+  },
+  "transaction": {
+    "amount_rejected": "15800.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-05",
+    "date_of_rejection": "2026-03-05",
+    "program_or_reason": "Iran — ITSR; potential dual-use goods; beneficiary in Iran",
+    "originator_name_address": "Precision Instruments Inc., 200 Broadway, Albany, NY 12204, United States",
+    "originating_fi": "Tech Valley Bank, 100 State Street, Albany, NY 12207, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Parsian Bank, Tehran, Iran",
+    "beneficiary_name_address": "Tehran Research Laboratory, University District, Tehran, Iran",
+    "additional_relevant_info": "Payment for \"laboratory equipment.\" Product description raised dual-use concerns; end-user in Iran. Transaction rejected.",
+    "additional_data": "Invoice INV-TRL-2026-334; Pro forma invoice reviewed"
+  },
+  "preparer": {
+    "name": "Susan Lee",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-05"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Iran; keyword flag for dual-use / research",
+    "sanctions_nexus": "Beneficiary located in Iran; payment for goods with potential dual-use application; ITSR prohibits unauthorized Iran-related transactions",
+    "documents_reviewed": [
+      "Wire instruction and invoice",
+      "Product description and end-user statement",
+      "OFAC and export control screening output",
+      "Customer due diligence file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

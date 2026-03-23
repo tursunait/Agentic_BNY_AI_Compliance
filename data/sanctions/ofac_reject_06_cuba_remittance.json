@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-006",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Cuba — CACR",
+  "institution": {
+    "name": "Sunshine State Bank",
+    "type": "Bank",
+    "address": "100 Biscayne Blvd",
+    "city": "Miami",
+    "state": "FL",
+    "postal_code": "33132",
+    "country": "United States",
+    "contact_person": "Carlos Mendez",
+    "telephone": "305-555-0555",
+    "email": "cmendez@sunshinestatebank.com"
+  },
+  "transaction": {
+    "amount_rejected": "1200.00",
+    "currency": "USD",
+    "transaction_type": "International remittance",
+    "date_of_transaction": "2026-03-10",
+    "date_of_rejection": "2026-03-10",
+    "program_or_reason": "Cuba Assets Control Regulations (CACR), 31 C.F.R. Part 515",
+    "originator_name_address": "Juan Perez, 2500 NW 72nd Ave, Miami, FL 33122, United States",
+    "originating_fi": "Sunshine State Bank, 100 Biscayne Blvd, Miami, FL 33132, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Banco Metropolitano S.A., Havana, Cuba",
+    "beneficiary_name_address": "Maria Perez, Calle 23 No. 456, Havana, Cuba",
+    "additional_relevant_info": "Customer requested remittance to family in Cuba. General license not applicable; no specific license on file.",
+    "additional_data": "Remittance platform REF-20260310-1122"
+  },
+  "preparer": {
+    "name": "Carlos Mendez",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-03-10"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Cuba",
+    "sanctions_nexus": "Remittance destined for Cuba; CACR restricts most financial transactions with Cuba absent a general or specific license",
+    "documents_reviewed": [
+      "Remittance order form",
+      "Customer identification and relationship file",
+      "OFAC screening result and license check",
+      "Cuba sanctions compliance memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

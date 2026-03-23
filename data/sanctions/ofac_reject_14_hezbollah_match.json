@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-014",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "list_match",
+  "sanctions_program": "SDN — Global Terrorism (e.g. Hezbollah)",
+  "institution": {
+    "name": "Liberty National Bank",
+    "type": "Bank",
+    "address": "350 Park Avenue",
+    "city": "New York",
+    "state": "NY",
+    "postal_code": "10022",
+    "country": "United States",
+    "contact_person": "Daniel Cohen",
+    "telephone": "212-555-1004",
+    "email": "dcohen@libertynational.com"
+  },
+  "transaction": {
+    "amount_rejected": "12000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-08",
+    "date_of_rejection": "2026-03-08",
+    "program_or_reason": "OFAC SDN — Specially Designated Global Terrorist; 31 C.F.R. Ch. V",
+    "originator_name_address": "Charity Foundation Inc., 400 Madison Ave, New York, NY 10017, United States",
+    "originating_fi": "Liberty National Bank, 350 Park Avenue, New York, NY 10022, United States",
+    "intermediary_fi": "Arab Bank plc, Amman, Jordan",
+    "beneficiary_fi": "Lebanon and Gulf Bank, Beirut, Lebanon",
+    "beneficiary_name_address": "Social Development Council, Beirut, Lebanon",
+    "additional_relevant_info": "Donation wire. Beneficiary name matched SDN/terrorism list; confirmed positive match.",
+    "additional_data": "Ref DON-2026-778"
+  },
+  "preparer": {
+    "name": "Daniel Cohen",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-08"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary name matched OFAC SDN list (terrorism designations)",
+    "sanctions_nexus": "Beneficiary identified as designated entity; transaction would have involved blocked person",
+    "documents_reviewed": [
+      "Wire instruction and purpose letter",
+      "OFAC SDN search and match report",
+      "Customer nonprofit file",
+      "Compliance escalation memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

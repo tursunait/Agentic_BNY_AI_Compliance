@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-019",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR",
+  "institution": {
+    "name": "Plains State Bank",
+    "type": "Bank",
+    "address": "400 Broadway",
+    "city": "Kansas City",
+    "state": "MO",
+    "postal_code": "64111",
+    "country": "United States",
+    "contact_person": "Amanda Foster",
+    "telephone": "816-555-1009",
+    "email": "afoster@plainsstatebank.com"
+  },
+  "transaction": {
+    "amount_rejected": "15500.00",
+    "currency": "USD",
+    "transaction_type": "Check deposit / incoming item",
+    "date_of_transaction": "2026-02-22",
+    "date_of_rejection": "2026-02-22",
+    "program_or_reason": "Iran — ITSR (Iran Transactions and Sanctions Regulations), 31 C.F.R. Part 560",
+    "originator_name_address": "Drawer: Tehran Export Co., c/o foreign correspondent, Dubai, UAE",
+    "originating_fi": "Mashreq Bank, Dubai, UAE",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Plains State Bank, Kansas City, MO, United States",
+    "beneficiary_name_address": "Midwest Grain Traders Inc., 500 Broadway, Kansas City, MO 64111, United States",
+    "additional_relevant_info": "Incoming check drawn on behalf of Iran-related entity; check rejected, not processed.",
+    "additional_data": "Check number 445566; return reason OFAC"
+  },
+  "preparer": {
+    "name": "Amanda Foster",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-23"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — drawer/originator linked to Iran; incoming item",
+    "sanctions_nexus": "Check related to Iran-based party; accepting would facilitate Iran-related transaction; rejected",
+    "documents_reviewed": [
+      "Check image and MICR",
+      "Originator/drawer screening output",
+      "Customer account and OFAC memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

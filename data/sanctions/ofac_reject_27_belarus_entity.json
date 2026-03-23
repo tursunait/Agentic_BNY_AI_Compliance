@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-027",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Belarus — E.O. 14038",
+  "institution": {
+    "name": "Heartland Bank",
+    "type": "Bank",
+    "address": "200 W Capitol Ave",
+    "city": "Little Rock",
+    "state": "AR",
+    "postal_code": "72201",
+    "country": "United States",
+    "contact_person": "Sarah Mitchell",
+    "telephone": "501-555-1017",
+    "email": "smitchell@heartlandbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "38000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-09",
+    "date_of_rejection": "2026-03-09",
+    "program_or_reason": "Belarus Sanctions (E.O. 14038); designated state-owned entity",
+    "originator_name_address": "Arkansas Agri Corp., 300 W Capitol, Little Rock, AR 72201, United States",
+    "originating_fi": "Heartland Bank, 200 W Capitol Ave, Little Rock, AR 72201, United States",
+    "intermediary_fi": "SEB Bank, Vilnius, Lithuania",
+    "beneficiary_fi": "Belagroprombank, Minsk, Belarus",
+    "beneficiary_name_address": "Belarusian State Food Concern, Minsk, Belarus",
+    "additional_relevant_info": "Payment for fertilizer. Beneficiary is designated Belarus state entity.",
+    "additional_data": "SWIFT MT103; Ref BEL-AGR-2026-02"
+  },
+  "preparer": {
+    "name": "Sarah Mitchell",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-10"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary entity matched Belarus designations",
+    "sanctions_nexus": "Beneficiary is designated under E.O. 14038; transaction would involve blocked entity",
+    "documents_reviewed": [
+      "Payment message and contract",
+      "OFAC SDN/SSI search",
+      "Customer file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

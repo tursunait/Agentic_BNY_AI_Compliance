@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-028",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "list_match",
+  "sanctions_program": "Myanmar — E.O. 14014 (designated entity)",
+  "institution": {
+    "name": "Bay Area United Bank",
+    "type": "Bank",
+    "address": "300 California St",
+    "city": "San Francisco",
+    "state": "CA",
+    "postal_code": "94104",
+    "country": "United States",
+    "contact_person": "David Tran",
+    "telephone": "415-555-1018",
+    "email": "dtran@bayareaunited.com"
+  },
+  "transaction": {
+    "amount_rejected": "62000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-02-28",
+    "date_of_rejection": "2026-02-28",
+    "program_or_reason": "Myanmar Sanctions (E.O. 14014); designated military-linked entity",
+    "originator_name_address": "Pacific Mining Equipment Inc., 400 California St, San Francisco, CA 94104, United States",
+    "originating_fi": "Bay Area United Bank, 300 California St, San Francisco, CA 94104, United States",
+    "intermediary_fi": "DBS Bank, Singapore",
+    "beneficiary_fi": "Myanmar Foreign Trade Bank, Yangon, Myanmar",
+    "beneficiary_name_address": "Myanmar Gems and Jewelry Enterprise, Yangon, Myanmar",
+    "additional_relevant_info": "Payment for equipment. Beneficiary is designated Myanmar state/military entity.",
+    "additional_data": "SWIFT MT103; Ref MYA-GEM-2026"
+  },
+  "preparer": {
+    "name": "David Tran",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-01"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary matched Myanmar designations (E.O. 14014)",
+    "sanctions_nexus": "Beneficiary is designated entity linked to Myanmar military; transaction would involve blocked person",
+    "documents_reviewed": [
+      "Wire and commercial documents",
+      "OFAC SDN/SSI search",
+      "Customer trade file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

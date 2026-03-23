@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-001",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR",
+  "institution": {
+    "name": "First National Bank",
+    "type": "Bank",
+    "address": "100 Commerce Street",
+    "city": "Houston",
+    "state": "TX",
+    "postal_code": "77002",
+    "country": "United States",
+    "contact_person": "Sandra Reyes",
+    "telephone": "713-555-0142",
+    "email": "sreyes@fnbhouston.com"
+  },
+  "transaction": {
+    "amount_rejected": "18450.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-06",
+    "date_of_rejection": "2026-03-06",
+    "program_or_reason": "Iran — ITSR (Iran Transactions and Sanctions Regulations), 31 C.F.R. Part 560",
+    "originator_name_address": "ABC Import Services, 4210 Industrial Blvd, Houston, TX 77001, United States",
+    "originating_fi": "First National Bank, 100 Commerce Street, Houston, TX 77002, United States",
+    "intermediary_fi": "Citibank N.A., 388 Greenwich Street, New York, NY 10013, United States",
+    "beneficiary_fi": "Bank Melli Iran, Ferdowsi Avenue, Tehran, Iran",
+    "beneficiary_name_address": "Tehran Industrial Supply Co., 12 Shahid Beheshti Avenue, Tehran, Iran",
+    "additional_relevant_info": "Payment reference indicated settlement for industrial components, invoice INV-2026-0112.",
+    "additional_data": "OBI field: payment for industrial components delivery Tehran March 2026"
+  },
+  "preparer": {
+    "name": "Sandra Reyes",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-06"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Iran",
+    "sanctions_nexus": "Beneficiary located in Iran; beneficiary financial institution Bank Melli Iran is itself a sanctioned entity",
+    "documents_reviewed": [
+      "Payment message",
+      "Invoice INV-2026-0112",
+      "Customer account records",
+      "Sanctions screening output"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

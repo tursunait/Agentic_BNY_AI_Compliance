@@ -1,0 +1,49 @@
+{
+  "case_id": "OFAC-DAT-023",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "list_match",
+  "sanctions_program": "SDN — Narcotics / Kingpin",
+  "institution": {
+    "name": "Border Region Bank",
+    "type": "Bank",
+    "address": "100 Main Street",
+    "city": "El Paso",
+    "state": "TX",
+    "postal_code": "79901",
+    "country": "United States",
+    "contact_person": "Francisco Ruiz",
+    "telephone": "915-555-1013",
+    "email": "fruiz@borderregionbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "75000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-02-12",
+    "date_of_rejection": "2026-02-12",
+    "program_or_reason": "OFAC SDN — Foreign Narcotics Kingpin Designation Act (Kingpin Act)",
+    "originator_name_address": "Southwest Trading LLC, 200 N Mesa St, El Paso, TX 79901, United States",
+    "originating_fi": "Border Region Bank, 100 Main Street, El Paso, TX 79901, United States",
+    "intermediary_fi": "Banamex USA, Los Angeles, CA, United States",
+    "beneficiary_fi": "Banco del Pacifico, Guayaquil, Ecuador",
+    "beneficiary_name_address": "Pacific Export Import SA, Guayaquil, Ecuador",
+    "additional_relevant_info": "Payment for \"agricultural products.\" Beneficiary name and address matched SDN/Kingpin list; confirmed.",
+    "additional_data": "SWIFT MT103; Ref SW-2026-2233"
+  },
+  "preparer": {
+    "name": "Francisco Ruiz",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-02-13"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary matched OFAC SDN list (narcotics trafficking designations)",
+    "sanctions_nexus": "Beneficiary identified as designated under Kingpin Act; transaction would have involved blocked person",
+    "documents_reviewed": [
+      "Wire instruction and invoice",
+      "OFAC SDN search and match report",
+      "Customer due diligence",
+      "BSA escalation memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}
