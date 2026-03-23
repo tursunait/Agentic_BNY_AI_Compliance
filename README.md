@@ -1,550 +1,282 @@
-# Agentic_BNY_AI_Compliance
+# Validator Agent – SAR & CTR Compliance Checker
 
-Production-style multi-agent compliance reporting system for SAR/CTR workflows.
-
-This repository contains:
-- FastAPI backend (`backend/`) with CrewAI orchestration
-- Streamlit UI (`streamlit_app/`) for analyst workflows
-- Knowledge layer using Supabase + Weaviate + Redis
-- PDF filing tools for SAR/CTR templates
+This project implements a **Validator Agent** designed to automatically validate Suspicious Activity Reports (SAR) and Currency Transaction Reports (CTR) against a comprehensive set of regulatory rules and quality metrics. The agent processes input JSON files, runs rule‑based checks, optionally invokes a Large Language Model (LLM) to evaluate narrative quality, and produces a detailed validation report with scores and recommendations.
 
 ---
 
 ## Table of Contents
-
-1. [What the System Does](#what-the-system-does)
-2. [Current Agent Workflow](#current-agent-workflow)
-3. [Architecture and Data Stores](#architecture-and-data-stores)
-4. [Repository Layout](#repository-layout)
-5. [Prerequisites](#prerequisites)
-6. [Environment Variables](#environment-variables)
-7. [Local Setup (Step-by-Step)](#local-setup-step-by-step)
-8. [Initialize and Seed Knowledge Base](#initialize-and-seed-knowledge-base)
-9. [Run Backend and Frontend](#run-backend-and-frontend)
-10. [How to Test End-to-End](#how-to-test-end-to-end)
-11. [UI Usage Guide](#ui-usage-guide)
-12. [API Reference (Current)](#api-reference-current)
-13. [PDF Filing Behavior and Field Mapping Notes](#pdf-filing-behavior-and-field-mapping-notes)
-14. [PDF Filler Agent (Supabase templates)](#pdf-filler-agent-supabase-templates)
-15. [Troubleshooting](#troubleshooting)
-16. [Operational Notes for Teammates](#operational-notes-for-teammates)
-17. [Security Notes](#security-notes)
+- [Overview](#overview)
+- [System Architecture](#system-architecture)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Input Data Format](#input-data-format)
+- [Validation Rules](#validation-rules)
+- [Output Format](#output-format)
+- [LLM Integration](#llm-integration)
+- [Extending the Agent](#extending-the-agent)
+- [License](#license)
 
 ---
 
-## What the System Does
+## Overview
 
-Given a transaction case (JSON or text input converted to JSON), the system:
-1. Classifies filing type (`SAR`, `CTR`, `BOTH`, or none)
-2. Aggregates and maps case fields into report-ready structures
-3. Generates SAR narrative only when required
-4. Validates quality/compliance (or bypasses in testing mode)
-5. Fills PDF templates and returns downloadable report(s)
+Financial institutions are required to file SAR and CTR reports under the Bank Secrecy Act (BSA) and related regulations. The **Validator Agent** automates the quality control of these reports by:
 
-Output artifacts include:
-- Job status and progress per stage
-- Aggregated case payload(s)
-- Narrative payload (SAR path)
-- Validation outcome
-- Final filed PDF path(s)
+- Checking completeness of required fields.
+- Ensuring compliance with regulatory requirements (BSA, AML, OFAC).
+- Validating data accuracy (e.g., TIN format, amount consistency).
+- Assessing narrative quality (for SAR) using an LLM (ZhiPu GLM‑5).
+
+The agent outputs a structured JSON report containing a pass/fail decision, an overall validation score, per‑category scores, and a human‑readable summary.
 
 ---
 
-## Current Agent Workflow
+## System Architecture
 
-### Active orchestration path (current runtime)
+```
+┌─────────────────┐     ┌─────────────────────────────────────┐     ┌─────────────────┐
+│  Input JSON     │────▶│         Validator Agent             │────▶│  Output JSON    │
+│  (SAR or CTR)   │     │  (main.py + rule engines + LLM)     │     │  (validation    │
+└─────────────────┘     └─────────────────────────────────────┘     │   report)       │
+                                                                └─────────────────┘
+         ▲                                        │
+         │                                        │
+         │ reads                                  │ writes
+         │                                        ▼
+┌─────────────────┐                      ┌─────────────────┐
+│ Validation Data │                      │  Output Data    │
+│ (rules, legal   │                      │  (case_id.json) │
+│  requirements)  │                      └─────────────────┘
+└─────────────────┘
+```
 
-- Agent 1: **Router** (CrewAI)
-- Agent 2: **Researcher** is intentionally skipped
-- Agent 3: **Aggregator** (schema-aware mapper, Supabase-backed schema lookup)
-- Agent 4: **Narrative** (only when `narrative_required=true`)
-- Agent 5: **Validator** (CrewAI), or bypassed with `SKIP_VALIDATOR_FOR_TESTING=true`
-- Agent 6: **Filer** (deterministic PDF filling)
-
-### Execution flow
-
-1. `POST /api/v1/reports/submit`
-2. Job record is created in DB (`job_status` table)
-3. Background task starts Crew workflow
-4. Router classifies report types
-5. Aggregator maps per report type (`aggregator_by_type`)
-6. Narrative runs only for SAR when required
-7. Validator runs unless bypassed
-8. Filer generates PDF(s) on approved path
-9. Job status is updated (`processing` -> `completed`/`failed`)
-
----
-
-## Architecture and Data Stores
-
-### Backend
-- FastAPI (`backend/api/main.py`, `backend/api/routes.py`)
-- Crew orchestration (`backend/orchestration/crew.py`)
-- Agents (`backend/agents/*.py`)
-- PDF Filler Agent (`backend/pdf_filler/`) — Supabase-driven templates; legacy SAR/CTR tools may live under `backend/tools/` when present
-
-### Data services
-
-- **Supabase/Postgres (SQLAlchemy client in `supabase_client.py`)**
-  - Job lifecycle (`job_status`)
-  - Audit logs (`audit_log`)
-  - Optional schema/rules/mappings persistence tables
-
-- **Supabase REST (via `SUPABASE_URL` + `SUPABASE_ANON_KEY`)**
-  - `report_types` table (schema/rules/mapping/narrative config)
-  - `narrative_examples` table
-
-- **Weaviate**
-  - semantic retrieval for regulations/narratives/definitions
-
-- **Redis**
-  - cache for schema/rules/mappings/lookups
+- **Input**: A single JSON file placed in `data/input_data/` – either a CTR or a SAR report.
+- **Validation Data**: Two JSON files (`validation_rules.json` and `legal_requirements.json`) that define the checks to be performed.
+- **Rule Engines**: Separate engines for CTR and SAR that implement the actual checks.
+- **LLM Evaluator**: Invoked for SAR narratives to score quality and identify missing elements.
+- **Output**: A JSON file placed in `data/output_data/` containing the validation result and a detailed text report.
 
 ---
 
-## Repository Layout
+## Project Structure
 
-```text
-backend/
-  agents/
-  api/
-  config/
-  knowledge_base/
-  orchestration/
-  tools/
-
-streamlit_app/
-  app.py
-  pages/
-  components/
-  styles/
-  utils/
-
-knowledge_base/
-  schemas/
-  regulations/
-  narratives/
-  documents/pdf_templates/
-
-scripts/
-  preflight.py
-  init_weaviate.py
-  seed_kb.py
-  e2e_submit_check.py
-  test_pdf_filer.py
-  test_ctr_filer.py
-  test_crew.py
+```
+.
+├── .env                         # Environment variables (LLM API keys)
+├── requirements.txt             # Python dependencies
+├── main.py                      # Entry point
+├── utils/
+│   ├── __init__.py
+│   ├── ctr_rules_engine.py      # CTR‑specific rule implementations
+│   ├── sar_rules_engine.py      # SAR‑specific rule implementations
+│   ├── llm_evaluator.py         # LLM narrative evaluation
+│   └── scoring.py               # Scoring and status determination
+└── data/
+    ├── input_data/              # Place input JSON files here
+    ├── output_data/             # Generated validation reports
+    └── validation_data/         # Rule definitions (JSON + CSV)
+        ├── legal_requirements.json
+        ├── legal_requirements.csv
+        ├── validation_rules.json
+        └── validation_rules.csv
 ```
 
 ---
 
-## Prerequisites
+## Installation
 
-- Python 3.11+ (3.12 tested)
-- `pip`
-- Local Redis (unless using remote Redis)
-- Weaviate (local or cloud)
-- Postgres-compatible DB for job storage (local Postgres or Supabase DB)
-- OpenAI API key for embedding/LLM operations
-
----
-
-## Environment Variables
-
-Use `.env.example` as base.
-
-### Required in practice
-
-- `OPENAI_API_KEY`
-- `WEAVIATE_URL`
-- `REDIS_URL`
-- A working DB DSN path via one of:
-  - `SUPABASE_DB_URL`
-  - or `SUPABASE_DB_HOST` + `SUPABASE_DB_PASSWORD` (+ related components)
-  - or fallback `DATABASE_URL`
-
-### Required for Supabase REST-backed KB reads
-
-- `SUPABASE_URL` (HTTP URL, e.g. `https://<project_ref>.supabase.co`)
-- `SUPABASE_ANON_KEY`
-
-### Important URL distinction
-
-- `SUPABASE_URL` must be **HTTP(S)** for REST API access.
-- DB connection must be **PostgreSQL DSN** (`postgresql://...`) via DB vars.
-- Do not put HTTP URL into DB DSN fields.
-
-### Validator bypass toggle
-
-- `SKIP_VALIDATOR_FOR_TESTING=true`
-  - bypasses Agent 5
-  - auto-approves for filing
-  - useful for integration tests and PDF mapping iteration
+1. **Clone the repository** (if applicable) or copy the files to your working directory.
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Set up environment variables**:
+   Create a `.env` file in the project root with the following content (replace `your_api_key_here` with your actual key):
+   ```ini
+   DEFAULT_LLM_API_KEY=your_api_key_here
+   DEFAULT_LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+   DEFAULT_LLM_MODEL_NAME=glm-5
+   ```
 
 ---
 
-## Local Setup (Step-by-Step)
+## Configuration
 
-From repo root:
-
-```bash
-cd Agentic_BNY_AI_Compliance
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-```
-
-If you use Conda, deactivate first to avoid interpreter/package mismatch:
-
-```bash
-conda deactivate 2>/dev/null || true
-source .venv/bin/activate
-which python
-```
-
-Expected `which python` -> `.venv/bin/python`
-
----
-
-## Initialize and Seed Knowledge Base
-
-### 1) Preflight checks
-
-```bash
-source .venv/bin/activate
-set -a; source .env; set +a
-python scripts/preflight.py
-```
-
-### 2) Init Weaviate classes
-
-```bash
-python scripts/init_weaviate.py
-```
-
-### 3) Seed KB
-
-```bash
-python scripts/seed_kb.py
-```
-
-Notes:
-- If no real DB DSN is configured, `seed_kb.py` enters REST-only mode and skips SQL table seeding.
-- Weaviate seeding still runs.
-
----
-
-## Run Backend and Frontend
-
-### Backend
-
-```bash
-source .venv/bin/activate
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-Health check:
-
-```bash
-curl http://127.0.0.1:8001/health
-```
-
-Expected shape:
+All validation rules are defined in `data/validation_data/validation_rules.json`. Each rule has the following structure:
 
 ```json
-{"status":"healthy","services":{"database":true,"weaviate":true,"redis":true}}
+{
+  "rule_id": "CTR-REQ-001",
+  "report_type": "CTR",
+  "severity": "critical",
+  "rule_json": {
+    "condition": "The total cash-in amount or total cash-out amount must exceed $10,000.",
+    "message": "Transaction amount does not exceed the $10,000 reporting threshold."
+  },
+  "legal_refs": ["LEG-CTR-001"]
+}
 ```
 
-### Frontend (Streamlit)
+The corresponding legal requirements (for reference) are stored in `legal_requirements.json`.
 
-Run in a separate terminal:
-
-```bash
-source .venv/bin/activate
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-Open:
-- `http://localhost:8501`
-
-Current sidebar navigation intentionally shows:
-- Home
-- Dashboard
-- Submit Case
-- Case Management
-- Settings
+> **Note**: The agent reads only `validation_rules.json`; `legal_requirements.json` is provided for auditability and can be ignored by the engine.
 
 ---
 
-## How to Test End-to-End
+## Usage
 
-### A) API E2E smoke test
+1. **Place your input JSON file** (either a CTR or SAR report) inside `data/input_data/`.  
+   The agent will process the **first** JSON file it finds (alphabetical order).  
+   Example files (`ctr_output.json`, `sar_output.json`) are provided as templates.
 
-```bash
-source .venv/bin/activate
-python scripts/e2e_submit_check.py
-```
+2. **Run the validator**:
+   ```bash
+   python main.py
+   ```
 
-This submits:
-- one SAR-only case (expects narrative path)
-- one CTR-only case (expects narrative skip)
-
-Expected final line:
-- `PASS: End-to-end checks succeeded.`
-
-### B) Direct PDF filer tests
-
-```bash
-source .venv/bin/activate
-python scripts/test_pdf_filer.py --input data/CASE-2024-677021.json --report-type SAR
-python scripts/test_pdf_filer.py --input data/ctr_test_case.json --report-type CTR
-```
-
-### C) Full orchestration test from script
-
-```bash
-source .venv/bin/activate
-python scripts/test_crew.py --input data/CASE-2024-677021.json
-```
+3. **Check the output**:
+   The validation report will be written to `data/output_data/` with the same filename as the input’s `case_id` (e.g., `CTR-2024-00001.json`).
 
 ---
 
-## UI Usage Guide
+## Input Data Format
 
-## Home
-- KPI cards
-- recent activity
-- primary action: submit new case
+### CTR Example (`ctr_output.json`)
 
-## Submit Case
-Input methods:
-- **Text Input**
-  - supports plain text extraction (amount/date heuristics)
-  - also supports pasted JSON (raw JSON, fenced JSON, embedded JSON)
-- **Upload JSON**
-  - recommended for exact field fidelity
-- **Manual Entry**
-  - builds structured payload from form fields
-- **Batch Upload**
-  - placeholder currently
-- **Direct PDF Filing**
-  - bypasses agent pipeline and directly fills PDF from JSON path
+```json
+{
+  "report_type": "CTR",
+  "case_id": "CTR-2024-00001",
+  "amends_prior": false,
+  "multiple_persons": false,
+  "multiple_transactions": false,
+  "section_a": { ... },
+  "section_b": { ... },
+  "transaction": { ... },
+  "institution": { ... },
+  "signature": { ... },
+  "created_at": "...",
+  "data_sources": [...],
+  "missing_required_fields": [],
+  "data_quality_issues": [],
+  "risk_score": 0.0
+}
+```
 
-## Case Management
-- list tracked cases
-- stage timeline
-- case details
-- download artifacts when completed
+### SAR Example (`sar_output.json`)
 
-## Dashboard
-- overview metrics and trend charts
+```json
+{
+  "report_type": "SAR",
+  "case_id": "SAR-2024-00001",
+  "filing_type": "initial",
+  "prior_report_number": null,
+  "subject": { ... },
+  "activity": { ... },
+  "financial_institution": { ... },
+  "filing_institution": { ... },
+  "narrative": null,
+  "created_at": "...",
+  "data_sources": [...],
+  "missing_required_fields": [],
+  "data_quality_issues": [],
+  "risk_score": 50.0,
+  "narrative_required": true
+}
+```
 
-## Settings
-- API base URL, timeout, retry
-- user profile and display options
+All fields follow the structure defined in the FinCEN forms. Any `null` values will be treated as missing data and may trigger rule violations.
 
 ---
 
-## API Reference (Current)
+## Validation Rules
 
-Router prefix: `/api/v1`
+The rule engine implements two separate classes:
 
-### Implemented endpoints
+- `CTRRuleChecker` (in `ctr_rules_engine.py`)
+- `SARRuleChecker` (in `sar_rules_engine.py`)
 
-- `POST /api/v1/reports/submit`
-- `GET /api/v1/reports/{job_id}/status`
-- `GET /api/v1/reports/{job_id}/download`
-- `POST /api/v1/reports/file-direct`
-- `GET /api/v1/kb/search`
+Each rule ID (e.g., `CTR-REQ-001`) is mapped to a method `check_ctr_req_001()` inside the respective engine. If a rule is not implemented, the engine adds a violation indicating the missing implementation (this is intentional to avoid silent failures).
 
-Global health endpoint:
-- `GET /health`
+Rules cover four categories:
 
-Note:
-- Some UI client methods include fallback behavior when optional endpoints are absent (`/cases/*`, `/reports/list`, `/dashboard/metrics`).
+| Category      | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| Completeness  | All mandatory fields are present (e.g., name, address, TIN, ID details).    |
+| Compliance    | Adherence to regulatory requirements (BSA, AML, OFAC, red flags).           |
+| Accuracy      | Correct data formats (TIN, dates, amounts) and internal consistency.        |
+| Narrative     | Quality of the SAR narrative (assessed by LLM for SAR, always 100 for CTR). |
 
----
+Scores are calculated per category using **weighted severity**:
+- critical = 5
+- high = 3
+- medium = 1
+- low = 0.5
 
-## PDF Filing Behavior and Field Mapping Notes
-
-### Templates
-
-SAR filer auto-selects best template match between:
-- `knowledge_base/documents/pdf_templates/fincen_sar_form_acroform.pdf`
-- `knowledge_base/documents/pdf_templates/sar_report.pdf`
-
-CTR template:
-- `knowledge_base/documents/pdf_templates/ctr_report.pdf`
-
-### Key SAR mapping details
-
-- Field 34 (`Total dollar amount involved`) is dollar-only in legacy form:
-  - cents are not represented in the numeric boxes
-  - mapper fills both `item34` and `item34-1..item34-11`
-
-- Entity name handling:
-  - names like `LLC`, `INC`, `CORP` are treated as entity-style mapping even if `subject.type` is mislabeled
-
-- Address fallback:
-  - if address missing, mapper backfills from available `city/state/zip`
-  - transaction location is used as fallback source when needed
-
-- Item 35 summary characterization:
-  - mapping uses conservative category/keyword logic
-  - unmatched categories are preserved in `item35s-1` (other text)
-
-### PDF appearance and duplication fixes
-
-- `NeedAppearances` set to improve viewer rendering
-- duplicate-page writes were removed (no double page sets)
-
-### PDF Filler Agent (Supabase templates)
-
-Deterministic **PDF Filler Agent** for any report type configured in Supabase `report_types` (`pdf_template_path` + `pdf_field_mapping`):
-
-- **Code:** `backend/pdf_filler/` — `PdfFillerAgent.fill_report(...)` or `process(payload)`.
-- **Env:** `SUPABASE_URL` + `SUPABASE_API_KEY` or `SUPABASE_ANON_KEY`.
-- **Lookup:** `report_type_code` in DB; pipeline names like `SANCTIONS_REJECT` map to `OFAC_REJECT` (see `REPORT_TYPE_ALIASES` in `metadata.py`).
-- **Mapping:** Each key is a dot path on `transaction_json` (e.g. `institution.name`, `transaction.amount_rejected`). Values may be the PDF field name (string) or `{"field_id": "...", "type": "text"}` as stored in Supabase.
-- **Narrative:** Keys `narrative` / `narrative_text` / `__narrative__` use `narrative_text` when provided, else `transaction_json.narrative`. If there is no narrative mapping entry, the agent tries PDF fields named like `narrative`, `description`, or `Page 2`.
-- **Output:** `outputs/output_<REPORT_TYPE>_<UTC_timestamp>.pdf` (see `.gitignore` for `outputs/*.pdf`).
-
-```bash
-PYTHONPATH=. python scripts/test_pdf_filler_agent.py --example ofac_reject1.json --report-type SANCTIONS_REJECT
-PYTHONPATH=. python scripts/test_pdf_filler_agent.py --example sar1.json --report-type SAR
-pytest tests/test_pdf_filler_unit.py
-```
-
-**SAR:** Pass nested case JSON like `examples/sar1.json`. The agent flattens `subject`, `institution`, `alert`, `SuspiciousActivityInformation`, and `narrative` into FinCEN-style keys (`"3"`, `"26"`, `narrative_text`, …). You can also supply a fully flat `transaction_json` with explicit keys (`"3"`, `"4"`, …) if the aggregator already emits that shape.
+The overall score is the average of the four category scores.
 
 ---
 
-## Troubleshooting
+## Output Format
 
-### 1) `zsh: command not found: app.py`
-Use Streamlit runner, not direct python script execution:
+The output JSON contains the following fields:
 
-```bash
-streamlit run streamlit_app/app.py --server.port 8501
+```json
+{
+  "case_id": "CTR-2024-00001",
+  "report_type": "CTR",
+  "status": "APPROVED | NEEDS_REVIEW | REJECTED",
+  "pass_or_not": "Yes | No",
+  "validation_score": 87.5,
+  "scores": {
+    "completeness": 80.0,
+    "compliance": 90.0,
+    "accuracy": 95.0,
+    "narrative": 85.0
+  },
+  "validation_report": "====================================\nVALIDATION REPORT\n... (detailed text) ...",
+  "generate_times": 1,
+  "current_best_score": 0.0
+}
 ```
 
-### 2) `ModuleNotFoundError: No module named 'streamlit_app'`
-Run from repository root:
-
-```bash
-cd Agentic_BNY_AI_Compliance
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-### 3) UUID parsing errors in status endpoint
-Do not pass placeholders like `<REAL_UUID>` literally.
-Use the actual `job_id` returned from submit.
-
-### 4) `jq: Unknown option --argfile`
-Use Python-based payload construction or a compatible jq invocation.
-
-### 5) DB connection errors (`password authentication failed`, `connection refused`)
-Validate DB env vars:
-- host/user/password/port/db
-- DSN format
-- whether local or Supabase DB is reachable from your machine
-
-### 6) Supabase REST 400 on `report_types`
-Check table schema and column names used by code:
-- `report_type`
-- `json_schema`
-- `narrative_required`
-- `narrative_instructions`
-- `validation_rules`
-- `pdf_template_path`
-- `pdf_field_mapping`
-
-### 7) UI styling looks inconsistent across pages
-After updates:
-- restart Streamlit
-- hard refresh browser (`Cmd+Shift+R`)
-
-### 8) Port already in use
-
-```bash
-lsof -ti tcp:8001 -sTCP:LISTEN
-kill -9 <pid>
-```
-
-### 9) Weaviate URL errors
-Always include scheme:
-- `http://localhost:8080` (local)
-- `https://<cluster>.weaviate.cloud` (cloud)
+- **status**: Determined by the presence of any **critical** violation (`REJECTED`), or by the overall score (≥80 → `APPROVED`, otherwise `NEEDS_REVIEW`).
+- **validation_score**: Average of the four category scores.
+- **scores**: Individual scores for completeness, compliance, accuracy, and narrative.
+- **validation_report**: A multi‑line human‑readable summary listing all violations, recommendations, and category scores.
 
 ---
 
-## Operational Notes for Teammates
+## LLM Integration
 
-### Standard daily run
+For SAR reports, if a narrative is present and required (`narrative_required: true`), the agent calls the ZhiPu GLM‑5 API to evaluate the narrative quality. The prompt asks the LLM to check for:
 
-1. Activate venv and load env:
+- The five Ws (who, what, when, where, why) and how.
+- Prohibited phrases (e.g., “see attached”).
+- Clear description of funds flow.
 
-```bash
-source .venv/bin/activate
-set -a; source .env; set +a
-```
+The LLM returns a JSON with:
+- `score` (0–100)
+- `missing_elements` (list of strings)
+- `comments` (brief feedback)
 
-2. Start backend:
+The score overrides the default narrative category score, and any missing elements or comments are added as violations (severity medium/low) so they appear in the final report.
 
-```bash
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-3. Start frontend:
-
-```bash
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
-4. Test with Upload JSON first for deterministic mapping.
-
-### Recommended testing mode during integration
-
-Set in `.env`:
-
-```env
-SKIP_VALIDATOR_FOR_TESTING=true
-```
-
-Use this while validating Router -> Aggregator -> Narrative -> Filer behavior.
+If the API call fails, a default score of 50 is used and an error comment is added.
 
 ---
 
-## Security Notes
+## Extending the Agent
 
-- Do not commit `.env` or credentials.
-- Rotate API keys if exposed.
-- Use least-privilege Supabase keys in shared environments.
-- Audit and sanitize case data before sharing externally.
+### Adding a New Rule
+1. Edit `data/validation_data/validation_rules.json` and add a new rule with a unique `rule_id`, e.g., `CTR-REQ-030`.
+2. In the corresponding rule engine (`ctr_rules_engine.py` or `sar_rules_engine.py`), implement a method named `check_ctr_req_030(self) -> Tuple[bool, str]` that returns `(True, None)` if the rule passes, or `(False, custom_message)` if it fails.
+3. The engine’s `check_all()` will automatically call the method.
 
----
+### Modifying Scoring Categories
+The category mapping is handled in `scoring.py` by the `categorize_rule(rule_id)` function. Adjust the keyword‑based logic to reclassify rules as needed.
 
-## Quick Start Commands (Copy/Paste)
-
-```bash
-cd Agentic_BNY_AI_Compliance
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-set -a; source .env; set +a
-python scripts/preflight.py
-python scripts/init_weaviate.py
-python scripts/seed_kb.py
-uvicorn backend.api.main:app --reload --port 8001
-```
-
-New terminal:
-
-```bash
-cd Agentic_BNY_AI_Compliance
-source .venv/bin/activate
-streamlit run streamlit_app/app.py --server.port 8501
-```
-
+### Changing the LLM Provider
+Update the `.env` variables and modify `llm_evaluator.py` to match the new API endpoint and expected response format.
