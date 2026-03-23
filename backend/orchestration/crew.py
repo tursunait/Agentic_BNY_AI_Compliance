@@ -107,7 +107,7 @@ def create_compliance_crew(
     on_stage: Callable[[str, int], None] | None = None,
 ) -> Dict[str, dict]:
     normalized_case = normalize_case_data(transaction_data)
-    base_llm = LLM(model="gpt-4.1", temperature=0.1, max_tokens=4000, api_key=settings.OPENAI_API_KEY)
+    base_llm = LLM(model="gpt-4o", temperature=0.1, max_tokens=4000, api_key=settings.OPENAI_API_KEY)
 
     def mark_stage(agent: str, progress: int) -> None:
         if on_stage is None:

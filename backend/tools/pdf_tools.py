@@ -29,9 +29,9 @@ except Exception:
         return _decorator
 
 
-SAR_TEMPLATE_PATH = Path("knowledge_base/documents/pdf_templates/fincen_sar_form_acroform.pdf")
-SAR_TEMPLATE_FALLBACK_PATH = Path("knowledge_base/documents/pdf_templates/sar_report.pdf")
-CTR_TEMPLATE_PATH = Path("knowledge_base/documents/pdf_templates/ctr_report.pdf")
+SAR_TEMPLATE_PATH = Path("data/raw_data_pdf/SAR.pdf")
+SAR_TEMPLATE_FALLBACK_PATH = Path("data/raw_data_pdf/SAR.pdf")
+CTR_TEMPLATE_PATH = Path("data/raw_data_pdf/CTR.pdf")
 OUTPUT_DIR = Path("data/output")
 
 

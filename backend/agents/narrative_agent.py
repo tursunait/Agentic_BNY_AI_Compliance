@@ -240,6 +240,7 @@ def generate_narrative_payload(
         model="openai/gpt-4o-mini",
         temperature=0.2,
         max_tokens=2200,
+        api_key=settings.OPENAI_API_KEY,
     )
     agent = Agent(
         role="SAR Narrative Writer",

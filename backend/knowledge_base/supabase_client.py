@@ -315,7 +315,7 @@ class SupabaseClient:
             )
             session.add(record)
             session.flush()
-            logger.info("Job %s created", job_id)
+            logger.info("Job {} created", job_id)
             return record.job_id
 
     def update_job_status(
@@ -341,7 +341,7 @@ class SupabaseClient:
             if error:
                 record.error_message = error
             session.add(record)
-            logger.debug("Job %s updated to %s", job_id, status)
+            logger.debug("Job {} updated to {}", job_id, status)
 
     def get_job(self, job_id: str) -> Optional[Dict[str, Any]]:
         with self._session() as session:
