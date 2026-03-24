@@ -206,6 +206,22 @@ async def get_case(case_id: str):
     return job
 
 
+def _avg_processing_minutes(completed_jobs: list) -> float:
+    """Return average processing time in minutes for completed jobs."""
+    from datetime import datetime, timezone
+    deltas = []
+    for j in completed_jobs:
+        try:
+            created = datetime.fromisoformat(j["created_at"].replace("Z", "+00:00"))
+            updated = datetime.fromisoformat(j["updated_at"].replace("Z", "+00:00"))
+            delta_minutes = (updated - created).total_seconds() / 60
+            if 0 < delta_minutes < 1440:  # ignore outliers > 24h
+                deltas.append(delta_minutes)
+        except Exception:
+            continue
+    return round(sum(deltas) / len(deltas), 1) if deltas else 0.0
+
+
 @router.get("/dashboard/metrics")
 async def get_dashboard_metrics():
     db = SupabaseClient()
@@ -226,7 +242,7 @@ async def get_dashboard_metrics():
         "active_cases": len(active),
         "pending_reviews": len(pending_reviews),
         "reports_generated": len(completed),
-        "avg_processing_hours": 4.2,
+        "avg_processing_minutes": _avg_processing_minutes(completed),
         "sar_count": sar_count,
         "ctr_count": ctr_count,
         "status_distribution": status_distribution,

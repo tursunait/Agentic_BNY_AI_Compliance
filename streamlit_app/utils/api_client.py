@@ -279,7 +279,7 @@ class APIClient:
             "active_cases": len(active),
             "pending_reviews": len(pending_reviews),
             "reports_generated": len(completed),
-            "avg_processing_hours": 4.2,
+            "avg_processing_minutes": 0,
             "sar_count": sar_count,
             "ctr_count": ctr_count,
             "status_distribution": status_distribution,

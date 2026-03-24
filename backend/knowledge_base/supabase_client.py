@@ -376,6 +376,7 @@ class SupabaseClient:
                     "result": r.result,
                     "error_message": r.error_message,
                     "created_at": r.created_at.isoformat() if r.created_at else None,
+                    "updated_at": r.updated_at.isoformat() if r.updated_at else None,
                 }
                 for r in records
             ]
