@@ -55,12 +55,100 @@ def _parse_raw_user_input(raw: Any) -> Dict[str, Any]:
     return {}
 
 
+def _extract_structured_fields_from_narrative(
+    narrative_text: str,
+    report_type: str,
+) -> Dict[str, Any]:
+    """
+    Use the LLM to extract structured field values from free-text narrative.
+    Field definitions are pulled from the Supabase schema for the given report type.
+    Returns a flat dict of {field_key: value} using dot-notation keys where nested.
+    """
+    from backend.knowledge_base.supabase_client import SupabaseClient
+    import requests as _requests
+
+    api_key = str(getattr(settings, "OPENAI_API_KEY", "") or "").strip()
+    if not api_key:
+        return {}
+
+    try:
+        db = SupabaseClient()
+        schema = db.get_schema(report_type) or {}
+    except Exception:
+        schema = {}
+
+    required_paths = schema.get("required_fields") or schema.get("requiredFields") or []
+    if not required_paths:
+        return {}
+
+    system_prompt = (
+        "You extract structured data from a compliance officer's narrative. "
+        "Return a JSON object whose keys are exactly the field paths listed. "
+        "Set each value to what the narrative states, or null if not mentioned. "
+        "Preserve dot-notation keys as-is (e.g. subject.first_name). "
+        "For dates use MM/DD/YYYY. For amounts use numbers without currency symbols."
+    )
+    user_content = json.dumps(
+        {
+            "report_type": report_type,
+            "narrative": narrative_text[:12000],
+            "required_field_paths": required_paths,
+        },
+        ensure_ascii=False,
+    )
+
+    model = str(getattr(settings, "OPENAI_MODEL", "") or "gpt-4o-mini").strip()
+    base_url = str(getattr(settings, "OPENAI_BASE_URL", "") or "https://api.openai.com/v1").rstrip("/")
+
+    try:
+        resp = _requests.post(
+            f"{base_url}/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "temperature": 0,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_content},
+                ],
+                "response_format": {"type": "json_object"},
+            },
+            timeout=30,
+        )
+        resp.raise_for_status()
+        content = (((resp.json().get("choices") or [{}])[0].get("message") or {}).get("content") or "").strip()
+        parsed = json.loads(content) if content else {}
+        if not isinstance(parsed, dict):
+            return {}
+        return {k: v for k, v in parsed.items() if v is not None and str(v).strip()}
+    except Exception as exc:
+        from loguru import logger as _logger
+        _logger.warning("LLM narrative extraction failed: {}", exc)
+        return {}
+
+
+def _merge_extracted_into_case(case_data: Dict[str, Any], extracted: Dict[str, Any]) -> None:
+    """Merge LLM-extracted flat/dot-path key-value pairs into case_data."""
+    for input_key, value in extracted.items():
+        if not isinstance(input_key, str) or not input_key.strip():
+            continue
+        parts = input_key.strip().split(".")
+        node = case_data
+        for part in parts[:-1]:
+            if not isinstance(node.get(part), dict):
+                node[part] = {}
+            node = node[part]
+        node[parts[-1]] = value
+
+
 def _enrich_from_raw_user_input(normalized: Dict[str, Any]) -> Dict[str, Any]:
     """
     If source_type is free_text, parse raw_user_input and merge the rich
     structured fields back, overwriting the synthetic placeholders.
     Priority fields: case_id, subject, institution, transactions,
     SuspiciousActivityInformation (especially amount and date range).
+    When raw_user_input is not JSON-parseable, use LLM extraction to pull
+    structured fields from the narrative text.
     """
     if normalized.get("source_type") != "free_text":
         return normalized
@@ -70,6 +158,13 @@ def _enrich_from_raw_user_input(normalized: Dict[str, Any]) -> Dict[str, Any]:
 
     parsed = _parse_raw_user_input(raw)
     if not parsed:
+        # True free-text narrative: extract structured fields via LLM
+        report_type = str(normalized.get("report_type_hint") or normalized.get("report_type") or "SAR").strip().upper()
+        extracted = _extract_structured_fields_from_narrative(str(raw), report_type)
+        if extracted:
+            enriched = dict(normalized)
+            _merge_extracted_into_case(enriched, extracted)
+            return enriched
         return normalized
 
     enriched = dict(normalized)
@@ -201,7 +296,7 @@ def _normalize_report_types(value: Any) -> list[str]:
 
     out: list[str] = []
     for item in raw:
-        report_type = str(item or "").upper()
+        report_type = str(item or "").strip().upper()
         if report_type in {"SAR", "CTR", "OFAC_REJECT"} and report_type not in out:
             out.append(report_type)
     return out
