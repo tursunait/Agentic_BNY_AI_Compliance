@@ -67,7 +67,9 @@ with m2:
 with m3:
     render_metric_card("Reports Generated", str(metrics.get("reports_generated", 0)), help_text="Completed filings")
 with m4:
-    render_metric_card("Avg Processing", f"{metrics.get('avg_processing_hours', 0):.1f}h", help_text="Per case")
+    avg_min = metrics.get("avg_processing_minutes", 0)
+    avg_label = f"{avg_min:.1f} min" if avg_min else "N/A"
+    render_metric_card("Avg Processing", avg_label, help_text="Per case")
 
 st.markdown('<div class="home-section-title">Recent Activity</div>', unsafe_allow_html=True)
 try:

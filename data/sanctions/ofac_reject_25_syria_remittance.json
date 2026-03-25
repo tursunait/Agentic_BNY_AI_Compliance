@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-025",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Syria — SSR",
+  "institution": {
+    "name": "Metro Detroit Bank",
+    "type": "Bank",
+    "address": "500 Woodward Ave",
+    "city": "Detroit",
+    "state": "MI",
+    "postal_code": "48226",
+    "country": "United States",
+    "contact_person": "Ahmed Hassan",
+    "telephone": "313-555-1015",
+    "email": "ahassan@metrodetroitbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "3500.00",
+    "currency": "USD",
+    "transaction_type": "International remittance",
+    "date_of_transaction": "2026-03-20",
+    "date_of_rejection": "2026-03-20",
+    "program_or_reason": "Syria — Syrian Sanctions Regulations (SSR), 31 C.F.R. Part 542",
+    "originator_name_address": "Hassan Family, 600 Woodward Ave, Detroit, MI 48226, United States",
+    "originating_fi": "Metro Detroit Bank, 500 Woodward Ave, Detroit, MI 48226, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "BEMO Bank, Beirut, Lebanon (routing to Syria)",
+    "beneficiary_name_address": "Recipient, Damascus, Syria",
+    "additional_relevant_info": "Remittance to family in Syria. SSR prohibits; no general license applicable.",
+    "additional_data": "Remittance REF-20260320-5566"
+  },
+  "preparer": {
+    "name": "Ahmed Hassan",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-03-20"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — destination country Syria",
+    "sanctions_nexus": "Remittance destined for Syria; SSR restricts such transactions",
+    "documents_reviewed": [
+      "Remittance order and ID",
+      "OFAC screening and license check",
+      "Customer file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

@@ -7,8 +7,9 @@ import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
+import requests as _requests
 from loguru import logger
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import BooleanObject, DictionaryObject, NameObject
@@ -29,10 +30,87 @@ except Exception:
         return _decorator
 
 
-SAR_TEMPLATE_PATH = Path("knowledge_base/documents/pdf_templates/fincen_sar_form_acroform.pdf")
-SAR_TEMPLATE_FALLBACK_PATH = Path("knowledge_base/documents/pdf_templates/sar_report.pdf")
-CTR_TEMPLATE_PATH = Path("knowledge_base/documents/pdf_templates/ctr_report.pdf")
+SAR_TEMPLATE_PATH = Path("data/raw_data_pdf/SAR.pdf")
+SAR_TEMPLATE_FALLBACK_PATH = Path("data/raw_data_pdf/SAR.pdf")
+CTR_TEMPLATE_PATH = Path("data/raw_data_pdf/CTR.pdf")
 OUTPUT_DIR = Path("data/output")
+TEMPLATE_CACHE_DIR = Path("data/output/templates")
+
+
+# ---------------------------------------------------------------------------
+# Supabase template resolver
+# ---------------------------------------------------------------------------
+
+def _fetch_template_url_from_supabase(report_type_code: str) -> Optional[str]:
+    """Return the pdf_template_path URL from Supabase report_types for *report_type_code*."""
+    try:
+        from backend.config.settings import settings
+        rest_url = (settings.get_supabase_rest_url() or "").rstrip("/")
+        anon_key = (settings.SUPABASE_ANON_KEY or "").strip()
+        if not rest_url or not anon_key:
+            return None
+        headers = {"apikey": anon_key, "Authorization": f"Bearer {anon_key}"}
+        url = f"{rest_url}/rest/v1/report_types"
+        resp = _requests.get(
+            url,
+            headers=headers,
+            params={"select": "pdf_template_path", "report_type_code": f"eq.{report_type_code.upper()}", "limit": "1"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        rows = resp.json()
+        if isinstance(rows, list) and rows:
+            return (rows[0].get("pdf_template_path") or "").strip() or None
+    except Exception as exc:
+        logger.warning("Could not fetch template URL from Supabase for {}: {}", report_type_code, exc)
+    return None
+
+
+def _download_template(url: str, dest: Path) -> Path:
+    """Download a PDF from *url* to *dest*, creating parent dirs as needed."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    resp = _requests.get(url, timeout=60)
+    resp.raise_for_status()
+    dest.write_bytes(resp.content)
+    logger.info("Downloaded PDF template from {} → {}", url, dest)
+    return dest
+
+
+def resolve_template_path(report_type_code: str, local_fallback: Path) -> Path:
+    """
+    Return the best available template path for *report_type_code*.
+
+    Priority:
+      1. Supabase pdf_template_path URL  (downloaded & cached locally)
+      2. *local_fallback* if it exists
+    Raises FileNotFoundError if nothing is available.
+    """
+    code = report_type_code.upper()
+    TEMPLATE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cached = TEMPLATE_CACHE_DIR / f"{code}_template.pdf"
+
+    # Use cached download if fresh enough (present at all is fine for a session).
+    if cached.exists():
+        logger.debug("Using cached template: {}", cached)
+        return cached
+
+    # Try Supabase first.
+    template_url = _fetch_template_url_from_supabase(code)
+    if template_url and template_url.startswith("http"):
+        try:
+            return _download_template(template_url, cached)
+        except Exception as exc:
+            logger.warning("Template download failed ({}): {} — falling back to local", template_url, exc)
+
+    # Local fallback.
+    if local_fallback.exists():
+        logger.info("Using local fallback template: {}", local_fallback)
+        return local_fallback
+
+    raise FileNotFoundError(
+        f"No PDF template found for {code}. "
+        f"Supabase pdf_template_path returned {template_url!r} and local fallback {local_fallback} does not exist."
+    )
 
 
 class BaseReportFiler:
@@ -218,13 +296,20 @@ class SARReportFiler(BaseReportFiler):
         "37-3",
     )
     PAGE3_FIELDS = {"item51"}
-    AUTO_TEMPLATE_PATHS = (SAR_TEMPLATE_PATH, SAR_TEMPLATE_FALLBACK_PATH)
+    # Preferred order: S3-sourced AcroForm cache first, local raw files as fallback only.
+    AUTO_TEMPLATE_PATHS = (
+        TEMPLATE_CACHE_DIR / "SAR_template.pdf",
+        SAR_TEMPLATE_PATH,
+        SAR_TEMPLATE_FALLBACK_PATH,
+    )
 
-    def __init__(self, template_path: str = str(SAR_TEMPLATE_PATH), output_dir: str = str(OUTPUT_DIR)):
-        # Backward-compatible fallback for environments that still use the older template name.
-        self.auto_select_template = template_path == str(SAR_TEMPLATE_PATH)
-        if template_path == str(SAR_TEMPLATE_PATH) and not Path(template_path).exists() and SAR_TEMPLATE_FALLBACK_PATH.exists():
-            template_path = str(SAR_TEMPLATE_FALLBACK_PATH)
+    def __init__(self, template_path: str | None = None, output_dir: str = str(OUTPUT_DIR)):
+        # Resolve template: Supabase URL → cached local file → local fallback
+        self.auto_select_template = template_path is None
+        if template_path is None:
+            template_path = str(resolve_template_path("SAR", SAR_TEMPLATE_PATH))
+        elif not Path(template_path).exists():
+            template_path = str(resolve_template_path("SAR", SAR_TEMPLATE_PATH))
         super().__init__(template_path=template_path, output_dir=output_dir)
         self.template_variant = self._detect_template_variant()
 
@@ -272,13 +357,6 @@ class SARReportFiler(BaseReportFiler):
         normalized_case: Dict[str, Any],
         injected_narrative: str | None = None,
     ) -> tuple[Path, str, Dict[str, str]]:
-        # Enforce the newer FinCEN AcroForm when available.
-        if SAR_TEMPLATE_PATH.exists():
-            self.template_path = SAR_TEMPLATE_PATH
-            variant = self._detect_template_variant()
-            fields = self._build_field_values(normalized_case, variant, injected_narrative)
-            return SAR_TEMPLATE_PATH, variant, fields
-
         candidates: List[Path] = []
         for path in self.AUTO_TEMPLATE_PATHS:
             if path.exists():
@@ -301,6 +379,129 @@ class SARReportFiler(BaseReportFiler):
         _, chosen_path, chosen_variant, chosen_fields = best
         return chosen_path, chosen_variant, chosen_fields
 
+    # ------------------------------------------------------------------
+    # Item 26 per-cell digit injection
+    # ------------------------------------------------------------------
+    # The SAR AcroForm template shares a single field node "Text9" for
+    # ALL 31 widget instances across items 26, 28, 63, and phone cells.
+    # PDF viewers read the parent field's /V — so setting widget-level
+    # /V has no visual effect.  The only correct fix is to SPLIT the 7
+    # item-26 widgets out of the Text9 parent into 7 independent field
+    # nodes (one per cell), each with its own /V.  Items 28 and 63 keep
+    # sharing the original Text9 node and are unaffected.
+    # ------------------------------------------------------------------
+
+    # Y range (PDF points, page 0) that isolates the item 26 row.
+    # PDF Y-axis runs bottom→top, so item 26 (higher on page) has larger Y
+    # than item 28 (lower on page).  Confirmed: item 26 ≈ Y 239–264.
+    _ITEM26_Y_MIN: float = 239.0
+    _ITEM26_Y_MAX: float = 264.0
+
+    def _fix_item26_cells(self, pdf_path: Path, cells_str: str) -> None:
+        """
+        Re-open *pdf_path* and split the 7 item-26 Text9 widget annotations
+        into independent AcroForm field nodes so each digit cell can hold a
+        distinct value.  Writes the modified PDF back in place.
+
+        *cells_str* must be exactly 7 characters: the digits for cells 6–12
+        of item 26 (left → right, i.e. millions → units).
+        """
+        from pypdf.generic import (
+            ArrayObject, DictionaryObject, NameObject,
+            create_string_object, BooleanObject,
+        )
+
+        try:
+            reader = PdfReader(str(pdf_path))
+            writer = PdfWriter()
+            writer.clone_reader_document_root(reader)
+
+            # --- locate Text9 parent field in AcroForm /Fields ---
+            root = writer._root_object
+            acroform = root["/AcroForm"].get_object()
+            fields_array = acroform["/Fields"]
+
+            text9_field = None
+            for fref in fields_array:
+                f = fref.get_object()
+                if str(f.get("/T") or "") == "Text9":
+                    text9_field = f
+                    break
+
+            if text9_field is None:
+                logger.warning("_fix_item26_cells: Text9 field not found — skipping.")
+                return
+
+            da = text9_field.get("/DA", create_string_object(""))
+
+            # --- identify the 7 item-26 widget annotations ---
+            page0 = writer.pages[0]
+            annots = page0.get("/Annots", []) or []
+            item26: List[Tuple[float, Any, Any]] = []  # (x, indirect_ref, annot_obj)
+            for ref in annots:
+                try:
+                    annot = ref.get_object()
+                except Exception:
+                    continue
+                parent_ref = annot.get("/Parent")
+                if not parent_ref:
+                    continue
+                try:
+                    if str(parent_ref.get_object().get("/T") or "") != "Text9":
+                        continue
+                except Exception:
+                    continue
+                rect = annot.get("/Rect")
+                if rect and self._ITEM26_Y_MIN <= float(rect[1]) <= self._ITEM26_Y_MAX:
+                    item26.append((float(rect[0]), ref, annot))
+
+            item26.sort(key=lambda t: t[0])  # left → right = cell 6 → 12
+
+            if not item26:
+                logger.warning("_fix_item26_cells: no item-26 widgets found — skipping.")
+                return
+
+            item26_ids = {ref.idnum for _, ref, _ in item26}
+
+            # --- remove item-26 kids from the Text9 parent ---
+            text9_field[NameObject("/Kids")] = ArrayObject(
+                [k for k in text9_field["/Kids"] if k.idnum not in item26_ids]
+            )
+
+            # --- create one independent field node per cell ---
+            for i, (_, widget_ref, widget_annot) in enumerate(item26):
+                digit = cells_str[i] if i < len(cells_str) else "0"
+                new_field = DictionaryObject({
+                    NameObject("/T"):    create_string_object(f"Text9_i26c{6 + i}"),
+                    NameObject("/FT"):   NameObject("/Tx"),
+                    NameObject("/V"):    create_string_object(digit),
+                    NameObject("/DV"):   create_string_object(""),
+                    NameObject("/DA"):   da,
+                    NameObject("/Kids"): ArrayObject([widget_ref]),
+                })
+                new_field_ref = writer._add_object(new_field)
+                fields_array.append(new_field_ref)
+
+                # Widget's /Parent → new independent field
+                widget_annot[NameObject("/Parent")] = new_field_ref
+                # Remove stale appearance; NeedAppearances triggers regeneration
+                for stale_key in ("/AP", "/V"):
+                    if NameObject(stale_key) in widget_annot:
+                        del widget_annot[NameObject(stale_key)]
+
+            acroform[NameObject("/NeedAppearances")] = BooleanObject(True)
+
+            with open(pdf_path, "wb") as fh:
+                writer.write(fh)
+
+            logger.debug(
+                "Item 26 AcroForm split: {} cells → digits '{}'",
+                len(item26),
+                cells_str,
+            )
+        except Exception as exc:
+            logger.warning("_fix_item26_cells failed (non-blocking): {}", exc)
+
     def fill_from_dict(self, case_data: Any, injected_narrative: str | None = None) -> Dict:
         normalized_case = normalize_case_data(case_data)
         case_id = normalized_case.get("case_id", "UNKNOWN")
@@ -310,15 +511,30 @@ class SARReportFiler(BaseReportFiler):
         logger.info("Filling SAR PDF for case {}", case_id)
 
         if self.auto_select_template:
-            selected_template, selected_variant, field_values = self._choose_best_template(
-                normalized_case, injected_narrative
-            )
-            self.template_path = selected_template
-            self.template_variant = selected_variant
+            # template_path was already resolved to the best available (S3 AcroForm → local fallback)
+            # by resolve_template_path() in __init__. Re-detect the variant in case it changed.
+            self.template_variant = self._detect_template_variant()
+            field_values = self._build_field_values(normalized_case, self.template_variant, injected_narrative)
         else:
             field_values = self._build_field_values(normalized_case, self.template_variant, injected_narrative)
 
+        # AI field verification — review mapped values against source data and apply corrections
+        try:
+            from backend.tools.ai_field_verifier import verify_and_correct_fields
+            field_values = verify_and_correct_fields(
+                field_values, normalized_case, "SAR", self.template_variant
+            )
+        except Exception as _vex:
+            logger.warning("AI field verifier raised unexpectedly — continuing without corrections. {}", _vex)
+
+        # Pop per-cell item 26 digits before standard field fill (private key, not a real field)
+        item26_cells = field_values.pop("_item26_text9_cells", None)
+
         filled_count, errors = self._fill_pdf(field_values, out_path)
+
+        # Inject item 26 Text9 cells individually so each digit is accurate
+        if item26_cells and out_path.exists():
+            self._fix_item26_cells(out_path, item26_cells)
         template_field_count = self._template_field_count()
         attempted_fields = len(field_values)
         result = {
@@ -353,7 +569,11 @@ class CTRReportFiler(BaseReportFiler):
     PAGE2_PREFIXES = ("F2", "f2", "C2", "c2")
     PAGE3_PREFIXES = ("F3", "f3", "C3", "c3", "item-", "text")
 
-    def __init__(self, template_path: str = str(CTR_TEMPLATE_PATH), output_dir: str = str(OUTPUT_DIR)):
+    def __init__(self, template_path: str | None = None, output_dir: str = str(OUTPUT_DIR)):
+        if template_path is None:
+            template_path = str(resolve_template_path("CTR", CTR_TEMPLATE_PATH))
+        elif not Path(template_path).exists():
+            template_path = str(resolve_template_path("CTR", CTR_TEMPLATE_PATH))
         super().__init__(template_path=template_path, output_dir=output_dir)
 
     def fill_from_dict(self, case_data: Any, injected_narrative: str | None = None) -> Dict:
@@ -367,6 +587,15 @@ class CTRReportFiler(BaseReportFiler):
 
         mapper = CTRFieldMapper(normalized_case)
         field_values = mapper.map_all_fields()
+
+        # AI field verification — review mapped values against source data and apply corrections
+        try:
+            from backend.tools.ai_field_verifier import verify_and_correct_fields
+            field_values = verify_and_correct_fields(
+                field_values, normalized_case, "CTR"
+            )
+        except Exception as _vex:
+            logger.warning("AI field verifier raised unexpectedly — continuing without corrections. {}", _vex)
 
         filled_count, errors = self._fill_pdf(field_values, out_path)
         template_field_count = self._template_field_count()

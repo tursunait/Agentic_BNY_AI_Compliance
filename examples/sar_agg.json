@@ -1,0 +1,134 @@
+{
+    "sar_structuring_case": {
+      "report_type": "SAR",
+      "filing_type": "initial",
+      "data_sources": ["core_banking", "transaction_monitoring", "kyc_system"],
+  
+      "subject_information": {
+        "last_name": "Vasquez",
+        "first_name": "Marco",
+        "middle_initial": "A",
+        "gender": "M",
+        "alternate_name": "Marco V",
+        "occupation": "Restaurant Owner",
+        "naics_code": "722511",
+        "address": "4821 Crestwood Blvd",
+        "city": "Dallas",
+        "state": "TX",
+        "zip": "75201",
+        "country": "US",
+        "tin": "456-78-9012",
+        "tin_type": "SSN",
+        "id_type": "Driver's License",
+        "dob": "1978-04-15",
+        "phone_type": "Mobile",
+        "phone": "2145550192",
+        "email": "mvasquez@email.com",
+        "corroborative_statement": false,
+        "relationship_to_institution": ["customer"],
+        "role_in_activity": ["conductor"]
+      },
+  
+      "accounts_affected": ["CHK-00291847", "SAV-00391028"],
+  
+      "activity": {
+        "amount": 47500.00,
+        "activity_date_range": {
+          "start": "2024-03-01",
+          "end": "2024-03-28"
+        },
+        "structuring": ["multiple_cash_deposits_below_10k"],
+        "fraud": [],
+        "terrorist_financing": [],
+        "money_laundering": [],
+        "identification_issues": [],
+        "casinos": [],
+        "insurance": [],
+        "securities": [],
+        "mortgage_fraud": [],
+        "other_suspicious": [],
+        "product_types": ["checking_account", "savings_account"],
+        "instrument_types": ["cash"],
+        "ip_address": null,
+        "commodity_type": null,
+        "product_description": null,
+        "market_traded": null,
+        "cusip_1": null,
+        "cusip_2": null
+      },
+  
+      "transactions": [
+        {"date": "2024-03-04", "amount": 9500.00, "type": "cash_deposit"},
+        {"date": "2024-03-07", "amount": 9800.00, "type": "cash_deposit"},
+        {"date": "2024-03-11", "amount": 9400.00, "type": "cash_deposit"},
+        {"date": "2024-03-14", "amount": 9300.00, "type": "cash_deposit"},
+        {"date": "2024-03-18", "amount": 9500.00, "type": "cash_deposit"}
+      ],
+  
+      "alerts": [
+        {
+          "alert_id": "ALT-9921",
+          "subtype": "structuring_below_ctr_threshold",
+          "triggered_on": "2024-03-20"
+        }
+      ],
+  
+      "financial_institution": {
+        "type": "depository_institution",
+        "federal_regulator": "OCC",
+        "casino_type": null,
+        "securities_type": [],
+        "id_number_type": "EIN",
+        "role_in_transaction": ["where_activity_occurred"],
+        "name": "First National Bank of Texas",
+        "alternate_name": "FNBT",
+        "tin": "75-1234567",
+        "tin_type": "EIN",
+        "address": "500 Commerce St",
+        "city": "Dallas",
+        "state": "TX",
+        "zip": "75202",
+        "country": "US",
+        "internal_control_number": "ICN-2024-0091",
+        "loss_amount": 0.0,
+        "branch_role": ["where_activity_occurred"],
+        "branch_address": "4900 Greenville Ave",
+        "branch_rssd": "123456",
+        "branch_city": "Dallas",
+        "branch_state": "TX",
+        "branch_zip": "75206",
+        "branch_country": "US"
+      },
+  
+      "filing_institution": {
+        "federal_regulator": "OCC",
+        "name": "First National Bank of Texas",
+        "tin": "75-1234567",
+        "tin_type": "EIN",
+        "type": "depository_institution",
+        "securities_type": [],
+        "id_number_type": "EIN",
+        "address": "500 Commerce St",
+        "city": "Dallas",
+        "state": "TX",
+        "zip": "75202",
+        "country": "US",
+        "alternate_name": "FNBT",
+        "internal_control_number": "ICN-2024-0091",
+        "contact_office": "BSA Compliance Department",
+        "contact_phone": "2145550100",
+        "contact_phone_ext": "201"
+      },
+  
+      "law_enforcement": {
+        "agency": "FinCEN",
+        "contact_name": "Agent R. Torres",
+        "phone": "2025550130",
+        "phone_ext": null,
+        "contact_date": "2024-04-02"
+      },
+  
+      "date_filed": "2024-04-05",
+      "narrative": null
+    }
+  }

@@ -1,0 +1,39 @@
+{
+  "report_type_name": "SANCTIONS_REJECT",
+  "transaction_json": {
+    "institution": {
+      "name": "Example Bank",
+      "type": "Bank",
+      "address": "1 Main St",
+      "city": "New York",
+      "state": "NY",
+      "postal_code": "10001",
+      "country": "United States",
+      "contact_person": "Compliance Officer",
+      "telephone": "212-555-0100",
+      "email": "aml@example.com",
+      "fax": "212-555-0101"
+    },
+    "transaction": {
+      "amount_rejected": "5000.00",
+      "currency": "USD",
+      "date_of_transaction": "2026-03-01",
+      "date_of_rejection": "2026-03-02",
+      "program_or_reason": "Example sanctions program",
+      "originator_name_address": "Sender, 123 St",
+      "originating_fi": "Originating FI",
+      "intermediary_fi": "Intermediary FI",
+      "beneficiary_fi": "Beneficiary FI",
+      "beneficiary_name_address": "Beneficiary address",
+      "additional_relevant_info": "Details",
+      "additional_data": "OBI / wire data"
+    },
+    "preparer": {
+      "name": "Jane Doe",
+      "title": "BSA Officer",
+      "date_prepared": "2026-03-18"
+    },
+    "narrative": "Optional case narrative if narrative_text is omitted."
+  },
+  "narrative_text": "Override narrative for Page 2 when provided."
+}

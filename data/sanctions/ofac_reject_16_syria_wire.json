@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-016",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Syria — SSR (designated entity)",
+  "institution": {
+    "name": "Capital City Bank",
+    "type": "Bank",
+    "address": "1500 K Street NW",
+    "city": "Washington",
+    "state": "DC",
+    "postal_code": "20005",
+    "country": "United States",
+    "contact_person": "Thomas Reed",
+    "telephone": "202-555-1006",
+    "email": "treed@capitalcitybank.com"
+  },
+  "transaction": {
+    "amount_rejected": "67000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-01",
+    "date_of_rejection": "2026-03-01",
+    "program_or_reason": "Syria — Syrian Sanctions Regulations (SSR), 31 C.F.R. Part 542; designated oil entity",
+    "originator_name_address": "Energy Trading Corp., 1600 K St NW, Washington, DC 20006, United States",
+    "originating_fi": "Capital City Bank, 1500 K Street NW, Washington, DC 20005, United States",
+    "intermediary_fi": "BNP Paribas, Paris, France",
+    "beneficiary_fi": "Syrian Lebanese Commercial Bank, Damascus, Syria",
+    "beneficiary_name_address": "Syrian Petroleum Company, Damascus, Syria",
+    "additional_relevant_info": "Payment for crude oil. Syrian Petroleum Company designated under SSR.",
+    "additional_data": "SWIFT MT103; contract SYR-OIL-2026"
+  },
+  "preparer": {
+    "name": "Thomas Reed",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-03-02"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary entity matched OFAC SDN/SSI (Syria designations)",
+    "sanctions_nexus": "Beneficiary is designated entity under Syria sanctions; transaction would have involved blocked person",
+    "documents_reviewed": [
+      "Wire and commercial documents",
+      "OFAC SDN/SSI search",
+      "Customer trade file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

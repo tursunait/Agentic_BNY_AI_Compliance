@@ -1,8 +1,6 @@
 import os
 import uuid
 import json
-import time
-from typing import Any, Dict, List
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
@@ -11,92 +9,10 @@ from backend.api.schemas import ReportSubmission
 from backend.knowledge_base.kb_manager import KBManager
 from backend.knowledge_base.supabase_client import SupabaseClient
 from backend.orchestration.crew import create_compliance_crew
-from backend.tools.field_mapper import determine_report_types
+from backend.tools.field_mapper import determine_report_types, normalize_case_data
 from backend.tools.pdf_tools import CTRReportFiler, SARReportFiler
 
 router = APIRouter()
-_METRICS_CACHE: Dict[str, Any] = {"ts": 0.0, "value": None}
-
-
-def _safe_float(value: Any) -> float:
-    try:
-        return float(value or 0)
-    except (TypeError, ValueError):
-        return 0.0
-
-
-def _extract_report_types(result: Dict[str, Any]) -> List[str]:
-    router_payload = result.get("router") if isinstance(result.get("router"), dict) else {}
-    report_types = router_payload.get("report_types") if isinstance(router_payload, dict) else []
-    if isinstance(report_types, list):
-        return [str(item).upper() for item in report_types if str(item).strip()]
-    return []
-
-
-def _extract_primary_aggregate(result: Dict[str, Any]) -> Dict[str, Any]:
-    by_type = result.get("aggregator_by_type") if isinstance(result.get("aggregator_by_type"), dict) else {}
-    if isinstance(by_type.get("SAR"), dict):
-        return by_type["SAR"]
-    if isinstance(by_type.get("CTR"), dict):
-        return by_type["CTR"]
-    fallback = result.get("aggregator")
-    return fallback if isinstance(fallback, dict) else {}
-
-
-def _extract_case_id(job: Dict[str, Any]) -> str:
-    result = job.get("result") if isinstance(job.get("result"), dict) else {}
-    aggregate = _extract_primary_aggregate(result)
-    final = result.get("final") if isinstance(result.get("final"), dict) else {}
-
-    if isinstance(final.get("reports"), list) and final["reports"]:
-        first_report = final["reports"][0] if isinstance(final["reports"][0], dict) else {}
-        if first_report.get("case_id"):
-            return str(first_report["case_id"])
-    if final.get("case_id"):
-        return str(final["case_id"])
-    if aggregate.get("case_id"):
-        return str(aggregate["case_id"])
-
-    input_data = job.get("input_data") if isinstance(job.get("input_data"), dict) else {}
-    if input_data.get("case_id"):
-        return str(input_data["case_id"])
-    return str(job.get("job_id", ""))
-
-
-def _build_case_summary(job: Dict[str, Any], include_result: bool = False) -> Dict[str, Any]:
-    result = job.get("result") if isinstance(job.get("result"), dict) else {}
-    router_payload = result.get("router") if isinstance(result.get("router"), dict) else {}
-    aggregate = _extract_primary_aggregate(result)
-    report_types = _extract_report_types(result)
-    final = result.get("final") if isinstance(result.get("final"), dict) else {}
-    job_status = str(job.get("status", "unknown")).lower()
-    final_status = str(final.get("status", "")).lower()
-    effective_status = "needs_review" if final_status == "needs_review" else job_status
-
-    risk_score = _safe_float(aggregate.get("risk_score"))
-    if risk_score > 1:
-        risk_score = risk_score / 100.0
-
-    summary = {
-        "job_id": str(job.get("job_id")),
-        "case_id": _extract_case_id(job),
-        "subject_name": aggregate.get("customer_name") or (job.get("input_data") or {}).get("subject", {}).get("name") or "Unknown",
-        "amount_usd": _safe_float(
-            aggregate.get("total_amount_involved")
-            or router_payload.get("total_cash_amount")
-            or ((job.get("input_data") or {}).get("SuspiciousActivityInformation") or {}).get("26_AmountInvolved", {}).get("amount_usd")
-        ),
-        "status": effective_status,
-        "report_types": report_types,
-        "report_type": "BOTH" if len(report_types) > 1 else (report_types[0] if report_types else "-"),
-        "risk_score": risk_score,
-        "created_at": job.get("created_at"),
-        "current_agent": job.get("current_agent"),
-        "progress": job.get("progress", 0),
-    }
-    if include_result:
-        summary["result"] = result
-    return summary
 
 
 def run_crew_workflow(job_id: str, transaction_data: dict) -> None:
@@ -113,13 +29,83 @@ def run_crew_workflow(job_id: str, transaction_data: dict) -> None:
         db.update_job_status(job_id, "failed", error=str(exc))
 
 
+@router.post("/router/analyze")
+async def router_analyze(body: dict):
+    """
+    Run the router agent on input data and return what was detected plus
+    which fields are still missing — without starting a full pipeline job.
+
+    Accepts: {"text": "...", "case_data": {...}}
+    Returns: {
+        "report_type", "report_types", "confidence_score", "reasoning",
+        "kb_status", "missing_fields", "missing_field_prompts",
+        "detected": {subject_name, amount, date_from, date_to, activity_types}
+    }
+    """
+    from backend.agents.router_agent import run_router
+    from backend.tools.field_mapper import normalize_case_data
+
+    raw_text = str(body.get("text") or "").strip()
+    case_data = body.get("case_data") or {}
+
+    # Build input: prefer structured case_data, fallback to wrapping raw text
+    if not case_data and raw_text:
+        case_data = {
+            "source_type": "free_text",
+            "raw_user_input": raw_text,
+            "narrative": raw_text,
+        }
+    elif raw_text and isinstance(case_data, dict):
+        case_data.setdefault("raw_user_input", raw_text)
+        case_data.setdefault("source_type", "free_text")
+
+    try:
+        normalized = normalize_case_data(case_data)
+        result = run_router(normalized)
+        router_dict = result.to_dict()
+
+        # Build detected-fields summary for the UI
+        validated = result.validated_input or {}
+        sai = validated.get("SuspiciousActivityInformation") or {}
+        subject = validated.get("subject") or {}
+        amount = (sai.get("26_AmountInvolved") or {}).get("amount_usd") or 0
+        dr = sai.get("27_DateOrDateRange") or {}
+        act_cats = [
+            k.split("_", 1)[-1].replace("_", " ").title()
+            for k in ("29_Structuring", "30_TerroristFinancing", "31_Fraud", "33_MoneyLaundering", "35_OtherSuspiciousActivities")
+            if sai.get(k)
+        ]
+        router_dict["detected"] = {
+            "subject_name": subject.get("name") or "",
+            "amount": float(amount),
+            "date_from": dr.get("from") or "",
+            "date_to": dr.get("to") or "",
+            "activity_types": act_cats,
+        }
+        return router_dict
+    except Exception as exc:
+        from loguru import logger
+        logger.warning("router/analyze failed: {}", exc)
+        return {
+            "report_type": "SAR",
+            "report_types": ["SAR"],
+            "confidence_score": 0.0,
+            "reasoning": "",
+            "kb_status": "UNKNOWN",
+            "missing_fields": [],
+            "missing_field_prompts": {},
+            "detected": {},
+            "error": str(exc),
+        }
+
+
 @router.post("/reports/submit")
 async def submit_report(submission: ReportSubmission, background_tasks: BackgroundTasks):
     job_id = str(uuid.uuid4())
     db = SupabaseClient()
     db.create_job(job_id=job_id, input_data=submission.transaction_data)
     background_tasks.add_task(run_crew_workflow, job_id, submission.transaction_data)
-    return {"job_id": job_id, "status": "submitted", "message": "Report generation started"}
+    return {"job_id": job_id, "status": "pending", "message": "Report generation started"}
 
 
 @router.get("/reports/{job_id}/status")
@@ -155,26 +141,7 @@ async def download_report(job_id: uuid.UUID, report_type: str | None = None):
         raise HTTPException(status_code=400, detail=f"Status: {job['status']}")
     if not job.get("result"):
         raise HTTPException(status_code=400, detail="Report not ready")
-
-    result = job.get("result", {})
-    final = result.get("final", {})
-    validation = result.get("validation") if isinstance(result.get("validation"), dict) else {}
-    if not validation and isinstance(final.get("validation_report"), dict):
-        validation = final.get("validation_report")
-
-    final_status = str(final.get("status") or "").lower()
-    if final_status == "needs_review" or validation.get("approval_flag") is False:
-        raise HTTPException(
-            status_code=409,
-            detail={
-                "status": "needs_review",
-                "message": final.get("message") or "Validation did not pass; filing was skipped.",
-                "validation_status": validation.get("status"),
-                "issues": validation.get("issues", []),
-                "violations": validation.get("violations", []),
-            },
-        )
-
+    final = job.get("result", {}).get("final", {})
     pdf_path = None
     case_id = "report"
     resolved_type = "SAR"
@@ -182,25 +149,14 @@ async def download_report(job_id: uuid.UUID, report_type: str | None = None):
     # BOTH scenario.
     if isinstance(final.get("reports"), list):
         wanted = (report_type or "SAR").upper()
-        selected = None
         for item in final["reports"]:
             if (item or {}).get("report_type", "").upper() == wanted:
-                selected = item or {}
-                pdf_path = selected.get("pdf_path")
-                case_id = selected.get("case_id", "report")
+                pdf_path = (item or {}).get("pdf_path")
+                case_id = (item or {}).get("case_id", "report")
                 resolved_type = wanted
                 break
-        if not selected:
+        if not pdf_path:
             raise HTTPException(status_code=404, detail=f"No {wanted} report found for this job")
-        selected_status = str(selected.get("status") or "").lower()
-        if selected_status and selected_status not in {"success", "completed"}:
-            raise HTTPException(
-                status_code=409,
-                detail={
-                    "status": selected_status,
-                    "message": f"{wanted} report is not filed yet.",
-                },
-            )
     else:
         # Single report.
         pdf_path = final.get("pdf_path")
@@ -208,13 +164,7 @@ async def download_report(job_id: uuid.UUID, report_type: str | None = None):
         resolved_type = final.get("report_type", report_type or "SAR")
 
     if not pdf_path or not os.path.exists(pdf_path):
-        raise HTTPException(
-            status_code=404,
-            detail={
-                "status": final_status or "unknown",
-                "message": "PDF file not found for this job.",
-            },
-        )
+        raise HTTPException(status_code=404, detail="PDF file not found")
     return FileResponse(
         pdf_path,
         media_type="application/pdf",
@@ -260,205 +210,120 @@ async def file_report_direct(
 
 
 @router.get("/cases/list")
-async def list_cases(
-    status: str | None = None,
-    report_type: str | None = None,
-    query: str | None = None,
-    limit: int = 100,
-):
+async def list_cases(status: str | None = None, report_type: str | None = None, query: str | None = None):
     db = SupabaseClient()
-    rows = db.list_jobs(limit=min(max(limit, 1), 500))
-    cases = [_build_case_summary(row, include_result=False) for row in rows]
-
-    if status and status.lower() != "all":
-        wanted = status.lower()
-        cases = [c for c in cases if str(c.get("status", "")).lower() == wanted]
-
-    if report_type and report_type.lower() != "all":
-        wanted_type = report_type.upper()
-        cases = [c for c in cases if wanted_type in (c.get("report_types") or [])]
-
+    jobs = db.list_jobs(limit=200, status=status)
+    cases = []
+    for job in jobs:
+        result = job.get("result") or {}
+        router_result = result.get("router") or {}
+        aggregators = result.get("aggregator_by_type") or {}
+        if "SAR" in aggregators:
+            aggregator = aggregators["SAR"] or {}
+        elif "CTR" in aggregators:
+            aggregator = aggregators["CTR"] or {}
+        else:
+            aggregator = result.get("aggregator") or {}
+        final = result.get("final") or {}
+        final_status = str(final.get("status", "")).lower() if isinstance(final, dict) else ""
+        effective_status = "needs_review" if final_status == "needs_review" else job["status"]
+        case_id = (
+            final.get("case_id")
+            or (final.get("reports") or [{}])[0].get("case_id")
+            or aggregator.get("case_id")
+            or job["job_id"]
+        )
+        types = router_result.get("report_types") or []
+        report_type_str = "BOTH" if len(types) > 1 else (types[0] if types else "-")
+        risk_score = float(aggregator.get("risk_score") or 0)
+        if risk_score > 1:
+            risk_score = risk_score / 100.0
+        cases.append({
+            "job_id": job["job_id"],
+            "case_id": case_id,
+            "subject_name": aggregator.get("customer_name", "Unknown"),
+            "amount_usd": float(aggregator.get("total_amount_involved") or router_result.get("total_cash_amount") or 0),
+            "status": effective_status,
+            "report_types": types,
+            "report_type": report_type_str,
+            "risk_score": risk_score,
+            "created_at": job.get("created_at"),
+            "current_agent": job.get("current_agent"),
+            "progress": job.get("progress", 0),
+            "result": result,
+        })
+    if report_type and report_type != "All":
+        cases = [c for c in cases if report_type in (c.get("report_types") or [])]
     if query:
-        needle = query.strip().lower()
-        if needle:
-            cases = [
-                c
-                for c in cases
-                if needle in str(c.get("case_id", "")).lower()
-                or needle in str(c.get("subject_name", "")).lower()
-                or needle in str(c.get("job_id", "")).lower()
-            ]
-
-    return {"cases": cases}
+        q = query.strip().lower()
+        cases = [c for c in cases if q in str(c.get("case_id", "")).lower() or q in str(c.get("subject_name", "")).lower()]
+    return cases
 
 
 @router.get("/cases/recent")
-async def recent_cases(limit: int = 10):
+async def get_recent_cases(limit: int = 10):
     db = SupabaseClient()
-    rows = db.list_jobs(limit=min(max(limit, 1), 100))
-    return {"cases": [_build_case_summary(row, include_result=False) for row in rows]}
+    jobs = db.list_jobs(limit=limit)
+    return jobs[:limit]
 
 
 @router.get("/cases/{case_id}")
-async def case_details(case_id: str):
+async def get_case(case_id: str):
     db = SupabaseClient()
-    try:
-        uuid.UUID(case_id)
-        row = db.get_job(case_id)
-        if row:
-            return _build_case_summary(row, include_result=True)
-    except ValueError:
-        pass
-
-    rows = db.list_jobs(limit=500)
-    needle = case_id.strip().lower()
-    for row in rows:
-        summary = _build_case_summary(row, include_result=True)
-        if str(summary.get("case_id", "")).lower() == needle:
-            return summary
-    raise HTTPException(status_code=404, detail="Case not found")
+    job = db.get_job(case_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Case not found")
+    return job
 
 
-@router.get("/reports/list")
-async def list_reports(
-    report_type: str | None = None,
-    status: str | None = None,
-    query: str | None = None,
-    limit: int = 100,
-):
-    db = SupabaseClient()
-    rows = db.list_jobs(limit=min(max(limit, 1), 500))
-    reports: List[Dict[str, Any]] = []
-
-    for row in rows:
-        result = row.get("result") if isinstance(row.get("result"), dict) else {}
-        final = result.get("final") if isinstance(result.get("final"), dict) else {}
-        case_id = _extract_case_id(row)
-
-        if isinstance(final.get("reports"), list):
-            for item in final["reports"]:
-                if not isinstance(item, dict):
-                    continue
-                rtype = str(item.get("report_type", "SAR")).upper()
-                report_status = str(item.get("status") or row.get("status") or "unknown").lower()
-                reports.append(
-                    {
-                        "job_id": row.get("job_id"),
-                        "case_id": item.get("case_id", case_id),
-                        "report_type": rtype,
-                        "filename": f"{rtype}_{item.get('case_id', case_id)}.pdf",
-                        "pdf_path": item.get("pdf_path"),
-                        "fields_filled": item.get("fields_filled", 0),
-                        "attempted_fields": item.get("attempted_fields"),
-                        "template_field_count": item.get("template_field_count"),
-                        "template_path": item.get("template_path"),
-                        "template_variant": item.get("template_variant"),
-                        "generated_at": item.get("generated_at"),
-                        "status": report_status,
-                    }
-                )
-        elif final.get("pdf_path"):
-            rtype = str(final.get("report_type", "SAR")).upper()
-            report_status = str(final.get("status") or row.get("status") or "unknown").lower()
-            reports.append(
-                {
-                    "job_id": row.get("job_id"),
-                    "case_id": final.get("case_id", case_id),
-                    "report_type": rtype,
-                    "filename": f"{rtype}_{final.get('case_id', case_id)}.pdf",
-                    "pdf_path": final.get("pdf_path"),
-                    "fields_filled": final.get("fields_filled", 0),
-                    "attempted_fields": final.get("attempted_fields"),
-                    "template_field_count": final.get("template_field_count"),
-                    "template_path": final.get("template_path"),
-                    "template_variant": final.get("template_variant"),
-                    "generated_at": final.get("generated_at"),
-                    "status": report_status,
-                }
-            )
-
-    if report_type and report_type.lower() != "all":
-        wanted_type = report_type.upper()
-        reports = [r for r in reports if str(r.get("report_type", "")).upper() == wanted_type]
-
-    if status and status.lower() != "all":
-        wanted_status = status.lower()
-        reports = [r for r in reports if str(r.get("status", "")).lower() == wanted_status]
-
-    if query:
-        needle = query.strip().lower()
-        if needle:
-            reports = [
-                r
-                for r in reports
-                if needle in str(r.get("case_id", "")).lower()
-                or needle in str(r.get("filename", "")).lower()
-                or needle in str(r.get("job_id", "")).lower()
-            ]
-
-    return {"reports": reports[:limit]}
+def _avg_processing_minutes(completed_jobs: list) -> float:
+    """Return average processing time in minutes for completed jobs."""
+    from datetime import datetime, timezone
+    deltas = []
+    for j in completed_jobs:
+        try:
+            created = datetime.fromisoformat(j["created_at"].replace("Z", "+00:00"))
+            updated = datetime.fromisoformat(j["updated_at"].replace("Z", "+00:00"))
+            delta_minutes = (updated - created).total_seconds() / 60
+            if 0 < delta_minutes < 1440:  # ignore outliers > 24h
+                deltas.append(delta_minutes)
+        except Exception:
+            continue
+    return round(sum(deltas) / len(deltas), 1) if deltas else 0.0
 
 
 @router.get("/dashboard/metrics")
-async def dashboard_metrics(limit: int = 200):
-    now = time.time()
-    cached = _METRICS_CACHE.get("value")
-    if cached is not None and (now - float(_METRICS_CACHE.get("ts", 0.0)) < 15):
-        return cached
-
+async def get_dashboard_metrics():
     db = SupabaseClient()
-    try:
-        rows = db.list_jobs(limit=min(max(limit, 50), 500))
-        cases = [_build_case_summary(row, include_result=False) for row in rows]
-    except Exception:
-        # Return stale cache when available; otherwise return a lightweight empty payload.
-        if cached is not None:
-            return cached
-        return {
-            "total_cases": 0,
-            "active_cases": 0,
-            "pending_reviews": 0,
-            "reports_generated": 0,
-            "avg_processing_hours": 0.0,
-            "sar_count": 0,
-            "ctr_count": 0,
-            "status_distribution": {"submitted": 0, "processing": 0, "completed": 0, "failed": 0},
-            "agent_performance": [],
-        }
-
-    completed = [c for c in cases if c.get("status") == "completed"]
-    active = [c for c in cases if c.get("status") in {"submitted", "processing"}]
-    pending_reviews = [c for c in cases if c.get("status") in {"needs_review", "failed"}]
-    sar_count = sum(1 for c in cases if "SAR" in (c.get("report_types") or []))
-    ctr_count = sum(1 for c in cases if "CTR" in (c.get("report_types") or []))
-
+    jobs = db.list_jobs(limit=500)
+    completed = [j for j in jobs if j["status"] == "completed"]
+    active = [j for j in jobs if j["status"] in {"submitted", "processing"}]
+    pending_reviews = [j for j in jobs if j["status"] in {"needs_review", "failed"}]
     status_distribution = {
-        "submitted": sum(1 for c in cases if c.get("status") == "submitted"),
-        "processing": sum(1 for c in cases if c.get("status") == "processing"),
+        "submitted": sum(1 for j in jobs if j["status"] == "submitted"),
+        "processing": sum(1 for j in jobs if j["status"] == "processing"),
         "completed": len(completed),
-        "failed": sum(1 for c in cases if c.get("status") == "failed"),
+        "failed": sum(1 for j in jobs if j["status"] == "failed"),
     }
-
-    payload = {
-        "total_cases": len(cases),
+    sar_count = sum(1 for j in jobs if "SAR" in ((j.get("result") or {}).get("router", {}).get("report_types") or []))
+    ctr_count = sum(1 for j in jobs if "CTR" in ((j.get("result") or {}).get("router", {}).get("report_types") or []))
+    return {
+        "total_cases": len(jobs),
         "active_cases": len(active),
         "pending_reviews": len(pending_reviews),
         "reports_generated": len(completed),
-        "avg_processing_hours": 4.2,
+        "avg_processing_minutes": _avg_processing_minutes(completed),
         "sar_count": sar_count,
         "ctr_count": ctr_count,
         "status_distribution": status_distribution,
         "agent_performance": [
-            {"agent": "Router", "avg_time": "2.3s", "success_rate": 99.0, "cases_processed": len(cases)},
-            {"agent": "Aggregator", "avg_time": "5.4s", "success_rate": 98.5, "cases_processed": len(cases)},
-            {"agent": "Narrative", "avg_time": "7.2s", "success_rate": 96.8, "cases_processed": len(cases)},
-            {"agent": "Validator", "avg_time": "3.8s", "success_rate": 97.4, "cases_processed": len(cases)},
-            {"agent": "Filer", "avg_time": "6.0s", "success_rate": 98.1, "cases_processed": len(cases)},
+            {"agent": "Router", "avg_time": "2.3s", "success_rate": 99.0, "cases_processed": len(jobs)},
+            {"agent": "Aggregator", "avg_time": "5.4s", "success_rate": 98.5, "cases_processed": len(jobs)},
+            {"agent": "Narrative", "avg_time": "7.2s", "success_rate": 96.8, "cases_processed": len(jobs)},
+            {"agent": "Validator", "avg_time": "3.8s", "success_rate": 97.4, "cases_processed": len(jobs)},
+            {"agent": "Filer", "avg_time": "6.0s", "success_rate": 98.1, "cases_processed": len(jobs)},
         ],
     }
-    _METRICS_CACHE["ts"] = now
-    _METRICS_CACHE["value"] = payload
-    return payload
 
 
 @router.get("/kb/search")

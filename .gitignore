@@ -1,7 +1,8 @@
+# macOS
 .DS_Store
 Thumbs.db
 
-# Env/secrets
+# Environment & secrets
 .env
 .env.*
 !.env.example
@@ -21,6 +22,12 @@ env/
 .ruff_cache/
 .coverage
 htmlcov/
+dist/
+build/
+
+# Generated PDFs
+outputs/
+data/output/
 
 # Logs
 logs/
@@ -32,3 +39,6 @@ logs/
 # Editors/IDEs
 .vscode/
 .idea/
+
+# Streamlit
+.streamlit/secrets.toml

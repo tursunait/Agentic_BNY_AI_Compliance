@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-004",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "North Korea — NKSR",
+  "institution": {
+    "name": "Pacific Coast Bank",
+    "type": "Bank",
+    "address": "800 Wilshire Blvd",
+    "city": "Los Angeles",
+    "state": "CA",
+    "postal_code": "90017",
+    "country": "United States",
+    "contact_person": "David Park",
+    "telephone": "213-555-0333",
+    "email": "dpark@pacificcoastbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "8750.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-01",
+    "date_of_rejection": "2026-03-01",
+    "program_or_reason": "North Korea Sanctions Regulations (NKSR), 31 C.F.R. Part 510",
+    "originator_name_address": "Sunrise Trading Co., 1500 S Broadway, Los Angeles, CA 90015, United States",
+    "originating_fi": "Pacific Coast Bank, 800 Wilshire Blvd, Los Angeles, CA 90017, United States",
+    "intermediary_fi": "Bank of China, Beijing, China",
+    "beneficiary_fi": "Korea Kwangson Banking Corp., Pyongyang, North Korea",
+    "beneficiary_name_address": "DPRK Minerals Export Office, Pyongyang, North Korea",
+    "additional_relevant_info": "Customer requested wire for \"consulting services\"; screening flagged DPRK nexus.",
+    "additional_data": "OBI: consulting fee Q1 2026"
+  },
+  "preparer": {
+    "name": "David Park",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-02"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country North Korea (DPRK); intermediary routing through sanctioned jurisdiction",
+    "sanctions_nexus": "Beneficiary and beneficiary FI located in North Korea; NKSR prohibits virtually all financial transactions involving DPRK",
+    "documents_reviewed": [
+      "Wire instruction and payment message",
+      "Customer onboarding and transaction purpose form",
+      "Sanctions screening output and OFAC lookup"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

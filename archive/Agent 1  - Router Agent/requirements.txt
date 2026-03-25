@@ -1,0 +1,23 @@
+fastapi[all]>=0.109.0
+crewai>=0.80.0
+weaviate-client>=3.24.0
+psycopg2-binary>=2.9.9
+redis>=5.0.0
+pydantic>=2.6.1
+python-dotenv>=1.0.0
+pydantic-settings>=2.12.0
+loguru>=0.7.2
+pytest>=8.0.0
+openai>=1.13.3
+langchain>=0.2.0
+reportlab>=4.0.0
+pdfrw>=0.4
+httpx>=0.26.0
+setuptools>=69.0.0,<81
+streamlit>=1.31.0
+requests>=2.31.0
+plotly>=5.18.0
+pandas>=2.1.0
+pillow>=10.2.0
+# Optional: playwright for web scraping (install after main deps, then run: playwright install)
+# playwright>=1.41.0

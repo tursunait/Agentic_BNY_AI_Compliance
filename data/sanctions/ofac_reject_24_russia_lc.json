@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-024",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Russia — E.O. 14024",
+  "institution": {
+    "name": "Harbor National Bank",
+    "type": "Bank",
+    "address": "50 Congress St",
+    "city": "Boston",
+    "state": "MA",
+    "postal_code": "02109",
+    "country": "United States",
+    "contact_person": "Edward Walsh",
+    "telephone": "617-555-1014",
+    "email": "ewalsh@harbornational.com"
+  },
+  "transaction": {
+    "amount_rejected": "180000.00",
+    "currency": "USD",
+    "transaction_type": "Letter of credit payment (documentary)",
+    "date_of_transaction": "2026-03-04",
+    "date_of_rejection": "2026-03-04",
+    "program_or_reason": "Russia Harmful Foreign Activities Sanctions (E.O. 14024); issuing bank designated",
+    "originator_name_address": "Boston Machinery Inc., 100 Congress St, Boston, MA 02110, United States",
+    "originating_fi": "Harbor National Bank, 50 Congress St, Boston, MA 02109, United States",
+    "intermediary_fi": "Advising bank: European bank",
+    "beneficiary_fi": "Gazprombank, Moscow, Russia",
+    "beneficiary_name_address": "Russian Industrial Equipment Ltd, Moscow, Russia",
+    "additional_relevant_info": "LC issued by Russian bank (designated). Payment against documents would have been to blocked entity.",
+    "additional_data": "LC HNB-2026-LC-100; presentation 20260304"
+  },
+  "preparer": {
+    "name": "Edward Walsh",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-05"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — LC issuing bank and beneficiary Russia-designated",
+    "sanctions_nexus": "Honoring presentation would facilitate payment to designated Russian entity; rejected",
+    "documents_reviewed": [
+      "LC terms and presented documents",
+      "OFAC CAPTA/SDN check",
+      "Customer trade file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

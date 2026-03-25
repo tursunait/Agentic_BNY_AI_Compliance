@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(find /Users/tusunaiturumbekova/Desktop/Capstone/Agentic_BNY_AI_Compliance/data -type f -not -path */__pycache__/*)",
+      "Bash(git stash:*)",
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "Bash(.venv/bin/python scripts/ingest_regulation_json.py --input knowledge_base/regulations/sar_filing_instructions.json)",
+      "Bash(.venv/bin/python scripts/ingest_regulation_json.py --input knowledge_base/regulations/ctr_filing_instructions.json)",
+      "Bash(.venv/bin/python scripts/ingest_narrative_examples.py --input knowledge_base/narratives/sar_narrative_examples.json)"
+    ]
+  }
+}

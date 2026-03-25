@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-020",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Cuba — CACR",
+  "institution": {
+    "name": "Tropical Commerce Bank",
+    "type": "Bank",
+    "address": "801 Brickell Ave",
+    "city": "Miami",
+    "state": "FL",
+    "postal_code": "33131",
+    "country": "United States",
+    "contact_person": "Rosa Diaz",
+    "telephone": "305-555-1010",
+    "email": "rdiaz@tropicalcommerce.com"
+  },
+  "transaction": {
+    "amount_rejected": "45000.00",
+    "currency": "USD",
+    "transaction_type": "Outbound wire transfer",
+    "date_of_transaction": "2026-03-18",
+    "date_of_rejection": "2026-03-18",
+    "program_or_reason": "Cuba Assets Control Regulations (CACR), 31 C.F.R. Part 515",
+    "originator_name_address": "Caribbean Trade Solutions Inc., 900 Brickell Ave, Miami, FL 33131, United States",
+    "originating_fi": "Tropical Commerce Bank, 801 Brickell Ave, Miami, FL 33131, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Banco Central de Cuba, Havana, Cuba",
+    "beneficiary_name_address": "Cuban State Trading Company, Havana, Cuba",
+    "additional_relevant_info": "Payment for authorized medical device sale; financing path required Cuban bank. CACR restrictions; no license; rejected.",
+    "additional_data": "SWIFT MT103; Ref CUB-MED-2026-02"
+  },
+  "preparer": {
+    "name": "Rosa Diaz",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-19"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary country Cuba; beneficiary FI is Cuban government entity",
+    "sanctions_nexus": "Payment would have been to Cuban state entity; CACR prohibits unless licensed",
+    "documents_reviewed": [
+      "Wire instruction and export documentation",
+      "OFAC license search (none applicable)",
+      "Sanctions screening log"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

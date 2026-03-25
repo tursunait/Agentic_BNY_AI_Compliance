@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-021",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Venezuela — E.O. 13850 / 13884",
+  "institution": {
+    "name": "Sunshine Bank of Florida",
+    "type": "Bank",
+    "address": "200 S Orange Ave",
+    "city": "Orlando",
+    "state": "FL",
+    "postal_code": "32801",
+    "country": "United States",
+    "contact_person": "Miguel Santos",
+    "telephone": "407-555-1011",
+    "email": "msantos@sunshinebankfl.com"
+  },
+  "transaction": {
+    "amount_rejected": "18500.00",
+    "currency": "USD",
+    "transaction_type": "ACH credit",
+    "date_of_transaction": "2026-03-02",
+    "date_of_rejection": "2026-03-02",
+    "program_or_reason": "Venezuela-related Sanctions, 31 C.F.R. Part 591 (E.O. 13850, 13884)",
+    "originator_name_address": "Orlando Medical Supply Co., 300 S Orange Ave, Orlando, FL 32801, United States",
+    "originating_fi": "Sunshine Bank of Florida, 200 S Orange Ave, Orlando, FL 32801, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Banco del Tesoro, Caracas, Venezuela",
+    "beneficiary_name_address": "Venezuelan Health Ministry Supplier, Caracas, Venezuela",
+    "additional_relevant_info": "Payment for medical supplies. Banco del Tesoro designated; ACH rejected.",
+    "additional_data": "ACH 20260302-7788"
+  },
+  "preparer": {
+    "name": "Miguel Santos",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-03-03"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary bank matched Venezuela sanctions list",
+    "sanctions_nexus": "Beneficiary FI is designated under Venezuela sanctions; transaction would involve blocked entity",
+    "documents_reviewed": [
+      "ACH batch and invoice",
+      "OFAC SSI/SDN search",
+      "Customer vendor file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

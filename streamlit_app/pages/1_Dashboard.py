@@ -60,7 +60,8 @@ with m2:
 with m3:
     render_metric_card("CTRs", str(metrics.get("ctr_count", 0)))
 with m4:
-    render_metric_card("Avg Time", f"{metrics.get('avg_processing_hours', 0):.1f}h")
+    avg_min = metrics.get("avg_processing_minutes", 0)
+    render_metric_card("Avg Time", f"{avg_min:.1f} min" if avg_min else "N/A")
 
 status_dist = metrics.get("status_distribution", {})
 status_df = pd.DataFrame(

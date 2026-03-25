@@ -11,22 +11,22 @@ from crewai import Agent, Crew, LLM, Process, Task
 from loguru import logger
 
 from backend.config.settings import settings
-from backend.agents.narrative_schemas import validate_input, validate_output
 
 
 class NarrativeKnowledgeBaseError(RuntimeError):
     """Raised when narrative guidance cannot be loaded from Supabase."""
 
 
-def _fallback_guidance_context(report_type_code: str) -> Tuple[str, str]:
-    code = (report_type_code or "SAR").upper()
-    instructions = (
-        f"Use only facts present in the input payload for {code}. "
-        "Include who/what/when/where/why/how, amounts, date range, and clear suspicious rationale. "
-        "Do not invent missing values; if unknown, state that explicitly."
-    )
-    return instructions, ""
-
+def _validate_input(data: Dict[str, Any], report_type_code: str = "SAR") -> Dict[str, Any]:
+    # OFAC rejection reports use a different payload structure — they don't have
+    # SuspiciousActivityInformation or a standard case_id/subject layout.
+    if report_type_code.upper() == "OFAC_REJECT":
+        return data
+    required = {"case_id", "subject", "SuspiciousActivityInformation"}
+    missing = required - set(data.keys())
+    if missing:
+        raise ValueError(f"Input missing required keys: {sorted(missing)}")
+    return data
 
 
 def _supabase_rest_url() -> str:
@@ -51,10 +51,7 @@ def _supabase_headers() -> Dict[str, str]:
 
 def _supabase_get(table: str, params: Dict[str, str]) -> List[Dict[str, Any]]:
     url = f"{_supabase_rest_url()}/{table}"
-    try:
-        response = requests.get(url, headers=_supabase_headers(), params=params, timeout=6)
-    except requests.RequestException as exc:
-        raise NarrativeKnowledgeBaseError(f"Failed to fetch {table}: {exc}") from exc
+    response = requests.get(url, headers=_supabase_headers(), params=params, timeout=20)
     if not response.ok:
         raise NarrativeKnowledgeBaseError(
             f"Failed to fetch {table}: {response.status_code} {response.text}"
@@ -80,26 +77,9 @@ def _coerce_json(value: Any) -> Any:
 def _fetch_report_type_row(report_type_code: str) -> Dict[str, Any]:
     code = (report_type_code or "SAR").upper()
     attempts = [
-        {
-            "select": "report_type,narrative_required,narrative_instructions,json_schema",
-            "report_type": f"eq.{code}",
-            "limit": "1",
-        },
-        {
-            "select": "report_type,narrative_instructions,json_schema",
-            "report_type": f"eq.{code}",
-            "limit": "1",
-        },
-        {
-            "select": "report_type_code,narrative_required,narrative_instructions,json_schema",
-            "report_type_code": f"eq.{code}",
-            "limit": "1",
-        },
-        {
-            "select": "report_type_code,narrative_instructions,json_schema",
-            "report_type_code": f"eq.{code}",
-            "limit": "1",
-        },
+        {"select": "*", "report_type": f"eq.{code}", "limit": "1"},
+        {"select": "*", "report_type_code": f"eq.{code}", "limit": "1"},
+        {"select": "*", "limit": "1"},
     ]
 
     last_exc: Exception | None = None
@@ -151,15 +131,7 @@ def _fetch_narrative_examples(report_type_code: str) -> List[Dict[str, Any]]:
 
 
 def _build_guidance_context(report_type_code: str) -> Tuple[str, str]:
-    try:
-        row = _fetch_report_type_row(report_type_code)
-    except Exception as exc:
-        logger.warning(
-            "Narrative guidance fallback activated for {}: {}",
-            report_type_code,
-            exc,
-        )
-        return _fallback_guidance_context(report_type_code)
+    row = _fetch_report_type_row(report_type_code)
 
     instruction_parts: List[str] = []
     instructions = (row.get("narrative_instructions") or "").strip()
@@ -173,12 +145,7 @@ def _build_guidance_context(report_type_code: str) -> Tuple[str, str]:
             instruction_parts.append("Additional narrative guidance from schema:")
             instruction_parts.extend([f"- {item}" for item in guidance if item])
 
-    try:
-        examples_rows = _fetch_narrative_examples(report_type_code)
-    except Exception as exc:
-        logger.warning("Narrative examples unavailable for {}: {}", report_type_code, exc)
-        examples_rows = []
-
+    examples_rows = _fetch_narrative_examples(report_type_code)
     example_chunks: List[str] = []
     for idx, row in enumerate(examples_rows, 1):
         summary = (row.get("summary") or "").strip()
@@ -198,8 +165,6 @@ def _build_guidance_context(report_type_code: str) -> Tuple[str, str]:
 
     instructions_text = "\n\n".join(instruction_parts).strip()
     examples_text = "\n".join(example_chunks).strip()
-    if not instructions_text and not examples_text:
-        return _fallback_guidance_context(report_type_code)
     return instructions_text, examples_text
 
 
@@ -231,11 +196,10 @@ def _parse_narrative_output(raw_output: str) -> str:
     if match:
         text = match.group(0)
     data = json.loads(text)
-    parsed = validate_output(data)
-    narrative = parsed.narrative.strip()
-    if not narrative:
+    narrative = data.get("narrative")
+    if not isinstance(narrative, str) or not narrative.strip():
         raise ValueError("Narrative output missing required 'narrative' text.")
-    return narrative
+    return narrative.strip()
 
 
 def generate_narrative_payload(
@@ -256,21 +220,38 @@ def generate_narrative_payload(
         "regulations_cited": [...]
       }
     """
-    validate_input(input_data)
     report_code = (report_type_code or "SAR").upper()
+    _validate_input(input_data, report_type_code=report_code)
 
     llm = LLM(
         model="openai/gpt-4o-mini",
         temperature=0.2,
         max_tokens=2200,
+        api_key=settings.OPENAI_API_KEY,
     )
-    agent = Agent(
-        role="SAR Narrative Writer",
-        goal="Write accurate, factual narratives using only the provided suspicious activity data.",
-        backstory=(
+    if report_code == "OFAC_REJECT":
+        agent_role = "OFAC Rejection Report Narrative Writer"
+        agent_goal = (
+            "Write accurate, factual narratives for OFAC sanctions rejection reports "
+            "using only the provided transaction and sanctions data."
+        )
+        agent_backstory = (
+            "You are a compliance analyst drafting OFAC rejection report narratives. "
+            "You describe the rejected wire transfer, the sanctioned party, the sanctions "
+            "program invoked, and the disposition — using only facts from the input JSON. "
+            "You never invent names, amounts, dates, or events not explicitly provided."
+        )
+    else:
+        agent_role = "SAR Narrative Writer"
+        agent_goal = "Write accurate, factual narratives using only the provided suspicious activity data."
+        agent_backstory = (
             "You are a compliance analyst drafting SAR narratives. You never invent "
             "names, dates, amounts, accounts, or events not explicitly provided."
-        ),
+        )
+    agent = Agent(
+        role=agent_role,
+        goal=agent_goal,
+        backstory=agent_backstory,
         llm=llm,
         verbose=verbose,
         allow_delegation=False,

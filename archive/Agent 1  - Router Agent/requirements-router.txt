@@ -1,0 +1,14 @@
+# Minimal deps for router_agent only (Streamlit + CrewAI + OpenAI + Supabase REST)
+# backend.config.settings is imported and requires sqlalchemy
+streamlit>=1.31.0
+crewai>=0.80.0
+openai>=1.13.3
+requests>=2.31.0
+pydantic>=2.6.1
+pydantic-settings>=2.12.0
+python-dotenv>=1.0.0
+loguru>=0.7.2
+httpx>=0.26.0
+sqlalchemy>=2.0.0
+redis>=5.0.0
+weaviate-client>=3.24.0

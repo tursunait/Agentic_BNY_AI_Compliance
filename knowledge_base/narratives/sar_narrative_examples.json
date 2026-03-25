@@ -1,240 +1,99 @@
 {
-  "collection_name": "SAR Narrative Examples - Sufficient and Complete",
-  "source_document": "FinCEN SAR Narrative Guidance",
-  "purpose": "Training examples for narrative generation - only sufficient/complete narratives included",
-  "last_updated": "2025-02-16",
+  "collection": "sar_narrative_examples",
+  "version": "1.0",
+  "last_updated": "2025-01-01",
+  "description": "High-quality SAR narrative examples for BNY Mellon AI Compliance system",
   "examples": [
     {
-      "example_id": "DEP-INST-001",
-      "filing_institution_type": "Depository Institution",
+      "example_id": "SAR-NAR-001",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["structuring", "money_laundering", "informal_value_transfer"],
-      "key_features": [
-        "includes_investigation_number",
-        "specific_dates_and_amounts",
-        "clear_chronology",
-        "source_and_destination_of_funds",
-        "due_diligence_documented",
-        "action_taken_stated"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["structuring", "money_laundering"],
+      "key_features": ["multiple transactions below CTR threshold", "rapid fund movement", "no lawful purpose stated", "subject declined to explain"],
       "amounts_involved": {
-        "total_usd": 225000.0,
-        "transaction_count": 9,
-        "wire_transfers": 225000.0,
-        "cash_deposits": 50000.0
+        "total_usd": 25500.00,
+        "transaction_count": 3
       },
-      "why_sufficient": "Well-written summary with internal reference number, specific transaction details, source/application of funds, due diligence steps documented, and disposition stated",
-      "narrative_text": "Investigation case number: A5678910. The customer, a grocery store and its owner, are suspected of intentionally structuring cash deposits to circumvent federal reporting requirements. The customer is also engaged in activity indicative of an informal value transfer operation: deposits of bulk cash, third party out of state personal checks and money orders, and engaging in aggregate wire transfers to Dubai, UAE. The type and volume of activity observed is non-commensurate with the customer's expected business volume and deviates from the normal volume of similar types of businesses located in the same area as the customer. Investigative activities are continuing. Our bank has elected to directly contact law enforcement concerning this matter along with filing this SAR.\n\nJohn Doe opened a personal checking account, #12345-6789, in March of 1994. Doe indicated that he was born in Yemen, presented a Virginia driver's license as identification, and claimed he was the self-employed owner of a grocery store identified as Acme, Inc. A business checking account, #23456-7891, was opened in January of 1998 for Acme, Inc.\n\nBetween January 17, 2003, and March 21, 2003, John Doe was the originator of nine wires totaling $225,000. The wire transfers were always conducted at the end of each week in the amount of $25,000. All of the wires were remitted to the Bank of Anan in Dubai, UAE, to benefit Kulkutta Building Supply Company, account #3489728.\n\nReviews covering the period between January 2 and March 17, 2003, revealed that 13 deposits (consisting of cash, checks, money orders) totaling approximately $50,000 posted to the personal account. Individual amounts ranged between $1,500 and $9,500 and occurred on consecutive business days in several instances. A number of third-party out of state checks and money orders were also deposited into the account.\n\nA review of deposit activity on the Acme, Inc. account covering the same period revealed 33 deposits (consisting of cash, checks, money orders) totaling approximately $275,000. Individual amounts ranged between $4,446 and $9,729; however 22 of 33 deposits ranged between $9,150 and $9,980. It was further noted that in nine of 13 instances in which cash deposits were made to both accounts on the same day, the combined deposits of cash exceeded $10,000. The bank filed currency transaction reports to the IRS for all aggregate daily transactions exceeding $10,000.\n\nA search of the world wide web identified a website for Acme, Inc., which identified the company as a grocery store that provides remittance services to countries in the Middle East that includes Iran (an OFAC blocked country). Contact with the Virginia State Department of Banking indicates Acme, Inc. is not a licensed money wire transfer business. The bank will close this account because of the suspect nature of the transactions being conducted by John Doe.",
-      "writing_lessons": [
-        "Start with investigation case number for law enforcement reference",
-        "Open with clear summary of suspicious activity and patterns",
-        "Provide chronological account with specific dates and amounts",
-        "Detail source of funds and destination",
-        "Document due diligence steps taken (website search, state agency contact)",
-        "State actions being taken (account closure, law enforcement contact)",
-        "Explain why activity is suspicious (non-commensurate with business, pattern of structuring)",
-        "Include context (customer background, account opening details)"
-      ],
-      "structure_template": {
-        "section_1": "Investigation reference number + Summary statement",
-        "section_2": "Subject background and account details",
-        "section_3": "Chronological transaction details with dates and amounts",
-        "section_4": "Pattern analysis and red flags",
-        "section_5": "Due diligence steps taken",
-        "section_6": "Actions taken and disposition"
-      }
+      "why_sufficient": "Clearly identifies who, what, when, where, why, and how. Describes fund flow with account numbers. Explains specific red flags.",
+      "narrative_text": "This Suspicious Activity Report is filed to document a pattern of structured cash deposits and funds transfers by Global Trade Corp (customer ID C-94926), a retail-sector individual with a Medium risk rating, at BNY Mellon. Between March 15, 2024, and March 22, 2024, the subject conducted three transactions totaling $25,500, each deliberately kept below the $10,000 Currency Transaction Report threshold. On March 15, 2024, a cash deposit of $9,500 was made from account XXXXXX0001 in Miami, FL, immediately followed by a wire transfer to account XXXXXX0002. On March 18, 2024, a second cash deposit of $8,000 was made from account XXXXXX0001 and transferred to account XXXXXX0003. On March 22, 2024, a final funds transfer of $8,000 was executed to account XXXXXX0004. The subject declined to provide any explanation for the large cash deposits when questioned. The ML Risk Model v2 flagged this activity under Alert ALRT-78051 due to unusual cash patterns and multiple-day deposits. Adverse media indicates the subject is currently under investigation by law enforcement. The pattern of multiple sub-threshold transactions combined with the rapid movement of funds across multiple accounts and the subject's refusal to explain is consistent with structuring, money laundering, and transactions with no apparent lawful purpose under 31 U.S.C. 5313 and FinCEN guidance."
     },
     {
-      "example_id": "DEP-INST-002",
-      "filing_institution_type": "Depository Institution",
+      "example_id": "SAR-NAR-002",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["structuring"],
-      "key_features": [
-        "clear_purpose_statement",
-        "multiple_branch_coordination",
-        "specific_dates_and_amounts",
-        "pattern_documented",
-        "prior_activity_comparison",
-        "disposition_stated",
-        "supporting_docs_location"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["wire_fraud", "money_laundering"],
+      "key_features": ["high-volume wire transfers", "foreign counterparties", "round-dollar amounts", "inconsistent with account profile"],
       "amounts_involved": {
-        "total_usd": 58800.0,
-        "transaction_count": 12,
-        "cash_deposits": 58800.0,
-        "checks_written": 58800.0
+        "total_usd": 485000.00,
+        "transaction_count": 7
       },
-      "why_sufficient": "Clear support for SAR purpose, identifies dates/amounts/locations, compares to prior activity, notes disposition, identifies documentation location",
-      "narrative_text": "Doe's Auto Sales, commercial checking account #1234567, is being reported for unusual activity and structured cash deposits. Doe's Auto Sales operates as a small used car lot with an inventory of less than 10 vehicles at any given time. John Doe is the owner of Doe's Auto Sales and a signer on the account. Jane Doe is an additional signer. The account was opened in September 2002 at the Happy Valley branch in Anytown, CA.\n\nAccount activity is usually extremely limited and several months involve periods of no account activity. However, many suspicious and structured transactions were conducted in June 2003 at two different bank branches in Anytown. The cash deposits were conducted in a manner possibly to avoid filing a currency transaction report. The structured cash deposits were always conducted for $9,800 each. Immediately following each deposit, a check for $9,800 posted to the account, payable to Doe's Auto Sales. Those checks were deposited to an account at XYZ Bank, also located in Anytown.\n\nStructured cash deposits conducted in June 2003 were as follows: 06/03 $9,800; 06/04 $9,800; 06/09 $9,800; 06/10 $9,800; 06/11 $9,800; and 06/12 $9,800. The deposits on 06/03, 06/09, and 06/11 were completed at the Happy Valley branch by John Doe. The remaining deposits, on 06/04, 06/10, and 6/12, were conducted by Jane Doe at the Main Office branch.\n\nThe source of the cash deposited to the account is unknown. Checks posting to the account payable to Doe's Auto Sales and deposited at XYZ bank were as follows: 06/04 $9,800; 06/05 $9,800; 06/10 $9,800; 06/11 $9,800, 06/12 $9,800; and 06/13 $9,800. It is unknown what happened to the funds after the deposits to XYZ Bank.\n\nDue to the pattern and manner of recent transactions, it appears that the cash deposits to credit Doe's Auto Sales were structured to evade the reporting requirement of the Bank Secrecy Act. Additionally, the immediate movement of funds out of the bank to another financial institution in amounts slightly below $10,000 seems unusual. A review of prior transactions since the account opened revealed no similar type of activity or in such amounts. Therefore, this suspicious activity report is being submitted.\n\nThe bank will continue to monitor the account for further activity and file a supplemental SAR if required. All documentation obtained during this investigation is located in the case file, case #03-501, maintained by the bank's anti-money laundering department. Additional branch location address: Main Office branch- 100 West Happy Valley Street, Anytown, CA 12345.",
-      "writing_lessons": [
-        "Describe the business and its typical activity patterns",
-        "Contrast suspicious activity with normal behavior",
-        "List specific transactions with dates, amounts, locations, and actors",
-        "Note coordination between multiple individuals and branches",
-        "Explain the pattern (structured just below threshold)",
-        "Compare to historical account activity",
-        "State planned ongoing monitoring",
-        "Provide case file location for supporting documentation"
-      ],
-      "structure_template": {
-        "section_1": "Subject/account identification and business description",
-        "section_2": "Normal activity baseline",
-        "section_3": "Suspicious activity with specific transactions listed",
-        "section_4": "Pattern analysis and red flags",
-        "section_5": "Comparison to prior activity",
-        "section_6": "Conclusion and ongoing actions",
-        "section_7": "Documentation location"
-      }
+      "why_sufficient": "Details wire fraud typology with specific counterparty information. Explains why activity deviates from established customer profile.",
+      "narrative_text": "This SAR is filed to report suspicious wire transfer activity by Meridian Holdings LLC (customer ID C-28847), a small import/export entity that has maintained an account at BNY Mellon since 2021. The account profile indicates average monthly activity of $50,000 in domestic wire transfers. Between September 1, 2024, and September 30, 2024, the customer initiated seven international wire transfers totaling $485,000 to three previously unknown foreign beneficiaries in the United Arab Emirates, Hong Kong, and Panama. All transfers were in round-dollar amounts ($75,000, $75,000, $60,000, $80,000, $65,000, $70,000, $60,000). When contacted, the customer's representative stated the transfers were for 'consulting services' but could not provide supporting invoices or contracts. Transaction monitoring system flagged the activity under Alert ALRT-90234. The volume, frequency, and round-dollar nature of the transfers, combined with the sudden shift to foreign jurisdictions associated with financial secrecy, the lack of supporting business documentation, and inconsistency with the established customer profile, are indicative of potential money laundering through trade-based schemes or wire fraud."
     },
     {
-      "example_id": "DEP-INST-003",
-      "filing_institution_type": "Depository Institution",
+      "example_id": "SAR-NAR-003",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["structuring", "wire_transfer"],
-      "key_features": [
-        "includes_investigation_number",
-        "employment_context",
-        "inconsistency_with_stated_income",
-        "immediate_wire_out_pattern",
-        "specific_beneficiary_details"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["structuring", "cash_intensive_business"],
+      "key_features": ["daily sub-threshold deposits", "ATM cash withdrawals", "no business justification", "prior SAR filed"],
       "amounts_involved": {
-        "total_usd": 29650.0,
-        "transaction_count": 6,
-        "cash_deposits": 29650.0,
-        "wire_transfers_out": 29500.0
+        "total_usd": 87500.00,
+        "transaction_count": 25
       },
-      "why_sufficient": "Provides file number, identifies inconsistency with employment, specific transaction details, explains suspicious pattern, notes investigation continuing",
-      "narrative_text": "Bank investigation file number AA67325.\n\nThis SAR is being filed to summarize suspicious cash deposits and wire transfer activity conducted by John Doe, account #12345678910. John Doe has been a bank customer since April 2000. Mr. Doe is a college student and employed part-time at Quickie Car Wash.\n\nCash deposits to Mr. Doe's personal checking account are structured to possibly circumvent federal reporting requirements. The deposits are followed by immediate wire transfers to Aussie Bank in Sydney, Australia to a single beneficiary, Jennifer Doe, account #981012345, with an address located in Australia.\n\nSpecifically the following activity has been observed: cash deposits (dates followed by amounts): 03/15/02 $9,950.00; 03/17/02 $9,700.00; 03/18/02 $10,000; total: $29,650. Wire transfers out (dates followed by amounts): 03/16/02 $9,900.00, 03/18/02 $9,700.00, 03/19/02 $9,900.00.\n\nThe volume and frequency of the deposits is not consistent with previous banking transactions conducted by Mr. Doe. The amounts of currency do not appear consistent with the customer's stated employment. Also, the relationship between the customer and Jennifer Doe and the purpose for the wire activity is unknown.\n\nTherefore, due to the structured cash deposits by the customer on almost consecutive days into the account, and the immediate wire transfer of the funds out of the account to Jennifer Doe, Aussie bank, account #891012345, Sydney Australia, this SAR is being filed. Investigation is continuing.\n\nThe bank's financial intelligence unit in Big City, FL, maintains all records related to this SAR.",
-      "writing_lessons": [
-        "Reference investigation file number upfront",
-        "Establish customer profile (student, part-time employment)",
-        "Explain why activity is inconsistent (amounts don't match stated income)",
-        "Detail immediate pattern (deposit → wire out)",
-        "Provide complete beneficiary information",
-        "Note unknown relationships that raise questions",
-        "State investigation status",
-        "Identify records custodian location"
-      ]
+      "why_sufficient": "References prior SAR filing, quantifies pattern across extended period, identifies specific structuring indicators.",
+      "narrative_text": "This SAR is filed as a follow-up to SAR filed on 2023-04-15 (DCN: 20230415-BNY-00342) to report continued structuring activity by James R. Thornton (SSN: XXX-XX-1234, DOB: 05/14/1978), account XXXXXX7890. During the period October 1, 2024, through November 30, 2024, Mr. Thornton made 25 separate cash deposits ranging from $2,900 to $4,800, totaling $87,500, consistently staying below the $10,000 CTR threshold. Additionally, 18 ATM cash withdrawals averaging $800 each were made across multiple branch locations in the New York metropolitan area within 24 hours of deposits. Mr. Thornton is self-employed as a landscaping contractor; his stated annual income is $65,000, making the deposit volumes inconsistent with his known business activity. When contacted, Mr. Thornton declined to provide an explanation. The continuation of this structuring pattern following a prior SAR filing, combined with the rapid withdrawal of deposited funds and the use of multiple ATM locations to avoid detection, indicates deliberate efforts to circumvent federal reporting requirements under 31 U.S.C. 5324."
     },
     {
-      "example_id": "MSB-001",
-      "filing_institution_type": "Money Services Business",
+      "example_id": "SAR-NAR-004",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["structuring", "identification_evasion"],
-      "key_features": [
-        "multiple_suspects",
-        "coordinated_behavior",
-        "identification_refusal",
-        "serial_numbers_documented",
-        "vehicle_descriptions",
-        "layering_attempt"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["elder_financial_exploitation"],
+      "key_features": ["elderly victim", "unusual large withdrawals", "third-party involvement", "changed behavior"],
       "amounts_involved": {
-        "total_usd": 14200.0,
-        "transaction_count": 8,
-        "money_orders_purchased": 14200.0
+        "total_usd": 145000.00,
+        "transaction_count": 12
       },
-      "why_sufficient": "Complete summary with suspect interaction details, serial numbers, denominations, and communication between branches showing layering",
-      "narrative_text": "This SAR is being filed on three suspects who purchased money orders in a manner to circumvent federal identification and recording requirements and engaged in suspicious money order transactions.\n\nOn May 1, 2003, two male customers came into the North City store location of XYS Money Orders Express and attempted to purchase a total of $7,000 in money orders. Prior to seeing a clerk, both customers stood in line and were observed conversing as if they worked with each other. Both customers went to different clerks and each attempted to purchase $3,500 in money orders with cash. When each customer was asked for identification per the $3,000-$10,000 recording requirement, the customers abruptly decided to lower their money order purchases below $3,000. One of the customers requested to purchase $2,500 in money orders while the other requested to purchase $2,900 in money orders.\n\nCustomer One, at window 1, was issued money orders, serial numbers/amounts: 112345/$1,500 and 112346/$1,000. The second customer, at window 2, was issued money orders 122347/$1,500 and 122348 for $1,400. The two individuals left together in a white Ford van.\n\nLater that same day, the same suspects returned to the same store with a female companion. The female purchased $2,000 from window 2, serial numbers/amounts: 112412/$1,000 and 112413/$1,000. The three suspects left the building together and drove away in a red Porsche.\n\nOn May 2, 2003, the female suspect entered the South City store location and again purchased money orders totaling $2,500. The instruments were purchased from window 1, serial numbers/amounts: 113345/$1,500 and 113346/$1,000. The customer was observed being picked up by the two previously referenced male suspects in a red Porsche.\n\nOn May 2, 2003, the North City store contacted the South City store to advise them that two money orders, #112345 and 113345, purchased the day before at the South City and North City stores were being used to purchase six $500 international money orders totaling $3,000, #1125451, #1125452, #1125453, #1125454, #1125455, and #1125456 by two male customers.",
-      "writing_lessons": [
-        "Open with clear statement of what suspects are doing wrong",
-        "Describe coordinated behavior between multiple suspects",
-        "Note behavioral red flags (abruptly changing transaction when ID requested)",
-        "Document serial numbers and amounts for each money order",
-        "Include identifying details (vehicles, physical descriptions if available)",
-        "Show cross-branch communication and coordination",
-        "Demonstrate layering (using money orders to buy more money orders)",
-        "Provide chronological flow with dates, times, locations"
-      ]
+      "why_sufficient": "Identifies victim, perpetrator relationship, behavioral changes, and specific exploitation indicators per FinCEN elder financial exploitation guidance.",
+      "narrative_text": "This SAR is filed to report suspected elder financial exploitation involving Margaret A. Collins (DOB: 03/22/1938), a retired schoolteacher who has maintained accounts at BNY Mellon for over 30 years. Mrs. Collins' account historically showed monthly activity of $3,000-$5,000 in Social Security and pension deposits with minimal withdrawals. Between July 1, 2024, and September 30, 2024, 12 cash withdrawals totaling $145,000 were made, each conducted in person by an unidentified male who identified himself as Mrs. Collins' 'nephew.' Branch staff noted that Mrs. Collins appeared confused and anxious during two of the transactions on July 15 and August 20, 2024, and that the accompanying individual spoke on her behalf without her initiating conversation. On September 10, 2024, Mrs. Collins visited the branch alone and could not explain the prior withdrawals, stating she did not recall making them. Power of attorney documentation presented was dated June 28, 2024, two weeks before the withdrawal pattern began. The sudden onset of large cash withdrawals by a third party, the customer's visible distress, her inability to account for the funds, and the recently executed power of attorney are consistent with indicators of elder financial exploitation as described in FinCEN Advisory FIN-2022-A002."
     },
     {
-      "example_id": "MSB-002",
-      "filing_institution_type": "Money Services Business",
+      "example_id": "SAR-NAR-005",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["money_transmission", "possible_tax_evasion"],
-      "key_features": [
-        "pattern_over_time",
-        "beneficiary_details",
-        "occupation_inconsistency",
-        "identification_documentation",
-        "bi_weekly_pattern"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["terrorist_financing", "money_laundering"],
+      "key_features": ["OFAC-listed entity connection", "international transfers", "NGO misuse", "rapid layering"],
       "amounts_involved": {
-        "total_usd": 130000.0,
-        "time_period_days": 365,
-        "average_transaction": 5000.0,
-        "frequency": "bi-weekly"
+        "total_usd": 220000.00,
+        "transaction_count": 9
       },
-      "why_sufficient": "Details frequent transmittals with beneficiary info, notes occupation and suspicion rationale, confirms records retained",
-      "narrative_text": "For at least a year, beginning on May 20, 2002, two customers, John Doe and his son, Bob, have been using our money transmitter service to send large amounts of money (in cash) to receivers named Jane Smith and Mary Smith located in Antigua. Funds are sent to the XYZ Caribbean Money Center in St. Johns, Antigua. The amount of money presented each time by John and/or Bob Doe is usually $5000 and the transmittals are sent bi-weekly.\n\nDuring one particular incident earlier this month, on June 12, 2003, John Doe attempted to send $10,000 without proper identification. We refused to send the funds and Mr. Doe left the premises. He returned later in the afternoon with identification but only sent $5000.\n\nAll incidents / transactions have occurred at our store in Anytown, IL. The office has documentation of the driver's licenses of both customers. Suspicion lies in the Does' occupation (lawyers), and the amount of money leading me to suspect possible tax evasion. Records related to the money transmittals are maintained in our store in Anytown.",
-      "writing_lessons": [
-        "Establish time period and pattern",
-        "Identify all parties (senders and receivers)",
-        "Provide complete beneficiary details (names, location, receiving institution)",
-        "Note typical transaction amounts and frequency",
-        "Describe specific incident that raised flags (ID refusal)",
-        "Explain basis for suspicion (occupation vs. amounts, frequency)",
-        "Confirm customer identification on file",
-        "State records location"
-      ]
+      "why_sufficient": "Identifies nexus to OFAC-designated entity, details layering scheme, references specific regulatory framework.",
+      "narrative_text": "This SAR is filed to report transactions with potential links to terrorist financing involving Crescent Aid Foundation (EIN: XX-XXXXXXX), a registered 501(c)(3) organization that opened an account at BNY Mellon on January 15, 2024. Between February 1, 2024, and April 30, 2024, nine wire transfers totaling $220,000 were received from international donors, immediately followed by outbound transfers to three sub-accounts and ultimately to a foreign entity whose name substantially matches an OFAC SDN-listed organization. On March 3, 2024, a wire of $45,000 was received from a donor in Qatar and transferred within 48 hours to Al-Nour General Trading LLC in Beirut, Lebanon. OFAC screening flagged Al-Nour as a potential match to an entity on the Specially Designated Global Terrorist list on March 5, 2024. The account was frozen pending review. The rapid transit of funds through a domestic nonprofit with minimal operational expenses, combined with the OFAC screening alert and the use of multiple layering accounts, is consistent with the use of charitable organizations as conduits for terrorist financing as described in FATF Recommendation 8 and FinCEN Advisory FIN-2021-A004."
     },
     {
-      "example_id": "BROKER-DEALER-001",
-      "filing_institution_type": "Broker-Dealer",
+      "example_id": "SAR-NAR-006",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["structuring", "wire_transfers"],
-      "key_features": [
-        "references_prior_sar",
-        "pattern_change_documented",
-        "customer_explanation_noted",
-        "account_closure_stated"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["check_fraud", "account_takeover"],
+      "key_features": ["counterfeit checks", "new payee pattern", "device change", "customer reported unauthorized activity"],
       "amounts_involved": {
-        "wire_transfers": 60000.0,
-        "checks_cashed": 19500.0
+        "total_usd": 32750.00,
+        "transaction_count": 5
       },
-      "why_sufficient": "References prior SAR, describes new suspicious pattern, includes customer's own incriminating statement, notes account closure",
-      "narrative_text": "On November 15, 2002, ABC Brokerage Firm, Office of General Counsel, filed a suspicious activity report for Jane Doe, account number 88112233. In summary, the prior submission reported that during the period of September 9, 2002 through October 1, 2002, Ms. Doe sent six wire transfers for amounts just under $10,000 each to her business account in Mexico.\n\nAfter ABC Brokerage Firm management advised the client that they would no longer accept such wire transfer instructions, the client began cashing checks drawn on her ABC Brokerage Firm account at casas de cambio in Mexico. Specifically, on December 17 and 18, 2002, the client cashed three checks made payable to a casa de cambio for an aggregate total of $19,500.\n\nWhen asked the reason for preparing and cashing these checks in this manner, Ms. Doe claimed, in substance, that she did not want to fill out the paperwork required by Mexican law for cash transactions of U.S. $10,000 or more.\n\nThe account has been closed. Primary federal regulator – SEC",
-      "writing_lessons": [
-        "Reference prior SAR filings for context",
-        "Explain how pattern evolved after institution took action",
-        "Include customer's own statements (especially when incriminating)",
-        "Note specific dates and amounts",
-        "State final disposition (account closed)",
-        "Include regulatory information"
-      ]
+      "why_sufficient": "Describes fraud typology with timeline, identifies customer harm, links account takeover indicators to subsequent fraudulent transactions.",
+      "narrative_text": "This SAR is filed to report suspected check fraud and account takeover involving the business account of Sunrise Catering Co. (EIN: XX-XXXXXXX), account XXXXXX4521, operated by owner David S. Park (DOB: 11/05/1971). On November 12, 2024, BNY Mellon's fraud detection system identified an unusual login from an unrecognized device and IP address in Romania at 2:14 AM EST. Within three hours, the online banking profile was modified to add three new payees. Between November 13 and November 19, 2024, five checks totaling $32,750 were cashed at branches in Brooklyn, Queens, and Newark, bearing signatures inconsistent with the authorized signature card on file. The checks were made payable to individuals with no prior transaction history with the account. On November 20, 2024, Mr. Park contacted BNY Mellon to report unauthorized transactions, stating he had not initiated any of the changes or issued the checks. Forensic review confirmed the checks were printed on paper inconsistent with the bank's check stock. The combination of unauthorized remote access, immediate profile modification, and rapid issuance of counterfeit checks payable to previously unknown parties is consistent with an organized account takeover and check fraud scheme."
     },
     {
-      "example_id": "CASINO-001",
-      "filing_institution_type": "Casino",
+      "example_id": "SAR-NAR-007",
       "narrative_quality": "sufficient_complete",
-      "activity_types": ["money_laundering", "chip_passing"],
-      "key_features": [
-        "references_prior_sar",
-        "multiple_related_subjects",
-        "surveillance_observations",
-        "minimal_gambling_documented",
-        "chip_passing_pattern",
-        "wire_source_documented"
-      ],
+      "filing_institution_type": "bank",
+      "activity_types": ["human_trafficking"],
+      "key_features": ["frequent cash deposits from multiple senders", "consistent recipient in high-risk geography", "customer profile mismatch", "FinCEN typology match"],
       "amounts_involved": {
-        "outgoing_wires": 73850.0,
-        "incoming_wires_total": 70000.0
+        "total_usd": 58900.00,
+        "transaction_count": 31
       },
-      "why_sufficient": "References prior SAR, details multiple subjects, includes surveillance observations, documents chip passing, identifies wire sources, states law enforcement referral",
-      "narrative_text": "A SAR-C dated 11/03/2002 was previously filed on John Doe because of excessive wire transfers and minimal gambling activities. This supplemental report details recent suspect activities in which John Doe has engaged at Bob's Casino with other associates, Jack Doe and Jim Doe, which may indicate possible money laundering. The SAR-C is being filed based on numerous suspicious factors: 1. John Doe's excessive wire transfer activity; 2. John Doe's association with other players who are identified by the casino as having excessive incoming wires used to purchase chips; 3. Pass off of chips by Jack and Jim Doe to John Doe that are cashed out and deposited back into John Doe's account; and 4. Surveillance of Doe and associates, which indicate minimal play by all parties.\n\nSpecifically, the following wire transfers and patterns appeared suspicious. Between 10/12/2002 through 1/06/2003, John Doe has transacted wire transfers totaling $73,850 to Jane Doe, ABC Bank, account #12345678. The source of these funds was cashed-in chips.\n\nDuring the same time period, Jack Doe received four incoming wire transactions totaling $30,000 from Albert Doe, Bank of Good Fortune, New York, account #76543210. Jim Doe also received $40,000 from Albert Doe, Bank of Good Fortune, New York, account #765463210. Cash was taken from Jack and Jim Does' accounts for the purchase of chips.\n\nOn five occasions as follows all three subjects were observed by Bob's Casino security playing black jack together at the casino: 10/12/2002, 10/20/2002, 11/02/2002, 11/03/2002, 12/17/2002 and 1/06/2003. Prior to each visit, Jack and Jim Doe receive wire transfers from Arnold Doe, which were used to purchase chips in increments of $6,000 to $8,000. John Doe purchased chips using a smaller balance maintained on his account, and was usually between $3,000 to $4,000.\n\nThe black jack pit supervisor indicated each of the players did not extensively play but each took losses when they played between $300 to $500 each time they visited. The black jack supervisor has observed John Doe receiving chips from Jack and Jim Doe during some of their visits. The casino's surveillance of the subjects also confirmed observing the same type of activity between the patrons. John Doe normally deposited $14,000 to $17,000 in chips that he identified as winnings to pit clerks. Funds were usually wire transferred to Jane Doe on the day after John Doe visited the casino.\n\nThis matter has been referred to the State Gaming Commission and State Police. The investigation is ongoing.",
-      "writing_lessons": [
-        "Reference prior SARs filed on same subjects",
-        "List suspicious factors upfront as numbered points",
-        "Document relationships between multiple subjects",
-        "Include specific surveillance observations",
-        "Note minimal actual gambling despite chip purchases",
-        "Detail chip passing between subjects",
-        "Track wire transfer sources and destinations",
-        "State law enforcement referrals made",
-        "Note ongoing investigation status"
-      ]
+      "why_sufficient": "Applies FinCEN human trafficking typology indicators, identifies geographic risk, describes the sender-recipient pattern consistent with labor trafficking proceeds.",
+      "narrative_text": "This SAR is filed to report suspected human trafficking proceeds involving the personal account of Rosa M. Vasquez (DOB: 07/18/1995), account XXXXXX2287. Ms. Vasquez is a domestic worker whose stated income is approximately $24,000 annually. Between January 1, 2024, and March 31, 2024, 31 cash deposits totaling $58,900 were made to her account at multiple branch locations in the New York City metropolitan area by at least 11 different individuals. No single deposit exceeded $3,000. Immediately following each deposit, funds were wired to a single beneficiary account at a bank in Guatemala City, Guatemala. The deposits and withdrawals occurred at irregular hours, including several after 10 PM and before 8 AM. When branch staff attempted to speak with Ms. Vasquez privately on January 28, 2024, an accompanying male interpreted all responses, and Ms. Vasquez appeared reluctant to make eye contact or speak independently. The pattern of multiple third-party cash deposits followed by immediate international remittances to a single foreign recipient, combined with the customer's apparent lack of autonomy and income inconsistency, aligns with indicators described in FinCEN Advisory FIN-2014-A008 regarding human trafficking proceeds."
     }
   ]
 }

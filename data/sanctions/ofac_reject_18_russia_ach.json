@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-018",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_entity",
+  "sanctions_program": "Russia — E.O. 14024 / CAPTA",
+  "institution": {
+    "name": "Mid-Atlantic Bank",
+    "type": "Bank",
+    "address": "100 E Pratt Street",
+    "city": "Baltimore",
+    "state": "MD",
+    "postal_code": "21202",
+    "country": "United States",
+    "contact_person": "Steven Brown",
+    "telephone": "410-555-1008",
+    "email": "sbrown@midatlanticbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "22000.00",
+    "currency": "USD",
+    "transaction_type": "ACH credit",
+    "date_of_transaction": "2026-03-15",
+    "date_of_rejection": "2026-03-15",
+    "program_or_reason": "Russia Harmful Foreign Activities Sanctions (E.O. 14024); CAPTA",
+    "originator_name_address": "Chesapeake Logistics LLC, 200 E Pratt St, Baltimore, MD 21202, United States",
+    "originating_fi": "Mid-Atlantic Bank, 100 E Pratt Street, Baltimore, MD 21202, United States",
+    "intermediary_fi": null,
+    "beneficiary_fi": "Sberbank Russia, Moscow, Russia",
+    "beneficiary_name_address": "Moscow Freight Forwarding Co., Moscow, Russia",
+    "additional_relevant_info": "Payment for logistics services. Sberbank designated; ACH would have been rejected by correspondent.",
+    "additional_data": "ACH batch 20260315-4455"
+  },
+  "preparer": {
+    "name": "Steven Brown",
+    "title": "OFAC Compliance Analyst",
+    "date_prepared": "2026-03-16"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — beneficiary bank matched OFAC CAPTA/SDN (Sberbank)",
+    "sanctions_nexus": "Beneficiary financial institution is designated under Russia sanctions; transaction would involve blocked entity",
+    "documents_reviewed": [
+      "ACH batch and customer instruction",
+      "OFAC screening and CAPTA list",
+      "Customer vendor file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

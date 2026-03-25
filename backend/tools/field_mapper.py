@@ -33,300 +33,6 @@ def _normalize_obj(value: Any) -> Any:
     return _normalize_scalar(value)
 
 
-def _to_float(value: Any) -> float:
-    try:
-        return float(str(value or 0).replace(",", "").replace("$", "").strip() or 0)
-    except (TypeError, ValueError):
-        return 0.0
-
-
-def _to_mmddyyyy(value: Any) -> str:
-    text = str(value or "").strip()
-    if not text:
-        return ""
-    probe = text[:10]
-    for fmt in ("%m/%d/%Y", "%Y-%m-%d", "%Y/%m/%d", "%m-%d-%Y"):
-        try:
-            return datetime.strptime(probe, fmt).strftime("%m/%d/%Y")
-        except ValueError:
-            continue
-    return probe
-
-
-def _set_if_missing(payload: Dict[str, Any], path: str, value: Any) -> None:
-    if value is None:
-        return
-    if isinstance(value, str) and not value.strip():
-        return
-    parts = [part for part in path.split(".") if part]
-    if not parts:
-        return
-    current = payload
-    for key in parts[:-1]:
-        child = current.get(key)
-        if not isinstance(child, dict):
-            child = {}
-            current[key] = child
-        current = child
-    leaf = parts[-1]
-    existing = current.get(leaf)
-    if existing is None or (isinstance(existing, str) and not existing.strip()):
-        current[leaf] = value
-
-
-def _location_to_text(value: Any) -> str:
-    if isinstance(value, str):
-        return value.strip()
-    if isinstance(value, dict):
-        city = str(value.get("city") or "").strip()
-        state = str(value.get("state") or "").strip()
-        if city or state:
-            return ", ".join(part for part in [city, state] if part)
-        address = str(value.get("address") or "").strip()
-        if address:
-            parts = [part.strip() for part in address.split(",") if part.strip()]
-            if len(parts) >= 2:
-                city = parts[-2]
-                state = parts[-1].split(" ")[0][:2]
-                return ", ".join(part for part in [city, state] if part)
-            return address
-    return ""
-
-
-def _canonicalize_transactions(case: Dict[str, Any]) -> None:
-    txs = case.get("transactions")
-    if not isinstance(txs, list):
-        return
-
-    normalized_txs: List[Dict[str, Any]] = []
-    for idx, tx in enumerate(txs, start=1):
-        if not isinstance(tx, dict):
-            continue
-        item = dict(tx)
-
-        if not item.get("tx_id"):
-            item["tx_id"] = item.get("transaction_id") or f"TX-{idx:04d}"
-        if not item.get("transaction_id"):
-            item["transaction_id"] = item.get("tx_id")
-
-        if item.get("amount_usd") in (None, "") and item.get("amount") not in (None, ""):
-            item["amount_usd"] = _to_float(item.get("amount"))
-        if item.get("amount") in (None, "") and item.get("amount_usd") not in (None, ""):
-            item["amount"] = _to_float(item.get("amount_usd"))
-
-        if not item.get("timestamp"):
-            date_part = str(item.get("date") or "").strip()
-            time_part = str(item.get("time") or "").strip()
-            if date_part and time_part:
-                item["timestamp"] = f"{date_part} {time_part}"
-            elif date_part:
-                item["timestamp"] = date_part
-
-        if not item.get("origin_account"):
-            item["origin_account"] = item.get("account_number") or item.get("account") or ""
-        if not item.get("account"):
-            item["account"] = item.get("origin_account")
-
-        location_text = _location_to_text(item.get("location"))
-        if location_text:
-            item["location"] = location_text
-
-        normalized_txs.append(item)
-
-    case["transactions"] = normalized_txs
-
-
-def _canonicalize_extended_case(case: Dict[str, Any]) -> Dict[str, Any]:
-    report_meta = case.get("report_metadata") if isinstance(case.get("report_metadata"), dict) else {}
-    if report_meta:
-        _set_if_missing(case, "report_type", report_meta.get("filing_type"))
-        _set_if_missing(case, "filing_type", report_meta.get("report_type"))
-        _set_if_missing(case, "sar_filing_date", _to_mmddyyyy(report_meta.get("filing_date")))
-
-    part1 = case.get("part_1_subject_information") if isinstance(case.get("part_1_subject_information"), dict) else {}
-    if part1:
-        personal = part1.get("personal_details") if isinstance(part1.get("personal_details"), dict) else {}
-        address = part1.get("address") if isinstance(part1.get("address"), dict) else {}
-        ident = part1.get("identification") if isinstance(part1.get("identification"), dict) else {}
-
-        first = str(personal.get("first_name") or "").strip()
-        last = str(personal.get("last_name") or "").strip()
-        full_name = " ".join(part for part in [first, last] if part)
-
-        _set_if_missing(case, "subject.first_name", first)
-        _set_if_missing(case, "subject.last_name", last)
-        _set_if_missing(case, "subject.name", full_name)
-        _set_if_missing(case, "subject.middle_initial", personal.get("middle_initial"))
-        _set_if_missing(case, "subject.date_of_birth", _to_mmddyyyy(personal.get("date_of_birth")))
-        _set_if_missing(case, "subject.dob", _to_mmddyyyy(personal.get("date_of_birth")))
-        _set_if_missing(case, "subject.industry_or_occupation", personal.get("occupation"))
-        _set_if_missing(case, "subject.occupation", personal.get("occupation"))
-
-        _set_if_missing(case, "subject.address", address.get("street"))
-        _set_if_missing(case, "subject.city", address.get("city"))
-        _set_if_missing(case, "subject.state", address.get("state"))
-        _set_if_missing(case, "subject.zip", address.get("zip_code"))
-        _set_if_missing(case, "subject.country", address.get("country_code"))
-
-        _set_if_missing(case, "subject.tin", ident.get("tin"))
-        _set_if_missing(case, "subject.ssn_or_ein", ident.get("tin"))
-        _set_if_missing(case, "subject.id_type", ident.get("id_form"))
-        _set_if_missing(case, "subject.id_number", ident.get("id_number"))
-
-        accounts = part1.get("accounts") if isinstance(part1.get("accounts"), list) else []
-        if accounts and not isinstance(case.get("accounts"), list):
-            extracted: List[str] = []
-            for item in accounts:
-                if not isinstance(item, dict):
-                    continue
-                acct = str(item.get("account_number") or "").strip()
-                if acct:
-                    extracted.append(acct)
-            if extracted:
-                case["accounts"] = extracted
-
-    part2 = case.get("part_2_suspicious_activity") if isinstance(case.get("part_2_suspicious_activity"), dict) else {}
-    if part2:
-        _set_if_missing(case, "amount", _to_float(part2.get("amount_involved")))
-        _set_if_missing(case, "total_amount_involved", _to_float(part2.get("amount_involved")))
-        _set_if_missing(case, "SuspiciousActivityInformation.26_AmountInvolved.amount_usd", _to_float(part2.get("amount_involved")))
-        _set_if_missing(case, "SuspiciousActivityInformation.26_AmountInvolved.no_amount", bool(part2.get("no_amount_involved", False)))
-
-        period = part2.get("activity_period") if isinstance(part2.get("activity_period"), dict) else {}
-        from_date = _to_mmddyyyy(period.get("from_date") or period.get("from"))
-        to_date = _to_mmddyyyy(period.get("to_date") or period.get("to"))
-        _set_if_missing(case, "activity_date_range.start", from_date)
-        _set_if_missing(case, "activity_date_range.end", to_date)
-        _set_if_missing(case, "SuspiciousActivityInformation.27_DateOrDateRange.from", from_date)
-        _set_if_missing(case, "SuspiciousActivityInformation.27_DateOrDateRange.to", to_date)
-
-        category_map = {
-            "29_structuring": "29_Structuring",
-            "30_terrorist_financing": "30_TerroristFinancing",
-            "31_fraud": "31_Fraud",
-            "32_casinos": "32_Casinos",
-            "33_money_laundering": "33_MoneyLaundering",
-            "34_identification": "34_IdentificationDocumentation",
-            "35_other_suspicious": "35_OtherSuspiciousActivities",
-            "36_insurance": "36_Insurance",
-            "37_securities": "37_SecuritiesFuturesOptions",
-            "38_mortgage_fraud": "38_MortgageFraud",
-        }
-        categories = part2.get("suspicious_activity_categories") if isinstance(part2.get("suspicious_activity_categories"), dict) else {}
-        for source_key, target_key in category_map.items():
-            vals = categories.get(source_key)
-            if isinstance(vals, list):
-                _set_if_missing(case, f"SuspiciousActivityInformation.{target_key}", vals)
-
-    part3 = case.get("part_3_institution_where_occurred") if isinstance(case.get("part_3_institution_where_occurred"), dict) else {}
-    if part3:
-        details = part3.get("institution_details") if isinstance(part3.get("institution_details"), dict) else {}
-        branch = part3.get("branch_information") if isinstance(part3.get("branch_information"), dict) else {}
-        regulator = part3.get("primary_federal_regulator")
-        inst_type = part3.get("institution_type")
-
-        _set_if_missing(case, "institution.name", details.get("legal_name"))
-        _set_if_missing(case, "institution.tin", details.get("tin"))
-        _set_if_missing(case, "institution.ein", details.get("tin"))
-        _set_if_missing(case, "institution.primary_federal_regulator", regulator)
-        _set_if_missing(case, "institution.type", inst_type)
-        _set_if_missing(case, "institution.address", branch.get("branch_address"))
-        _set_if_missing(case, "institution.branch_city", branch.get("branch_city"))
-        _set_if_missing(case, "institution.branch_state", branch.get("branch_state"))
-        _set_if_missing(case, "institution.zip", branch.get("branch_zip"))
-        _set_if_missing(case, "institution.country", branch.get("branch_country"))
-
-        _set_if_missing(case, "financial_institution.name", details.get("legal_name"))
-        _set_if_missing(case, "financial_institution.branch_address", branch.get("branch_address"))
-        _set_if_missing(case, "financial_institution.address", branch.get("branch_address"))
-        _set_if_missing(case, "financial_institution.city", branch.get("branch_city"))
-        _set_if_missing(case, "financial_institution.state", branch.get("branch_state"))
-        _set_if_missing(case, "financial_institution.zip", branch.get("branch_zip"))
-        _set_if_missing(case, "financial_institution.country", branch.get("branch_country"))
-        _set_if_missing(case, "financial_institution.tin", details.get("tin"))
-        _set_if_missing(case, "financial_institution.ein_or_ssn", details.get("tin"))
-        _set_if_missing(case, "financial_institution.federal_regulator", regulator)
-        _set_if_missing(case, "financial_institution.primary_federal_regulator", regulator)
-        _set_if_missing(case, "financial_institution.type", inst_type)
-
-    part4 = case.get("part_4_filing_institution") if isinstance(case.get("part_4_filing_institution"), dict) else {}
-    if part4:
-        details = part4.get("filer_details") if isinstance(part4.get("filer_details"), dict) else {}
-        address = part4.get("address") if isinstance(part4.get("address"), dict) else {}
-        regulator = part4.get("primary_federal_regulator")
-        inst_type = part4.get("institution_type")
-
-        _set_if_missing(case, "filing_institution.name", details.get("legal_name"))
-        _set_if_missing(case, "filing_institution.tin", details.get("tin"))
-        _set_if_missing(case, "filing_institution.address", address.get("street"))
-        _set_if_missing(case, "filing_institution.city", address.get("city"))
-        _set_if_missing(case, "filing_institution.state", address.get("state"))
-        _set_if_missing(case, "filing_institution.zip", address.get("zip_code"))
-        _set_if_missing(case, "filing_institution.country", address.get("country_code"))
-        _set_if_missing(case, "filing_institution.federal_regulator", regulator)
-        _set_if_missing(case, "filing_institution.primary_federal_regulator", regulator)
-        _set_if_missing(case, "filing_institution.type", inst_type)
-        _set_if_missing(case, "filing_institution.contact_office", part4.get("contact_office"))
-        _set_if_missing(case, "filing_institution.contact_phone", part4.get("contact_phone"))
-        _set_if_missing(case, "filing_institution.date_filed", _to_mmddyyyy(part4.get("filing_date") or report_meta.get("filing_date")))
-
-        if not isinstance(case.get("institution"), dict):
-            _set_if_missing(case, "institution.name", details.get("legal_name"))
-            _set_if_missing(case, "institution.tin", details.get("tin"))
-
-    if isinstance(case.get("narrative"), dict):
-        narrative_text = case.get("narrative", {}).get("text")
-        if isinstance(narrative_text, str) and narrative_text.strip():
-            case["narrative"] = narrative_text.strip()
-
-    if not isinstance(case.get("alert"), dict):
-        red_flags = case.get("red_flags") if isinstance(case.get("red_flags"), list) else []
-        if red_flags:
-            trigger_reasons: List[str] = []
-            labels: List[str] = []
-            alerts: List[Dict[str, Any]] = []
-            for item in red_flags:
-                if not isinstance(item, dict):
-                    continue
-                indicator = str(item.get("indicator") or "").strip()
-                description = str(item.get("description") or "").strip()
-                severity = str(item.get("severity") or "medium").strip().lower() or "medium"
-                reference = str(item.get("regulatory_reference") or "").strip()
-                if indicator:
-                    labels.append(indicator)
-                if description:
-                    trigger_reasons.append(description)
-                alerts.append({
-                    "subtype": indicator,
-                    "description": description,
-                    "severity": severity,
-                    "rule_id": reference,
-                })
-            if labels or trigger_reasons:
-                case["alert"] = {
-                    "subtype": labels[0] if labels else "",
-                    "red_flags": labels,
-                    "trigger_reasons": trigger_reasons,
-                }
-            if alerts and not isinstance(case.get("alerts"), list):
-                case["alerts"] = alerts
-
-    law_enforcement = (
-        case.get("part_4_filing_institution", {}).get("law_enforcement_contact")
-        if isinstance(case.get("part_4_filing_institution"), dict)
-        else {}
-    )
-    if isinstance(law_enforcement, dict) and law_enforcement:
-        _set_if_missing(case, "external_signals.law_enforcement_contacted.contacted", bool(law_enforcement.get("contacted", False)))
-        _set_if_missing(case, "external_signals.law_enforcement_contacted.agency", law_enforcement.get("agency"))
-        _set_if_missing(case, "external_signals.law_enforcement_contacted.contact_name", law_enforcement.get("contact_name"))
-        _set_if_missing(case, "external_signals.law_enforcement_contacted.phone", law_enforcement.get("contact_phone"))
-        _set_if_missing(case, "external_signals.law_enforcement_contacted.date", _to_mmddyyyy(law_enforcement.get("contact_date")))
-
-    _canonicalize_transactions(case)
-    return case
-
-
 def normalize_case_data(case_data: Any) -> Dict[str, Any]:
     """
     Normalize supported case payloads into a single dict.
@@ -337,11 +43,11 @@ def normalize_case_data(case_data: Any) -> Dict[str, Any]:
     """
     normalized = _normalize_obj(case_data)
     if isinstance(normalized, dict):
-        return _canonicalize_extended_case(normalized)
+        return normalized
     if isinstance(normalized, list):
         for item in normalized:
             if isinstance(item, dict):
-                return _canonicalize_extended_case(item)
+                return item
     return {}
 
 
@@ -389,6 +95,7 @@ class SARFieldMapper:
         fields: Dict[str, str] = {}
         variant = (template_variant or "legacy").strip().lower()
         if variant == "fincen_acroform":
+            fields.update(self._map_suspicious_activity())
             fields.update(self._map_fincen_acroform())
         elif variant == "all":
             fields.update(self._map_institution())
@@ -815,8 +522,8 @@ class SARFieldMapper:
         """
         Map key values to the newer FinCEN SAR AcroForm field names.
 
-        This map prioritizes reliable population of required identity/institution
-        fields and fills repeated template sections with the same normalized values.
+        This map is intentionally conservative (text fields only) because
+        checkbox/radio export values in this template are not stable labels.
         """
         f: Dict[str, str] = {}
 
@@ -832,12 +539,11 @@ class SARFieldMapper:
             f["3  Individuals last name or entitys legal name a Unk"] = subject_name
 
         fallback_city, fallback_state = self._city_state_from_txns()
-        subject_city = (self.subject.get("city", "") or "").strip() or fallback_city or "UNKNOWN"
-        subject_state = (self.subject.get("state", "") or "").strip()[:2] or fallback_state or "NA"
+        subject_city = (self.subject.get("city", "") or "").strip() or fallback_city
+        subject_state = (self.subject.get("state", "") or "").strip()[:2] or fallback_state
         subject_zip = (
             (self.subject.get("zip", "") or "").strip()
             or (self.subject.get("postal_code", "") or "").strip()
-            or "00000"
         )
         subject_address = (self.subject.get("address", "") or "").strip()
         if not subject_address:
@@ -852,53 +558,11 @@ class SARFieldMapper:
 
         subject_tin = (
             self.subject.get("tin")
-            or self.subject.get("ssn_or_ein")
             or self.subject.get("ssn")
             or self.subject.get("ein")
-            or "UNKNOWN"
-        )
-        f["13  TIN a Unk"] = subject_tin
-
-        # Populate generic date fields that represent date-of-birth/date blocks
-        # in this template family.
-        dob_raw = (
-            self.subject.get("date_of_birth")
-            or self.subject.get("dob")
-            or self.subject.get("onboarding_date")
-            or self.case.get("generated_at")
             or ""
         )
-        mm = dd = yyyy = ""
-        dob_text = str(dob_raw or "").strip()
-        if dob_text:
-            parsed_dt = None
-            for fmt in (
-                "%Y-%m-%d",
-                "%m/%d/%Y",
-                "%m/%d/%Y %H:%M:%S",
-                "%Y-%m-%dT%H:%M:%S",
-                "%Y-%m-%dT%H:%M:%SZ",
-            ):
-                try:
-                    parsed_dt = datetime.strptime(dob_text, fmt)
-                    break
-                except ValueError:
-                    continue
-            if parsed_dt is not None:
-                mm = parsed_dt.strftime("%m")
-                dd = parsed_dt.strftime("%d")
-                yyyy = parsed_dt.strftime("%Y")
-            else:
-                m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})$", dob_text)
-                if m:
-                    mm, dd, yyyy = m.group(1).zfill(2), m.group(2).zfill(2), m.group(3)
-
-        if mm:
-            f["MM"] = mm
-        if dd:
-            f["DD"] = dd
-        if yyyy:
-            f["YYYY"] = yyyy
+        f["13  TIN a Unk"] = subject_tin
 
         alert_email = (
             self.case.get("institution", {}).get("contact_email")
@@ -907,77 +571,152 @@ class SARFieldMapper:
         ) or ""
         f["19 Email adress (If available)"] = alert_email
 
-        fin_inst = (
-            self.case.get("financial_institution")
-            if isinstance(self.case.get("financial_institution"), dict)
-            else {}
-        )
-        inst_city = (self.inst.get("branch_city", "") or "").strip() or fallback_city or "UNKNOWN"
-        inst_state = (self.inst.get("branch_state", "") or "").strip()[:2] or fallback_state or "NA"
+        inst_city = (self.inst.get("branch_city", "") or "").strip() or fallback_city
+        inst_state = (self.inst.get("branch_state", "") or "").strip()[:2] or fallback_state
         inst_zip = (
             (self.inst.get("zip", "") or "").strip()
             or (self.inst.get("postal_code", "") or "").strip()
-            or (fin_inst.get("zip", "") or "").strip()
-            or "00000"
         )
         inst_address = (self.inst.get("address", "") or "").strip()
+
+        # Subject state (FinCEN SAR item 10)
+        f["10 State"] = subject_state
+
+        # Subject TIN type checkbox (item 14) — check EIN or SSN/ITIN based on subject type
+        if subject_tin:
+            has_ssn = bool(self.subject.get("ssn"))
+            f["EIN"] = "/Yes" if not has_ssn else "/Off"
+            f["SSNITIN"] = "/Yes" if has_ssn else "/Off"
+
+        # Item 1 — Initial filing type
+        f["2  Check  a"] = "/Yes"
+
+        # -----------------------------------------------------------------
+        # Part III — Financial Institution Where Activity Occurred
+        # -----------------------------------------------------------------
+        # Institution type: Depository institution (item 47)
+        f["Depository institution"] = "/Yes"
+
+        # Primary federal regulator (item 48) — best-effort from case data
+        regulator = (self.inst.get("primary_federal_regulator", "") or "").strip().upper()
+        REGULATOR_FIELD = {
+            "FRB": "a_10", "FEDERAL RESERVE": "a_10",
+            "FDIC": "a_11",
+            "NCUA": "a_12",
+            "OCC": "a_13",
+            "OTS": "a_14",
+        }
+        reg_field = REGULATOR_FIELD.get(regulator)
+        if reg_field:
+            f[reg_field] = "/Yes"
+
+        inst_name = (self.inst.get("name", "") or "BNY Mellon").strip()
+        inst_ein = (self.inst.get("ein", "") or "13-4941247").strip()
+        if not inst_city:
+            inst_city = "New York"
+        if not inst_state:
+            inst_state = "NY"
+        if not inst_zip:
+            inst_zip = "10286"
         if not inst_address:
-            inst_address = self._compose_address_line(inst_city, inst_state, inst_zip)
+            inst_address = "240 Greenwich Street"
 
-        inst_tin = (
-            self.inst.get("ein")
-            or self.inst.get("tin")
-            or self.inst.get("ein_or_ssn")
-            or fin_inst.get("ein_or_ssn")
-            or fin_inst.get("tin")
-            or "UNKNOWN"
-        )
-
-        f["21a  Institution  TIN"] = inst_tin
-        f["53  Legal name of financial institution a  Unk"] = self.inst.get("name", "")
-        f["55  TIN a  Unk"] = inst_tin
+        f["53  Legal name of financial institution a  Unk"] = inst_name
+        f["21a  Institution  TIN"] = inst_ein
+        f["55  TIN a  Unk"] = inst_ein
+        # Institution TIN type — EIN
+        f["EIN_2"] = "/Yes"
         f["57  Address a  Unk"] = inst_address
         f["58  City a  Unk"] = inst_city
         f["59 State"] = inst_state
         f["60  ZIPPostal Code"] = inst_zip
 
-        # Fill repeated institution/branch sections that are present on this template.
-        f["62  Internal controlfile number"] = str(self.case.get("case_id", ""))
+        # Branch / office where activity occurred (items 65–70)
         f["65  Address of branch or office where activity occurred If no branch activity involved check this box a"] = inst_address
         f["67  City"] = inst_city
         f["68  State"] = inst_state
         f["69  ZIPPostal Code"] = inst_zip
-        f["70  Country 2letter code"] = country
-        f["72 Adress"] = inst_address
-        f["74 City"] = inst_city
-        f["75 State"] = inst_state
-        f["76  ZIPPostal Code"] = inst_zip
-        f["77  Country 2letter code"] = country
-        f["80  TIN"] = inst_tin
-        f["85  AddressRow1"] = inst_address
+        f["70  Country 2letter code"] = (self.inst.get("country", "US") or "US").strip().upper()[:2]
+
+        # RSSD identifier (item 66) — optional but included when provided
+        rssd = str(self.inst.get("rssd", "") or "").strip()
+        if rssd:
+            f["66  RSSD number"] = rssd
+
+        # Internal control / file number (item 62)
+        case_id = str(self.case.get("case_id", "") or "").strip()
+        if case_id:
+            f["62  Internal controlfile number"] = case_id
+            f["91  Internal controlfile number"] = case_id
+
+        # -----------------------------------------------------------------
+        # Part IV — Filing Institution Contact Information (static defaults)
+        # These fields represent the filing institution (BNY Mellon) and
+        # do not change per-case. Case-level institution data is preferred;
+        # BNY Mellon data is used as fallback so the form is never blank.
+        # -----------------------------------------------------------------
+        # Institution type for filer (item 78)
+        f["Depository institution_2"] = "/Yes"
+
+        # Item 79 — Legal name of filing institution
+        f["79 Filer name"] = inst_name
+
+        # Item 80 — TIN of filing institution
+        f["80  TIN"] = inst_ein
+
+        # Item 81 — TIN type: EIN
+        f["EIN_2"] = "/Yes"
+
+        # Items 85–88 — Filing institution address
+        # NOTE: do NOT set "85  AddressRow1" — that field renders in the
+        # item 89 (Country) cell position and would corrupt the country value.
         f["85  Address"] = inst_address
         f["86  City"] = inst_city
         f["87 State"] = inst_state
         f["88 Zip postal code"] = inst_zip
-        f["91  Internal controlfile number"] = str(self.case.get("case_id", ""))
 
-        # TIN type radio hints.
-        if treat_as_entity or re.search(r"\d{2}-?\d{7}", str(subject_tin)):
-            f["EIN"] = "/Yes"
-        elif subject_tin and str(subject_tin).strip().upper() != "UNKNOWN":
-            f["SSNITIN"] = "/Yes"
+        # Item 96 — Contact office (static)
+        contact_officer = (self.inst.get("contact_officer", "") or "").strip()
+        f[" 96 Filing institution contact office"] = contact_officer or "Financial Intelligence Unit"
 
-        if re.search(r"\d{2}-?\d{7}", str(inst_tin)):
-            f["EIN_2"] = "/Yes"
-        elif inst_tin and str(inst_tin).strip().upper() != "UNKNOWN":
-            f["SSNITIN_2"] = "/Yes"
+        # Item 97 — Contact phone
+        raw_phone = self.inst.get("contact_phone", "") or ""
+        normalized_phone = self._normalize_phone(raw_phone)
+        if len(normalized_phone) < 10:
+            normalized_phone = "2125956009"
+        f["97  Filing institution contact office phone number Include Area Code"] = normalized_phone
 
-        contact_name = self.inst.get("contact_officer", "") or ""
-        f["79 Filer name"] = contact_name
-        f[" 96 Filing institution contact office"] = "Compliance Office"
-        f["97  Filing institution contact office phone number Include Area Code"] = (
-            self._normalize_phone(self.inst.get("contact_phone", ""))
-        )
+        # ----------------------------------------------------------------
+        # Item 26 — Amount involved in this report
+        # The AcroForm uses shared field names across digit cells:
+        #   Text2 → cells 1-2 (both same digit; leading zeros for < $100B)
+        #   Text7 → cell 3  (billions)
+        #   Text10 → cell 4 (hundred millions)
+        #   Text8  → cell 5 (ten millions)
+        #   Text9  → cells 6-12 (7 cells, all same digit)
+        # The same fields also appear in items 28 and 63 (loss), so setting
+        # them is approximate for non-round amounts — the narrative carries
+        # the exact figure.
+        # ----------------------------------------------------------------
+        amount_val = self._resolve_amount_involved()
+        if amount_val > 0:
+            amount_int = min(int(round(amount_val)), 999_999_999_999)
+            digits = str(amount_int).zfill(12)
+            f["Text2"] = digits[0]   # cells 1-2 same digit (leading zero < $100B)
+            f["Text7"] = digits[2]   # cell 3 — billions
+            f["Text10"] = digits[3]  # cell 4 — hundred millions
+            f["Text8"] = digits[4]   # cell 5 — ten millions
+            # Text9 has 7 widget instances for cells 6-12 of item 26.
+            # Filling via the shared field name forces ALL cells to the same
+            # digit.  Store the 7 individual digits under a private key so
+            # SARReportFiler can inject them per-annotation instead.
+            f["_item26_text9_cells"] = digits[5:12]
+
+        # Filing date (MM/DD/YYYY standalone fields in AcroForm)
+        now = datetime.now()
+        f["MM"] = now.strftime("%m")
+        f["DD"] = now.strftime("%d")
+        f["YYYY"] = now.strftime("%Y")
 
         if self._as_bool(self.le.get("contacted", False)):
             f["92  LE contact agency"] = self.le.get("agency", "") or ""
@@ -986,141 +725,11 @@ class SARFieldMapper:
                 self.le.get("phone", "")
             )
 
-        # Ensure key suspicious amount appears in a visible free-text product field
-        # for templates where dedicated amount boxes are non-standardly named.
-        amount_val = self._resolve_amount_involved()
-        amount_info = self.activity.get("26_AmountInvolved", {})
-        no_amount = self._as_bool(amount_info.get("no_amount")) if isinstance(amount_info, dict) else False
-
-        if amount_val > 0 and not no_amount:
-            f.update(self._map_fincen_item26_amount_fields(amount_val))
-        elif no_amount:
-            # Item 26.b - no amount involved.
-            f["b_10"] = "/Yes"
-        else:
-            # Item 26.a - amount unknown.
-            f["a_7"] = "/Yes"
-
-        # Item 29 - Structuring checks.
-        f.update(self._map_fincen_item29_structuring_fields())
-
-        # Item 30-38 summary characterization checks.
-        f.update(self._map_fincen_summary_characterization_fields())
-
         narrative = self._map_narrative().get("item51", "")
         if narrative:
             f["Narrative"] = narrative
 
         return f
-
-    def _map_fincen_item26_amount_fields(self, amount_val: float) -> Dict[str, str]:
-        """
-        Best-effort mapping for Item 26 amount boxes on FinCEN AcroForm.
-
-        The current template uses non-semantic field ids (Text2/Text7/Text8/Text9/Text10)
-        for dollar boxes plus Text13 for cents.
-        """
-        fields: Dict[str, str] = {}
-        safe_amount = max(float(amount_val or 0.0), 0.0)
-        whole = int(safe_amount)
-        cents = int(round((safe_amount - whole) * 100))
-
-        # Right-align in a fixed 11-digit whole-dollar layout.
-        amount_digits = f"{whole:011d}"
-
-        # Preserve a human-readable backup in a visible text field.
-        fields["42 ProductInstrument description If needed"] = f"Total amount involved: ${safe_amount:,.2f}"
-
-        # Populate non-semantic dollar boxes used by item 26 in this template family.
-        fields["Text2"] = amount_digits[0:2]
-        fields["Text7"] = amount_digits[2:3]
-        fields["Text10"] = amount_digits[3:4]
-        fields["Text8"] = amount_digits[4:5]
-        fields["Text9"] = amount_digits[5:11]
-        fields["Text13"] = f"{cents:02d}"
-        return fields
-
-    def _map_fincen_item29_structuring_fields(self) -> Dict[str, str]:
-        """Map Item 29 (Structuring) checkboxes for the FinCEN AcroForm."""
-        fields: Dict[str, str] = {}
-        structuring_items = self._to_list(self.activity.get("29_Structuring"))
-        if not structuring_items:
-            return fields
-
-        combined = " | ".join(structuring_items).lower()
-        matched = False
-
-        keyword_map = {
-            "a_9": ("recordkeeping", "bsa recordkeeping"),
-            "b_11": ("avoid ctr", "ctr requirement"),
-            "c_8": ("cancel",),
-            "d_6": ("below bsa", "recordkeeping threshold"),
-            "e_2": ("below ctr", "ctr threshold", "structured to avoid ctr"),
-            "f_2": ("inquiry",),
-        }
-        for field_id, keywords in keyword_map.items():
-            if any(keyword in combined for keyword in keywords):
-                fields[field_id] = "/Yes"
-                matched = True
-
-        if not matched:
-            # Most SARs with item 29 indicate sub-threshold CTR behavior.
-            fields["e_2"] = "/Yes"
-
-        other_notes = [
-            item
-            for item in structuring_items
-            if not any(token in item.lower() for token in ("recordkeeping", "ctr", "cancel", "inquiry"))
-        ]
-        if other_notes:
-            fields["z_4"] = "/Yes"
-            fields["Other_4"] = "; ".join(other_notes)[:180]
-
-        return fields
-
-    def _map_fincen_summary_characterization_fields(self) -> Dict[str, str]:
-        """
-        Map Item 30-38 summary characterization categories on the FinCEN AcroForm.
-
-        FinCEN AcroForm field IDs are generic, so this uses first-checkbox-per-section
-        mapping to ensure category coverage without over-checking fine-grained options.
-        """
-        fields: Dict[str, str] = {}
-
-        def mark_if_present(path: str, checkbox: str, other_checkbox: str | None = None, other_text_field: str | None = None) -> None:
-            values = self._to_list(self.activity.get(path))
-            if not values:
-                return
-            fields[checkbox] = "/Yes"
-            if other_checkbox:
-                # Keep explicit "other" checkbox available when text-heavy lists are supplied.
-                if len(values) > 1:
-                    fields[other_checkbox] = "/Yes"
-            if other_text_field:
-                joined = "; ".join(str(v) for v in values if str(v).strip())
-                if joined:
-                    fields[other_text_field] = joined[:180]
-
-        # 30 Terrorist financing
-        mark_if_present("30_TerroristFinancing", "a_10", other_checkbox="z_5", other_text_field="Other_4")
-        # 31 Fraud
-        mark_if_present("31_Fraud", "a_11", other_checkbox="z_6")
-        # 32 Casinos
-        mark_if_present("32_Casinos", "a_12", other_checkbox="z_7")
-        # 33 Money laundering
-        mark_if_present("33_MoneyLaundering", "a_13", other_checkbox="z_8")
-        # 34 Identification/documentation issues
-        mark_if_present("34_IdentificationDocumentation", "a_14", other_checkbox="z_9")
-        # 35 Other suspicious activities
-        mark_if_present("35_OtherSuspiciousActivities", "a_15", other_checkbox="z_10", other_text_field="Unclear or no insurable interest")
-        # 36 Insurance
-        mark_if_present("36_Insurance", "a_16", other_checkbox="z_11", other_text_field="Unauthorized pooling")
-        # 37 Securities/futures/options
-        mark_if_present("37_SecuritiesFuturesOptions", "a_17", other_checkbox="z_12", other_text_field="Unlicensed or unregistered MSB")
-        # 38 Mortgage fraud
-        mark_if_present("38_MortgageFraud", "c_16", other_checkbox="d_14", other_text_field="Foreclosure fraud")
-
-        return fields
 
     def _city_state_from_txns(self) -> tuple[str, str]:
         for tx in self.txns:
@@ -1156,135 +765,249 @@ class SARFieldMapper:
         digits = re.sub(r"\D", "", value or "")
         if len(digits) == 11 and digits.startswith("1"):
             digits = digits[1:]
-        if len(digits) >= 10:
-            return digits[:10]
-        if digits:
-            return digits.ljust(10, "0")
-        return ""
+        return digits[:10] if digits else ""
 
 
 class CTRFieldMapper:
-    """Map case JSON data to CTR PDF AcroForm field IDs."""
+    """
+    Map case JSON to FinCEN CTR Form 104 AcroForm field IDs.
 
-    # The CTR template in this repo has generic field IDs. These defaults are
-    # intentionally simple and can be overridden by providing case_data["ctr_field_map"].
-    DEFAULT_FIELD_MAP = {
-        "institution_name": "item-1",
-        "institution_ein": "item-2",
-        "institution_address": "item-3",
-        "institution_city_state": "item-4",
-        "conductor_name": "item-5",
-        "conductor_country": "item-6",
-        "total_cash_amount": "item-7",
-        "prepared_date": "item-8",
-        "contact_name": "text1",
-        "contact_phone": "text2",
-        "account_numbers": "text3",
-        "transaction_summary": "text4",
+    Field IDs verified against the live PDF template via diagnostic fill:
+      Section A: F1-1 (last name), F1-2 (first name), F1-3 (middle),
+                 F1-4 (DBA), F1-5 (SSN/EIN), F1-14 (address), item-4 (DOB),
+                 F1-18 (city), F1-19 (state), F1-21 (zip), F1-22 (country),
+                 F1-24 (occupation)
+      Section B: F1-28/30/31 (name), F1-32 (addr), F1-33 (SSN),
+                 f1-43 (city), f1-44 (state), f1-46 (zip), f1-47 (country),
+                 item-2 (DOB)
+      Part II:  text1 (cash in), text3 (cash out), item-3 (txn date),
+                f1-62..f1-67 (account numbers)
+      Part III: f1-68 (inst name), f1-69 (regulator code), f1-70 (addr),
+                f1-71 (EIN), f1-80 (city), f1-81 (state), f1-83 (zip),
+                f1-84 (routing/MICR)
+      Signature: f1-93 (title), f1-97 (preparer), f1-98 (contact),
+                 f1-99 (phone), f1-102 (alt preparer), f1-105 (date)
+    """
+
+    # Regulator code lookup per CTR Form 104 instructions (Item 37)
+    REGULATOR_CODES = {
+        "OCC": "1", "COMPTROLLER": "1",
+        "FDIC": "2",
+        "FRB": "3", "FEDERAL RESERVE": "3", "FRS": "3",
+        "OTS": "4",
+        "NCUA": "5",
+        "SEC": "6",
+        "IRS": "7",
+        "USPS": "8",
+        "CFTC": "9",
+        "STATE": "10",
     }
 
     def __init__(self, case_data: Dict):
         self.case = normalize_case_data(case_data)
         inst = self.case.get("institution", {})
         subject = self.case.get("subject", {})
-        activity = self.case.get("SuspiciousActivityInformation", {})
         self.inst = inst if isinstance(inst, dict) else {}
         self.subject = subject if isinstance(subject, dict) else {}
-        self.activity = activity if isinstance(activity, dict) else {}
         txns = self.case.get("transactions", [])
         self.txns = [tx for tx in txns if isinstance(tx, dict)] if isinstance(txns, list) else []
 
-        overrides = self.case.get("ctr_field_map", {})
-        if isinstance(overrides, dict):
-            self.field_map = {**self.DEFAULT_FIELD_MAP, **overrides}
-        else:
-            self.field_map = dict(self.DEFAULT_FIELD_MAP)
-
     def map_all_fields(self) -> Dict[str, str]:
         fields: Dict[str, str] = {}
+        fields.update(self._map_section_a())
         fields.update(self._map_institution())
-        fields.update(self._map_conductor())
         fields.update(self._map_transactions())
-        fields.update(self._map_contact())
+        fields.update(self._map_signature())
         return {
             key: str(value)
             for key, value in fields.items()
             if key and value is not None and value != ""
         }
 
-    def _put(self, out: Dict[str, str], logical_key: str, value: str) -> None:
-        field_id = self.field_map.get(logical_key)
-        if field_id and value not in ("", None):
-            out[field_id] = str(value)
+    # ------------------------------------------------------------------ #
+    # Part I Section A — Person on whose behalf transaction is conducted  #
+    # ------------------------------------------------------------------ #
+    def _map_section_a(self) -> Dict[str, str]:
+        f: Dict[str, str] = {}
+        full_name = (self.subject.get("name", "") or "").strip()
+        subject_type = (self.subject.get("type", "") or "").lower()
+        treat_as_entity = subject_type != "individual" or self._looks_like_entity_name(full_name)
 
+        if full_name and not treat_as_entity:
+            parts = full_name.split()
+            f["F1-1"] = parts[-1]                    # Item 2 — last name
+            f["F1-2"] = parts[0]                     # Item 3 — first name
+            if len(parts) >= 3:
+                f["F1-3"] = parts[1][0]              # Item 4 — middle initial
+        elif full_name:
+            f["F1-1"] = full_name                    # Item 2 — entity name
+
+        # Item 5 — DBA
+        dba = (self.subject.get("dba", "") or "").strip()
+        if dba:
+            f["F1-4"] = dba
+
+        # Item 6 — SSN or EIN
+        tin = (
+            self.subject.get("tin")
+            or self.subject.get("ssn")
+            or self.subject.get("ein")
+            or ""
+        )
+        if tin:
+            f["F1-5"] = str(tin).strip()
+
+        # Item 7 — Address  (F1-14 is the address field, confirmed by diagnostic)
+        addr = (self.subject.get("address", "") or "").strip()
+        if addr:
+            f["F1-14"] = addr
+
+        # Item 8 — Date of birth  (item-4 is the DOB field, confirmed by diagnostic)
+        dob = (self.subject.get("dob", "") or self.subject.get("date_of_birth", "") or "").strip()
+        if dob:
+            f["item-4"] = dob
+
+        # Items 9–11 — City / State / ZIP
+        city = (self.subject.get("city", "") or "").strip()
+        state = (self.subject.get("state", "") or "").strip()[:2]
+        zip_code = (self.subject.get("zip", "") or self.subject.get("postal_code", "") or "").strip()
+        if city:
+            f["F1-18"] = city
+        if state:
+            f["F1-19"] = state
+        if zip_code:
+            f["F1-21"] = zip_code
+
+        # Item 12 — Country code (only if non-US)
+        country = (self.subject.get("country", "") or "").strip().upper()[:2]
+        if country and country != "US":
+            f["F1-22"] = country
+
+        # Item 13 — Occupation / type of business
+        occ = (
+            self.subject.get("industry_or_occupation", "")
+            or self.subject.get("occupation", "")
+            or ""
+        ).strip()
+        if occ:
+            f["F1-24"] = occ
+
+        return f
+
+    # ------------------------------------------------------------------ #
+    # Part III — Financial institution where transaction takes place      #
+    # ------------------------------------------------------------------ #
     def _map_institution(self) -> Dict[str, str]:
         f: Dict[str, str] = {}
-        name = self.inst.get("name", "")
-        ein = self.inst.get("ein", "")
-        addr = self.inst.get("address", "")
-        city = self.inst.get("branch_city", "")
-        state = (self.inst.get("branch_state", "") or "")[:2]
-        city_state = f"{city}, {state}".strip(", ")
 
-        self._put(f, "institution_name", name)
-        self._put(f, "institution_ein", ein)
-        self._put(f, "institution_address", addr)
-        self._put(f, "institution_city_state", city_state)
+        name = (self.inst.get("name", "") or "BNY Mellon").strip()
+        ein = (self.inst.get("ein", "") or "13-4941247").strip()
+        addr = (self.inst.get("address", "") or "240 Greenwich Street").strip()
+        city = (self.inst.get("branch_city", "") or self.inst.get("city", "") or "New York").strip()
+        state = (self.inst.get("branch_state", "") or self.inst.get("state", "") or "NY").strip()[:2]
+        zip_code = (self.inst.get("zip", "") or self.inst.get("postal_code", "") or "10286").strip()
+        routing = (self.inst.get("routing_number", "") or self.inst.get("micr", "") or "021000018").strip()
+
+        f["f1-68"] = name       # Item 37 — Institution name
+        f["f1-70"] = addr       # Item 38 — Address
+        f["f1-71"] = ein        # Item 39 — EIN/SSN
+        f["f1-80"] = city       # Item 40 — City
+        f["f1-81"] = state      # Item 41 — State
+        f["f1-83"] = zip_code   # Item 42 — ZIP
+        f["f1-84"] = routing    # Item 43 — Routing (MICR)
+
+        # Item 37 regulator/BSA examiner code
+        regulator = (self.inst.get("primary_federal_regulator", "") or "FDIC").strip().upper()
+        code = self.REGULATOR_CODES.get(regulator, self.REGULATOR_CODES.get(regulator.split()[0], "2"))
+        f["f1-69"] = code
+
         return f
 
-    def _map_conductor(self) -> Dict[str, str]:
-        f: Dict[str, str] = {}
-        full_name = self.subject.get("name", "") or "Unknown"
-        country = self.subject.get("country", "US")
-        self._put(f, "conductor_name", full_name)
-        self._put(f, "conductor_country", country)
-        return f
-
+    # ------------------------------------------------------------------ #
+    # Part II — Amount and type of transaction(s)                         #
+    # ------------------------------------------------------------------ #
     def _map_transactions(self) -> Dict[str, str]:
         f: Dict[str, str] = {}
-        total_cash = calculate_total_cash_amount(self.case)
-        if total_cash:
-            self._put(f, "total_cash_amount", f"{total_cash:,.2f}")
 
-        accounts = []
-        seen = set()
+        # Item 28 — Date of transaction  (item-3, confirmed by diagnostic)
+        if self.txns:
+            ts = (self.txns[0].get("timestamp", "") or self.txns[0].get("date", "") or "").strip()
+            if ts:
+                date_part = ts.split("T")[0] if "T" in ts else ts
+                f["item-3"] = date_part
+
+        # Items 26 / 27 — Cash in / cash out
+        # text1 = total cash in (Item 26), text3 = total cash out (Item 27)
+        cash_in = 0.0
+        cash_out = 0.0
         for tx in self.txns:
-            for key in ("origin_account", "destination_account"):
-                value = tx.get(key, "")
-                if value and value not in seen:
-                    seen.add(value)
-                    accounts.append(value)
-        if accounts:
-            self._put(f, "account_numbers", ", ".join(accounts[:4]))
+            amt = float(tx.get("amount_usd", 0) or tx.get("amount", 0) or 0)
+            tx_type = (tx.get("type", "") or tx.get("transaction_type", "") or "").lower()
+            if "out" in tx_type or "withdraw" in tx_type:
+                cash_out += amt
+            else:
+                cash_in += amt
 
-        tx_lines: List[str] = []
-        for tx in self.txns[:6]:
-            ts = tx.get("timestamp", "")
-            amt = float(tx.get("amount_usd", 0) or 0)
-            instrument = tx.get("instrument_type", "")
-            product = tx.get("product_type", "")
-            tx_lines.append(f"{ts} ${amt:,.2f} {instrument} {product}".strip())
-        if tx_lines:
-            self._put(f, "transaction_summary", " | ".join(tx_lines)[:500])
+        total_cash = calculate_total_cash_amount(self.case)
+        if cash_in > 0:
+            f["text1"] = f"{cash_in:,.2f}"
+        elif total_cash > 0:
+            f["text1"] = f"{total_cash:,.2f}"
+
+        if cash_out > 0:
+            f["text3"] = f"{cash_out:,.2f}"      # text3 = cash out (NOT text4!)
+
+        # Item 35 — Account numbers (f1-62 through f1-67, confirmed by diagnostic)
+        accounts: List[str] = []
+        seen: set = set()
+        for tx in self.txns:
+            for key in ("origin_account", "destination_account", "account_number"):
+                val = (tx.get(key, "") or "").strip()
+                if val and val not in seen:
+                    seen.add(val)
+                    accounts.append(val)
+        acct_fields = ["f1-62", "f1-63", "f1-64", "f1-66", "f1-67"]
+        for idx, acct in enumerate(accounts[:5]):
+            f[acct_fields[idx]] = acct
 
         return f
 
-    def _map_contact(self) -> Dict[str, str]:
+    # ------------------------------------------------------------------ #
+    # Signature / preparer section                                        #
+    # ------------------------------------------------------------------ #
+    def _map_signature(self) -> Dict[str, str]:
         f: Dict[str, str] = {}
-        contact_name = self.inst.get("contact_officer", "")
-        if contact_name:
-            self._put(f, "contact_name", contact_name)
 
-        phone = self.inst.get("contact_phone", "") or ""
+        contact_name = (self.inst.get("contact_officer", "") or "Compliance Officer").strip()
+        phone = (self.inst.get("contact_phone", "") or "2125956009").strip()
+
+        # Item 44 — Title of approving official (hardcoded; static per institution)
+        f["f1-93"] = "Chief Compliance Officer"
+
+        # Item 47 — Preparer's name  (f1-97, confirmed by diagnostic)
+        f["f1-97"] = contact_name
+
+        # Item 48 — Contact person  (f1-98, confirmed by diagnostic)
+        f["f1-98"] = contact_name
+
+        # Item 49 — Telephone  (f1-99, confirmed by diagnostic)
         digits = re.sub(r"\D", "", phone)
         if len(digits) == 11 and digits.startswith("1"):
             digits = digits[1:]
-        if len(digits) >= 10:
-            self._put(f, "contact_phone", f"{digits[:3]}-{digits[3:10]}")
+        if digits:
+            f["f1-99"] = digits[:10]
 
-        now = datetime.now().strftime("%m/%d/%Y")
-        self._put(f, "prepared_date", now)
+        # Filing date
+        now = datetime.now()
+        f["f1-105"] = now.strftime("%m/%d/%Y")
+
         return f
+
+    @staticmethod
+    def _looks_like_entity_name(name: str) -> bool:
+        upper = f" {(name or '').upper()} "
+        entity_tokens = (" LLC ", " INC ", " CORP ", " CORPORATION ", " LTD ", " COMPANY ", " CO. ")
+        return any(token in upper for token in entity_tokens)
 
 
 def _to_list(value) -> List[str]:

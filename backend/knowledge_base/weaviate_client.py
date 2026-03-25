@@ -226,7 +226,17 @@ class WeaviateClient:
         where_clause = self._build_where_clause(filters)
         if where_clause:
             builder = builder.with_where(where_clause)
-        response = builder.do()
+        try:
+            response = builder.do()
+        except Exception as exc:
+            if "no graphql provider" in str(exc).lower() or "422" in str(exc):
+                logger.warning("Weaviate Narratives schema not initialised — returning empty results. ({})", exc)
+                return []
+            raise
+        errors = response.get("errors")
+        if errors:
+            logger.warning("Weaviate Narratives query errors — returning empty results: {}", errors)
+            return []
         return response.get("data", {}).get("Get", {}).get(NARRATIVES_CONFIG.name, [])
 
     def search_regulations(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
@@ -240,7 +250,17 @@ class WeaviateClient:
             .with_limit(limit)
             .with_additional("distance")
         )
-        response = builder.do()
+        try:
+            response = builder.do()
+        except Exception as exc:
+            if "no graphql provider" in str(exc).lower() or "422" in str(exc):
+                logger.warning("Weaviate Regulations schema not initialised — returning empty results. ({})", exc)
+                return []
+            raise
+        errors = response.get("errors")
+        if errors:
+            logger.warning("Weaviate Regulations query errors — returning empty results: {}", errors)
+            return []
         return response.get("data", {}).get("Get", {}).get(REGULATIONS_CONFIG.name, [])
 
     def search_definitions(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
@@ -254,7 +274,17 @@ class WeaviateClient:
             .with_limit(limit)
             .with_additional("distance")
         )
-        response = builder.do()
+        try:
+            response = builder.do()
+        except Exception as exc:
+            if "no graphql provider" in str(exc).lower() or "422" in str(exc):
+                logger.warning("Weaviate Definitions schema not initialised — returning empty results. ({})", exc)
+                return []
+            raise
+        errors = response.get("errors")
+        if errors:
+            logger.warning("Weaviate Definitions query errors — returning empty results: {}", errors)
+            return []
         return response.get("data", {}).get("Get", {}).get(DEFINITIONS_CONFIG.name, [])
 
     def hybrid_search(self, query: str, filters: Optional[Dict[str, Any]] = None, alpha: float = 0.5, limit: int = 10) -> List[Dict[str, Any]]:

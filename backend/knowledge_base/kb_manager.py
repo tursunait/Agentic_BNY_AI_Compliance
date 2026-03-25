@@ -79,16 +79,19 @@ class KBManager:
             raise
 
     def _fetch_report_type_row(self, report_type: str) -> Optional[Dict[str, Any]]:
-        rows = self._supabase_select(
-            "report_types",
-            {
-                "select": "report_type,narrative_instructions,json_schema,validation_rules,pdf_template_path,pdf_field_mapping",
-                "report_type": f"eq.{report_type.upper()}",
-                "limit": "1",
-            },
-        )
-        if rows:
-            return rows[0]
+        code = report_type.upper()
+        attempts = [
+            {"select": "*", "report_type": f"eq.{code}", "limit": "1"},
+            {"select": "*", "report_type_code": f"eq.{code}", "limit": "1"},
+            {"select": "*", "limit": "1"},
+        ]
+        for params in attempts:
+            try:
+                rows = self._supabase_select("report_types", params)
+            except Exception:
+                continue
+            if rows:
+                return rows[0]
         return None
 
     @staticmethod
@@ -177,7 +180,8 @@ class KBManager:
                         "narrative_instructions": row.get("narrative_instructions"),
                     }
             else:
-                raise ValueError(f"Schema not found in Supabase report_types for {report_type}")
+                logger.warning("report_types REST lookup failed for {} — falling back to local DB", report_type)
+                schema = self.database.get_schema(report_type)
         else:
             schema = self.database.get_schema(report_type)
 
@@ -192,11 +196,14 @@ class KBManager:
         if cached:
             return cached.get("rules", [])
 
+        rules: List[Dict[str, Any]] = []
         if self._supabase_rest_enabled():
             row = self._fetch_report_type_row(report_type)
-            if not row:
-                raise ValueError(f"Validation rules not found in Supabase report_types for {report_type}")
-            rules = self._normalize_rules(row.get("validation_rules"))
+            if row:
+                rules = self._normalize_rules(row.get("validation_rules"))
+            else:
+                logger.warning("report_types REST lookup failed for {} — falling back to local DB", report_type)
+                rules = self.database.get_validation_rules(report_type)
         else:
             rules = self.database.get_validation_rules(report_type)
 
@@ -209,11 +216,14 @@ class KBManager:
         if cached:
             return cached.get("mappings", [])
 
+        mappings: List[Dict[str, Any]] = []
         if self._supabase_rest_enabled():
             row = self._fetch_report_type_row(report_type)
-            if not row:
-                raise ValueError(f"Field mappings not found in Supabase report_types for {report_type}")
-            mappings = self._normalize_field_mappings(row.get("pdf_field_mapping"))
+            if row:
+                mappings = self._normalize_field_mappings(row.get("pdf_field_mapping"))
+            else:
+                logger.warning("report_types REST lookup failed for {} — falling back to local DB", report_type)
+                mappings = self.database.get_field_mappings(report_type)
         else:
             mappings = self.database.get_field_mappings(report_type)
 

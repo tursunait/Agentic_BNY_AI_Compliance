@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import requests
@@ -50,9 +49,7 @@ class SARCaseSchema(BaseModel):
     SuspiciousActivityInformation: Dict[str, Any] = Field(default_factory=dict)
 
     suspicious_activity_type: List[str] = Field(default_factory=list)
-    activity_date_range: Dict[str, Optional[str]] = Field(
-        default_factory=lambda: {"start": None, "end": None}
-    )
+    activity_date_range: Dict[str, Optional[str]] = Field(default_factory=lambda: {"start": None, "end": None})
     total_amount_involved: float = 0.0
     suspicious_activity_description: Optional[str] = None
 
@@ -80,9 +77,6 @@ class CTRCaseSchema(BaseModel):
     section_a: Dict[str, Any] = Field(default_factory=dict)
     section_b: Dict[str, Any] = Field(default_factory=dict)
     transaction: Dict[str, Any] = Field(default_factory=dict)
-    filing_type: str = "initial"
-    financial_institution: Dict[str, Any] = Field(default_factory=dict)
-    person_a: Dict[str, Any] = Field(default_factory=dict)
 
     transactions: List[TransactionDetail] = Field(default_factory=list)
     transaction_count: int = 0
@@ -109,11 +103,6 @@ class SchemaBundle:
 
 class SupabaseReportSchemaProvider:
     """Load report schema from Supabase report_types.json_schema."""
-
-    LOCAL_SCHEMA_PATHS = {
-        "SAR": Path("knowledge_base/schemas/sar_schema.json"),
-        "CTR": Path("knowledge_base/schemas/ctr_schema.json"),
-    }
 
     def __init__(self, base_url: Optional[str] = None, anon_key: Optional[str] = None):
         self.base_url = (base_url or settings.get_supabase_rest_url() or "").rstrip("/")
@@ -144,17 +133,6 @@ class SupabaseReportSchemaProvider:
                 return {}
         return {}
 
-    def _load_local_schema(self, report_type: str) -> Dict[str, Any]:
-        path = self.LOCAL_SCHEMA_PATHS.get(str(report_type or "").upper())
-        if not path or not path.exists():
-            return {}
-        try:
-            raw = json.loads(path.read_text(encoding="utf-8"))
-            return raw if isinstance(raw, dict) else {}
-        except Exception as exc:
-            logger.warning("Failed reading local schema {}: {}", path, exc)
-            return {}
-
     def load(self, report_type: str) -> SchemaBundle:
         code = (report_type or "SAR").upper()
         if not self._enabled():
@@ -162,54 +140,28 @@ class SupabaseReportSchemaProvider:
                 "Supabase REST is not configured; using empty schema for report_type={}",
                 code,
             )
-            return SchemaBundle(
-                report_type=code,
-                json_schema=self._load_local_schema(code),
-                narrative_required=None,
-            )
+            return SchemaBundle(report_type=code, json_schema={}, narrative_required=None)
 
         url = f"{self.base_url}/rest/v1/report_types"
         query_attempts = [
-            {
-                "select": "report_type,json_schema,narrative_required",
-                "report_type": f"eq.{code}",
-                "limit": "1",
-            },
-            {
-                "select": "report_type,json_schema",
-                "report_type": f"eq.{code}",
-                "limit": "1",
-            },
-            {
-                "select": "report_type_code,json_schema,narrative_required",
-                "report_type_code": f"eq.{code}",
-                "limit": "1",
-            },
-            {
-                "select": "report_type_code,json_schema",
-                "report_type_code": f"eq.{code}",
-                "limit": "1",
-            },
+            {"select": "report_type,json_schema,narrative_required", "report_type": f"eq.{code}", "limit": "1"},
+            {"select": "report_type,json_schema", "report_type": f"eq.{code}", "limit": "1"},
+            {"select": "report_type_code,json_schema,narrative_required", "report_type_code": f"eq.{code}", "limit": "1"},
+            {"select": "report_type_code,json_schema", "report_type_code": f"eq.{code}", "limit": "1"},
         ]
 
         row: Dict[str, Any] = {}
         last_error: Optional[Exception] = None
         for params in query_attempts:
             try:
-                response = requests.get(
-                    url, headers=self._headers(), params=params, timeout=5
-                )
+                response = requests.get(url, headers=self._headers(), params=params, timeout=20)
                 response.raise_for_status()
             except requests.HTTPError as exc:
                 last_error = exc
                 # Column mismatch on Supabase returns 400; try next query shape.
                 if response.status_code == 400:
                     continue
-                break
-            except requests.RequestException as exc:
-                # Network or timeout error: fail fast and use fallback schema.
-                last_error = exc
-                break
+                raise
 
             payload = response.json()
             if isinstance(payload, list) and payload and isinstance(payload[0], dict):
@@ -217,16 +169,11 @@ class SupabaseReportSchemaProvider:
                 break
 
         if not row:
-            logger.warning(
-                "Supabase schema lookup unavailable for report_type={} ({}). Falling back to local required-field defaults.",
-                code,
-                last_error or "not found",
-            )
-            return SchemaBundle(
-                report_type=code,
-                json_schema=self._load_local_schema(code),
-                narrative_required=None,
-            )
+            if last_error:
+                raise ValueError(
+                    f"Schema lookup failed in Supabase report_types for report_type={code}: {last_error}"
+                ) from last_error
+            raise ValueError(f"Schema not found in Supabase report_types for report_type={code}")
 
         narrative_required = row.get("narrative_required")
         if not isinstance(narrative_required, bool):
@@ -260,9 +207,7 @@ class TransactionMapper:
         return datetime.now(timezone.utc)
 
     @staticmethod
-    def infer_type(
-        tx: Dict[str, Any],
-    ) -> Literal["deposit", "withdrawal", "transfer", "wire"]:
+    def infer_type(tx: Dict[str, Any]) -> Literal["deposit", "withdrawal", "transfer", "wire"]:
         text = " ".join(
             [
                 str(tx.get("type", "") or ""),
@@ -281,33 +226,6 @@ class TransactionMapper:
         return "transfer"
 
     @staticmethod
-    def _to_float(value: Any) -> float:
-        try:
-            return float(str(value or 0).replace(",", "").replace("$", "").strip() or 0)
-        except (TypeError, ValueError):
-            return 0.0
-
-    @staticmethod
-    def _location_text(tx: Dict[str, Any]) -> str:
-        location = tx.get("location")
-        if isinstance(location, str):
-            return location
-        if isinstance(location, dict):
-            city = str(location.get("city") or "").strip()
-            state = str(location.get("state") or "").strip()[:2]
-            if city or state:
-                return ", ".join(part for part in [city, state] if part)
-            address = str(location.get("address") or "").strip()
-            if address:
-                parts = [part.strip() for part in address.split(",") if part.strip()]
-                if len(parts) >= 2:
-                    city = parts[-2]
-                    state = parts[-1].split(" ")[0][:2]
-                    return ", ".join(part for part in [city, state] if part)
-                return address
-        return ""
-
-    @staticmethod
     def normalize_transactions(raw_case: Dict[str, Any]) -> List[TransactionDetail]:
         raw_transactions = raw_case.get("transactions", [])
         if not isinstance(raw_transactions, list):
@@ -317,55 +235,33 @@ class TransactionMapper:
         for index, tx in enumerate(raw_transactions, start=1):
             if not isinstance(tx, dict):
                 continue
-            location_text = TransactionMapper._location_text(tx)
-            description_text = str(tx.get("description") or tx.get("notes") or "").strip()
-            if not description_text and location_text:
-                description_text = location_text
             normalized.append(
                 TransactionDetail(
-                    transaction_id=str(
-                        tx.get("transaction_id") or tx.get("tx_id") or f"TX-{index:04d}"
-                    ),
-                    date=TransactionMapper.parse_datetime(
-                        tx.get("date") or tx.get("timestamp") or tx.get("datetime")
-                    ),
-                    amount=TransactionMapper._to_float(tx.get("amount") or tx.get("amount_usd")),
+                    transaction_id=str(tx.get("transaction_id") or tx.get("tx_id") or f"TX-{index:04d}"),
+                    date=TransactionMapper.parse_datetime(tx.get("date") or tx.get("timestamp")),
+                    amount=float(tx.get("amount") or tx.get("amount_usd") or 0.0),
                     currency=str(tx.get("currency") or "USD"),
                     type=TransactionMapper.infer_type(tx),
                     counterparty=(
-                        str(
-                            tx.get("counterparty")
-                            or tx.get("destination_account")
-                            or tx.get("beneficiary_account")
-                            or ""
-                        ).strip()
-                        or None
+                        str(tx.get("counterparty") or tx.get("destination_account"))
+                        if tx.get("counterparty") or tx.get("destination_account")
+                        else None
                     ),
-                    account=str(
-                        tx.get("account")
-                        or tx.get("origin_account")
-                        or tx.get("account_number")
-                        or ""
-                    ).strip(),
-                    description=description_text or None,
+                    account=str(tx.get("account") or tx.get("origin_account") or ""),
+                    description=str(tx.get("description") or tx.get("notes") or "") or None,
                 )
             )
         return normalized
 
     @staticmethod
-    def extract_accounts(
-        raw_case: Dict[str, Any], transactions: List[TransactionDetail]
-    ) -> List[str]:
+    def extract_accounts(raw_case: Dict[str, Any], transactions: List[TransactionDetail]) -> List[str]:
         accounts: List[str] = []
         seen = set()
 
         provided = raw_case.get("accounts")
         if isinstance(provided, list):
             for item in provided:
-                if isinstance(item, dict):
-                    value = str(item.get("account_number") or item.get("account") or "").strip()
-                else:
-                    value = str(item or "").strip()
+                value = str(item or "").strip()
                 if value and value not in seen:
                     seen.add(value)
                     accounts.append(value)
@@ -536,29 +432,10 @@ class SARRuleEngine:
         single_alert = raw_case.get("alert")
         if isinstance(single_alert, dict):
             return [single_alert]
-
-        red_flags = raw_case.get("red_flags")
-        if isinstance(red_flags, list) and red_flags:
-            converted: List[Dict[str, Any]] = []
-            for item in red_flags:
-                if not isinstance(item, dict):
-                    continue
-                converted.append(
-                    {
-                        "subtype": item.get("indicator"),
-                        "description": item.get("description"),
-                        "severity": item.get("severity") or "medium",
-                        "rule_id": item.get("regulatory_reference"),
-                    }
-                )
-            if converted:
-                return converted
         return []
 
     @staticmethod
-    def _collect_suspicious_types(
-        raw_case: Dict[str, Any], alerts: List[Dict[str, Any]]
-    ) -> List[str]:
+    def _collect_suspicious_types(raw_case: Dict[str, Any], alerts: List[Dict[str, Any]]) -> List[str]:
         suspicious_types: List[str] = []
         sai = raw_case.get("SuspiciousActivityInformation", {})
         if isinstance(sai, dict):
@@ -575,29 +452,13 @@ class SARRuleEngine:
                 if isinstance(values, list) and values:
                     suspicious_types.append(label)
 
-        part2 = raw_case.get("part_2_suspicious_activity") if isinstance(raw_case.get("part_2_suspicious_activity"), dict) else {}
-        categories = part2.get("suspicious_activity_categories") if isinstance(part2.get("suspicious_activity_categories"), dict) else {}
-        part2_labels = {
-            "29_structuring": "structuring",
-            "30_terrorist_financing": "terrorist financing",
-            "31_fraud": "fraud",
-            "33_money_laundering": "money laundering",
-            "35_other_suspicious": "other suspicious activity",
-            "38_mortgage_fraud": "mortgage fraud",
-        }
-        for key, values in categories.items():
-            if isinstance(values, list) and values:
-                suspicious_types.append(part2_labels.get(str(key), str(key)))
-
         for alert in alerts:
             subtype = str(alert.get("subtype") or "").strip()
             if subtype:
                 suspicious_types.append(subtype)
             red_flags = alert.get("red_flags")
             if isinstance(red_flags, list):
-                suspicious_types.extend(
-                    [str(item) for item in red_flags if str(item).strip()]
-                )
+                suspicious_types.extend([str(item) for item in red_flags if str(item).strip()])
 
         # Preserve order while removing duplicates.
         deduped: List[str] = []
@@ -610,19 +471,7 @@ class SARRuleEngine:
         return deduped
 
     @staticmethod
-    def _build_activity_date_range(
-        raw_case: Dict[str, Any], transactions: List[TransactionDetail]
-    ) -> Dict[str, Optional[str]]:
-        direct_range = raw_case.get("activity_date_range")
-        if isinstance(direct_range, dict):
-            start = direct_range.get("start")
-            end = direct_range.get("end")
-            if start or end:
-                return {
-                    "start": str(start) if start else None,
-                    "end": str(end) if end else None,
-                }
-
+    def _build_activity_date_range(raw_case: Dict[str, Any], transactions: List[TransactionDetail]) -> Dict[str, Optional[str]]:
         sai = raw_case.get("SuspiciousActivityInformation", {})
         if isinstance(sai, dict):
             date_block = sai.get("27_DateOrDateRange")
@@ -630,18 +479,12 @@ class SARRuleEngine:
                 start = date_block.get("from")
                 end = date_block.get("to")
                 if start or end:
-                    return {
-                        "start": str(start) if start else None,
-                        "end": str(end) if end else None,
-                    }
+                    return {"start": str(start) if start else None, "end": str(end) if end else None}
 
         if not transactions:
             return {"start": None, "end": None}
         dates = sorted(tx.date for tx in transactions)
-        return {
-            "start": dates[0].strftime("%Y-%m-%d"),
-            "end": dates[-1].strftime("%Y-%m-%d"),
-        }
+        return {"start": dates[0].strftime("%Y-%m-%d"), "end": dates[-1].strftime("%Y-%m-%d")}
 
     @staticmethod
     def _build_suspicious_activity_block(
@@ -653,22 +496,14 @@ class SARRuleEngine:
         existing = raw_case.get("SuspiciousActivityInformation")
         if isinstance(existing, dict) and existing:
             merged = dict(existing)
-            merged.setdefault(
-                "26_AmountInvolved", {"amount_usd": total_amount, "no_amount": False}
-            )
-            merged.setdefault(
-                "27_DateOrDateRange",
-                {"from": date_range.get("start"), "to": date_range.get("end")},
-            )
+            merged.setdefault("26_AmountInvolved", {"amount_usd": total_amount, "no_amount": False})
+            merged.setdefault("27_DateOrDateRange", {"from": date_range.get("start"), "to": date_range.get("end")})
             return merged
 
         lowered = " ".join(suspicious_types).lower()
         return {
             "26_AmountInvolved": {"amount_usd": total_amount, "no_amount": False},
-            "27_DateOrDateRange": {
-                "from": date_range.get("start"),
-                "to": date_range.get("end"),
-            },
+            "27_DateOrDateRange": {"from": date_range.get("start"), "to": date_range.get("end")},
             "29_Structuring": suspicious_types if "structur" in lowered else [],
             "30_TerroristFinancing": suspicious_types if "terror" in lowered else [],
             "31_Fraud": suspicious_types if "fraud" in lowered else [],
@@ -679,111 +514,56 @@ class SARRuleEngine:
         }
 
     @staticmethod
-    def map_fields(
-        raw_case: Dict[str, Any], case_id: Optional[str] = None
-    ) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    def map_fields(raw_case: Dict[str, Any], case_id: Optional[str] = None) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
+        subject = raw_case.get("subject") if isinstance(raw_case.get("subject"), dict) else {}
+        customer = raw_case.get("customer") if isinstance(raw_case.get("customer"), dict) else {}
+        institution = raw_case.get("institution")
+        if not isinstance(institution, dict):
+            institution = raw_case.get("financial_institution") if isinstance(raw_case.get("financial_institution"), dict) else {}
+
         transactions = TransactionMapper.normalize_transactions(raw_case)
         alerts = SARRuleEngine._extract_alerts(raw_case)
         suspicious_types = SARRuleEngine._collect_suspicious_types(raw_case, alerts)
+        date_range = SARRuleEngine._build_activity_date_range(raw_case, transactions)
 
-        subject = (
-            raw_case.get("subject") if isinstance(raw_case.get("subject"), dict) else {}
-        )
-        institution = (
-            raw_case.get("institution")
-            if isinstance(raw_case.get("institution"), dict)
-            else {}
-        )
-
-        account_numbers = TransactionMapper.extract_accounts(raw_case, transactions)
-
-        suspicious_info = raw_case.get("SuspiciousActivityInformation")
-        total_amount = 0.0
-        if isinstance(suspicious_info, dict):
-            amount_block = suspicious_info.get("26_AmountInvolved")
-            if isinstance(amount_block, dict):
-                try:
-                    total_amount = float(amount_block.get("amount_usd") or 0.0)
-                except (TypeError, ValueError):
-                    total_amount = 0.0
-            elif suspicious_info.get("28_CumulativeAmount") not in (None, ""):
-                try:
-                    total_amount = float(str(suspicious_info.get("28_CumulativeAmount")).replace(",", ""))
-                except (TypeError, ValueError):
-                    total_amount = 0.0
-
-        if total_amount == 0.0:
-            total_amount = float(raw_case.get("amount") or raw_case.get("total_amount_involved") or 0.0)
-        if total_amount == 0.0:
+        amount_block = (raw_case.get("SuspiciousActivityInformation") or {}).get("26_AmountInvolved", {})
+        if isinstance(amount_block, dict) and amount_block.get("amount_usd") is not None:
+            total_amount = float(amount_block.get("amount_usd") or 0.0)
+        else:
             total_amount = float(sum(tx.amount for tx in transactions))
 
-        activity_date_range = SARRuleEngine._build_activity_date_range(raw_case, transactions)
-        suspicious_activity_block = SARRuleEngine._build_suspicious_activity_block(
-            raw_case=raw_case,
-            suspicious_types=suspicious_types,
-            total_amount=total_amount,
-            date_range=activity_date_range,
-        )
-
-        customer_name = str(
-            subject.get("name")
-            or " ".join(
-                part
-                for part in [subject.get("first_name"), subject.get("last_name")]
-                if str(part or "").strip()
+        description = raw_case.get("suspicious_activity_description") or raw_case.get("narrative")
+        if not description:
+            description = (
+                f"{len(transactions)} transaction(s) totaling ${total_amount:,.2f}. "
+                f"Indicators: {', '.join(suspicious_types) if suspicious_types else 'suspicious activity'}."
             )
-            or "UNKNOWN"
-        )
 
-        customer_id = str(
-            subject.get("subject_id")
-            or subject.get("customer_id")
-            or subject.get("id")
-            or f"CUS-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        )
-
-        suspicious_desc_parts: List[str] = []
-        for item in suspicious_types:
-            text_value = str(item or "").strip()
-            if text_value:
-                suspicious_desc_parts.append(text_value)
-        for alert in alerts:
-            if not isinstance(alert, dict):
-                continue
-            desc = str(alert.get("description") or "").strip()
-            if desc:
-                suspicious_desc_parts.append(desc)
-        suspicious_activity_description = "; ".join(
-            list(dict.fromkeys(suspicious_desc_parts))[:8]
-        ) or None
+        customer_name = str(customer.get("name") or subject.get("name") or "Unknown")
+        customer_id = str(customer.get("id") or subject.get("subject_id") or "UNKNOWN")
+        case_value = str(case_id or raw_case.get("case_id") or f"SAR-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
 
         mapped = {
             "report_type": "SAR",
-            "case_id": str(
-                case_id
-                or raw_case.get("case_id")
-                or f"SAR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
-            ),
+            "case_id": case_value,
             "customer_name": customer_name,
             "customer_id": customer_id,
-            "account_numbers": account_numbers,
-            "customer_address": str(subject.get("address") or "").strip() or None,
-            "customer_dob": str(subject.get("date_of_birth") or subject.get("dob") or "").strip() or None,
-            "customer_ssn": str(
-                subject.get("ssn_or_ein")
-                or subject.get("ssn")
-                or subject.get("ein")
-                or subject.get("tin")
-                or ""
-            ).strip()
-            or None,
-            "subject": subject,
-            "institution": institution,
-            "SuspiciousActivityInformation": suspicious_activity_block,
+            "account_numbers": TransactionMapper.extract_accounts(raw_case, transactions),
+            "customer_address": customer.get("address") or subject.get("address"),
+            "customer_dob": customer.get("date_of_birth") or subject.get("dob"),
+            "customer_ssn": customer.get("ssn") or subject.get("ssn") or subject.get("tin"),
+            "subject": subject or {"name": customer_name, "subject_id": customer_id},
+            "institution": institution or {},
+            "SuspiciousActivityInformation": SARRuleEngine._build_suspicious_activity_block(
+                raw_case,
+                suspicious_types,
+                total_amount,
+                date_range,
+            ),
             "suspicious_activity_type": suspicious_types,
-            "activity_date_range": activity_date_range,
+            "activity_date_range": date_range,
             "total_amount_involved": total_amount,
-            "suspicious_activity_description": suspicious_activity_description,
+            "suspicious_activity_description": str(description),
             "transactions": transactions,
             "transaction_count": len(transactions),
             "risk_flags": [],
@@ -792,15 +572,10 @@ class SARRuleEngine:
             "data_quality_issues": [],
             "narrative_required": True,
             "narrative_justification": None,
-            "data_sources": (
-                raw_case.get("data_sources", [])
-                if isinstance(raw_case.get("data_sources"), list)
-                else []
-            ),
+            "data_sources": raw_case.get("data_sources", []) if isinstance(raw_case.get("data_sources"), list) else [],
             "created_at": datetime.now(timezone.utc),
         }
         return mapped, alerts
-
 
     @staticmethod
     def detect_risks(
@@ -814,14 +589,9 @@ class SARRuleEngine:
         sub_threshold = [
             tx
             for tx in transactions
-            if tx.amount < SARRuleEngine.STRUCTURING_THRESHOLD
-            and tx.type in {"deposit", "wire", "transfer"}
+            if tx.amount < SARRuleEngine.STRUCTURING_THRESHOLD and tx.type in {"deposit", "wire", "transfer"}
         ]
-        if (
-            len(sub_threshold) >= 3
-            and sum(tx.amount for tx in sub_threshold)
-            > SARRuleEngine.STRUCTURING_THRESHOLD
-        ):
+        if len(sub_threshold) >= 3 and sum(tx.amount for tx in sub_threshold) > SARRuleEngine.STRUCTURING_THRESHOLD:
             flags.append(
                 RiskFlag(
                     flag_type="structuring",
@@ -873,9 +643,7 @@ class SARRuleEngine:
             if not description:
                 trigger_reasons = alert.get("trigger_reasons")
                 if isinstance(trigger_reasons, list):
-                    description = "; ".join(
-                        str(item) for item in trigger_reasons if str(item).strip()
-                    )
+                    description = "; ".join(str(item) for item in trigger_reasons if str(item).strip())
             if not description:
                 continue
             severity = str(alert.get("severity") or "medium").lower()
@@ -886,19 +654,12 @@ class SARRuleEngine:
                     flag_type=str(alert.get("subtype") or "general_alert"),
                     severity=severity,  # type: ignore[arg-type]
                     description=description,
-                    rule_reference=str(
-                        alert.get("rule_id") or alert.get("alert_id") or "ALERT"
-                    ),
+                    rule_reference=str(alert.get("rule_id") or alert.get("alert_id") or "ALERT"),
                 )
             )
 
         score = min(
-            float(
-                sum(
-                    SARRuleEngine.SEVERITY_WEIGHTS.get(flag.severity, 0)
-                    for flag in flags
-                )
-            ),
+            float(sum(SARRuleEngine.SEVERITY_WEIGHTS.get(flag.severity, 0) for flag in flags)),
             100.0,
         )
         return flags, score
@@ -909,176 +670,35 @@ class CTRRuleEngine:
     SEVERITY_WEIGHTS = {"low": 10, "medium": 25, "high": 50, "critical": 100}
 
     @staticmethod
-    def map_fields(
-        raw_case: Dict[str, Any], case_id: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def map_fields(raw_case: Dict[str, Any], case_id: Optional[str] = None) -> Dict[str, Any]:
         transactions = TransactionMapper.normalize_transactions(raw_case)
-        subject = (
-            raw_case.get("subject") if isinstance(raw_case.get("subject"), dict) else {}
-        )
-        institution = (
-            raw_case.get("institution")
-            if isinstance(raw_case.get("institution"), dict)
-            else {}
-        )
-        section_a = (
-            raw_case.get("section_a")
-            if isinstance(raw_case.get("section_a"), dict)
-            else {}
-        )
-        section_b = (
-            raw_case.get("section_b")
-            if isinstance(raw_case.get("section_b"), dict)
-            else {}
-        )
-        tx_block = (
-            raw_case.get("transaction")
-            if isinstance(raw_case.get("transaction"), dict)
-            else {}
-        )
+        subject = raw_case.get("subject") if isinstance(raw_case.get("subject"), dict) else {}
+        institution = raw_case.get("institution") if isinstance(raw_case.get("institution"), dict) else {}
+        section_a = raw_case.get("section_a") if isinstance(raw_case.get("section_a"), dict) else {}
+        section_b = raw_case.get("section_b") if isinstance(raw_case.get("section_b"), dict) else {}
+        tx_block = raw_case.get("transaction") if isinstance(raw_case.get("transaction"), dict) else {}
 
-        fallback_city = ""
-        fallback_state = ""
-        for tx in transactions:
-            location = str(getattr(tx, "description", "") or "")
-            if not location and isinstance(raw_case.get("transactions"), list):
-                # Re-read original location field from the matching raw transaction when present.
-                for raw_tx in raw_case.get("transactions", []):
-                    if not isinstance(raw_tx, dict):
-                        continue
-                    if str(
-                        raw_tx.get("tx_id") or raw_tx.get("transaction_id") or ""
-                    ) == str(tx.transaction_id):
-                        location = str(raw_tx.get("location") or "")
-                        break
-            if "," in location:
-                city, state = location.split(",", 1)
-                fallback_city = city.strip() or fallback_city
-                fallback_state = state.strip()[:2] or fallback_state
-                break
-
-        cash_in = sum(tx.amount for tx in transactions if tx.type == "deposit")
-        cash_out = sum(
-            tx.amount
-            for tx in transactions
-            if tx.type in {"withdrawal", "wire", "transfer"}
-        )
-        computed_tx_defaults = {
-            "cash_in": cash_in,
-            "cash_out": cash_out,
-            "currency_exchange": False,
-            "wire_transfer": any(tx.type == "wire" for tx in transactions),
-        }
-
-        tx_block = dict(tx_block) if isinstance(tx_block, dict) else {}
         if not tx_block:
-            tx_block = dict(computed_tx_defaults)
-        else:
-            if tx_block.get("cash_in") in (None, ""):
-                tx_block["cash_in"] = computed_tx_defaults["cash_in"]
-            if tx_block.get("cash_out") in (None, ""):
-                tx_block["cash_out"] = computed_tx_defaults["cash_out"]
-            if tx_block.get("currency_exchange") in (None, ""):
-                tx_block["currency_exchange"] = computed_tx_defaults["currency_exchange"]
-            if tx_block.get("wire_transfer") in (None, ""):
-                tx_block["wire_transfer"] = computed_tx_defaults["wire_transfer"]
+            cash_in = sum(tx.amount for tx in transactions if tx.type == "deposit")
+            cash_out = sum(tx.amount for tx in transactions if tx.type in {"withdrawal", "wire", "transfer"})
+            tx_block = {
+                "cash_in": cash_in,
+                "cash_out": cash_out,
+                "currency_exchange": False,
+                "wire_transfer": any(tx.type == "wire" for tx in transactions),
+            }
 
-        if not tx_block.get("date"):
-            if transactions:
-                tx_block["date"] = min(tx.date for tx in transactions).strftime(
-                    "%Y-%m-%d"
-                )
-            else:
-                tx_block["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-        subject_name = str(subject.get("name") or "").strip()
-        section_a_defaults = {
-            "last_name": str(subject.get("last_name") or subject_name or "UNKNOWN"),
-            "first_name": str(subject.get("first_name") or ""),
-            "middle_initial": str(subject.get("middle_initial") or ""),
-            "ssn_or_ein": str(
-                subject.get("ssn_or_ein")
-                or subject.get("ssn")
-                or subject.get("ein")
-                or subject.get("tin")
-                or "UNKNOWN"
-            ),
-            "address": str(
-                subject.get("address")
-                or f"{fallback_city}, {fallback_state}".strip(", ")
-                or "UNKNOWN"
-            ),
-            "city": str(subject.get("city") or fallback_city or "UNKNOWN"),
-            "state": str(subject.get("state") or fallback_state or "NA")[:2],
-            "zip": str(subject.get("zip") or subject.get("postal_code") or "00000"),
-            "country": str(subject.get("country") or "US"),
-        }
-        section_a = dict(section_a) if isinstance(section_a, dict) else {}
-        section_a = {
-            **section_a_defaults,
-            **{k: v for k, v in section_a.items() if str(v or "").strip()},
-        }
-
-        provided_fi = (
-            raw_case.get("financial_institution")
-            if isinstance(raw_case.get("financial_institution"), dict)
-            else {}
-        )
-        default_fi_address = f"{institution.get('branch_city', fallback_city)}, {institution.get('branch_state', fallback_state)}".strip(
-            ", "
-        )
-        financial_institution_defaults = {
-            "name": str(institution.get("name") or "UNKNOWN"),
-            "address": str(
-                institution.get("address") or default_fi_address or "UNKNOWN"
-            ),
-            "city": str(
-                institution.get("city")
-                or institution.get("branch_city")
-                or fallback_city
-                or "UNKNOWN"
-            ),
-            "state": str(
-                institution.get("state")
-                or institution.get("branch_state")
-                or fallback_state
-                or "NA"
-            )[:2],
-            "zip": str(
-                institution.get("zip") or institution.get("postal_code") or "00000"
-            ),
-            "ein_or_ssn": str(
-                institution.get("ein_or_ssn")
-                or institution.get("ein")
-                or institution.get("tin")
-                or "UNKNOWN"
-            ),
-        }
-        financial_institution = {
-            **financial_institution_defaults,
-            **{k: v for k, v in provided_fi.items() if str(v or "").strip()},
-        }
-
-        total_amount = float(tx_block.get("cash_in") or 0.0) + float(
-            tx_block.get("cash_out") or 0.0
-        )
+        total_amount = float(tx_block.get("cash_in") or 0.0) + float(tx_block.get("cash_out") or 0.0)
         if total_amount == 0.0:
             total_amount = float(sum(tx.amount for tx in transactions))
 
-        case_value = str(
-            case_id
-            or raw_case.get("case_id")
-            or f"CTR-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
-        )
+        case_value = str(case_id or raw_case.get("case_id") or f"CTR-{datetime.now().strftime('%Y%m%d-%H%M%S')}")
         return {
             "report_type": "CTR",
             "case_id": case_value,
-            "filing_type": str(raw_case.get("filing_type") or "initial"),
             "subject": subject,
             "institution": institution,
-            "financial_institution": financial_institution,
             "section_a": section_a,
-            "person_a": section_a,
             "section_b": section_b or {"blank_reason": "conducted_on_own_behalf"},
             "transaction": tx_block,
             "transactions": transactions,
@@ -1090,11 +710,7 @@ class CTRRuleEngine:
             "data_quality_issues": [],
             "narrative_required": False,
             "narrative_justification": None,
-            "data_sources": (
-                raw_case.get("data_sources", [])
-                if isinstance(raw_case.get("data_sources"), list)
-                else []
-            ),
+            "data_sources": raw_case.get("data_sources", []) if isinstance(raw_case.get("data_sources"), list) else [],
             "created_at": datetime.now(timezone.utc),
         }
 
@@ -1127,10 +743,7 @@ class CTRRuleEngine:
                 )
             )
 
-        if (
-            bool(transaction.get("wire_transfer"))
-            and total_cash >= CTRRuleEngine.CTR_THRESHOLD
-        ):
+        if bool(transaction.get("wire_transfer")) and total_cash >= CTRRuleEngine.CTR_THRESHOLD:
             flags.append(
                 RiskFlag(
                     flag_type="wire_with_cash",
@@ -1142,12 +755,7 @@ class CTRRuleEngine:
             )
 
         score = min(
-            float(
-                sum(
-                    CTRRuleEngine.SEVERITY_WEIGHTS.get(flag.severity, 0)
-                    for flag in flags
-                )
-            ),
+            float(sum(CTRRuleEngine.SEVERITY_WEIGHTS.get(flag.severity, 0) for flag in flags)),
             100.0,
         )
         return flags, score
@@ -1167,7 +775,7 @@ class MultiReportAggregator:
         if report_type == "SAR":
             for field in ["customer_ssn", "customer_address", "customer_dob"]:
                 if not data.get(field):
-                    issues.append(f"Critical field missing: {field}")
+                    issues.append(f"Data quality note: {field} not provided (obtain if available)")
             for index, tx in enumerate(data.get("transactions", []), start=1):
                 tx_dict = tx if isinstance(tx, dict) else tx.model_dump()
                 if not tx_dict.get("counterparty"):
@@ -1177,9 +785,7 @@ class MultiReportAggregator:
             cash_in = float(tx_block.get("cash_in") or 0.0)
             cash_out = float(tx_block.get("cash_out") or 0.0)
             if (cash_in + cash_out) < CTRRuleEngine.CTR_THRESHOLD:
-                issues.append(
-                    "CTR threshold not met based on mapped cash_in/cash_out values"
-                )
+                issues.append("CTR threshold not met based on mapped cash_in/cash_out values")
         return issues
 
     @staticmethod
@@ -1189,27 +795,25 @@ class MultiReportAggregator:
         risk_flags: List[RiskFlag],
         missing_required: List[str],
     ) -> tuple[bool, Optional[str]]:
-        if isinstance(schema_narrative_required, bool):
-            if schema_narrative_required:
-                return True, "Narrative required by report schema configuration"
-            return False, "Narrative not required by report schema configuration"
-
+        # SAR always requires a narrative per FinCEN 31 CFR § 1020.320.
+        # Schema config cannot override this — check SAR first before consulting Supabase.
         if report_type == "SAR":
             reasons = ["SAR filing requires narrative explanation"]
-            high_risk = [
-                flag for flag in risk_flags if flag.severity in {"high", "critical"}
-            ]
+            high_risk = [flag for flag in risk_flags if flag.severity in {"high", "critical"}]
             if high_risk:
                 reasons.append(f"{len(high_risk)} high/critical risk flag(s)")
             if missing_required:
                 reasons.append("Data gaps require explanatory narrative")
             return True, "; ".join(reasons)
 
+        if isinstance(schema_narrative_required, bool):
+            if schema_narrative_required:
+                return True, "Narrative required by report schema configuration"
+            return False, "Narrative not required by report schema configuration"
+
         return False, None
 
-    def process_sar(
-        self, raw_data: Dict[str, Any], case_id: Optional[str] = None
-    ) -> SARCaseSchema:
+    def process_sar(self, raw_data: Dict[str, Any], case_id: Optional[str] = None) -> SARCaseSchema:
         case = normalize_case_data(raw_data)
         schema = self.schema_provider.load("SAR")
         required_paths = SchemaRequiredFields.extract(schema.json_schema, "SAR")
@@ -1223,9 +827,7 @@ class MultiReportAggregator:
         )
         mapped["risk_flags"] = [flag.model_dump() for flag in risk_flags]
         mapped["risk_score"] = risk_score
-        mapped["missing_required_fields"] = MissingValueReviewer.review(
-            mapped, required_paths
-        )
+        mapped["missing_required_fields"] = MissingValueReviewer.review(mapped, required_paths)
         mapped["data_quality_issues"] = self._build_quality_issues("SAR", mapped)
         narrative_required, justification = self._narrative_decision(
             report_type="SAR",
@@ -1237,9 +839,7 @@ class MultiReportAggregator:
         mapped["narrative_justification"] = justification
         return SARCaseSchema(**mapped)
 
-    def process_ctr(
-        self, raw_data: Dict[str, Any], case_id: Optional[str] = None
-    ) -> CTRCaseSchema:
+    def process_ctr(self, raw_data: Dict[str, Any], case_id: Optional[str] = None) -> CTRCaseSchema:
         case = normalize_case_data(raw_data)
         schema = self.schema_provider.load("CTR")
         required_paths = SchemaRequiredFields.extract(schema.json_schema, "CTR")
@@ -1248,9 +848,7 @@ class MultiReportAggregator:
         risk_flags, risk_score = CTRRuleEngine.detect_risks(mapped)
         mapped["risk_flags"] = [flag.model_dump() for flag in risk_flags]
         mapped["risk_score"] = risk_score
-        mapped["missing_required_fields"] = MissingValueReviewer.review(
-            mapped, required_paths
-        )
+        mapped["missing_required_fields"] = MissingValueReviewer.review(mapped, required_paths)
         mapped["data_quality_issues"] = self._build_quality_issues("CTR", mapped)
         narrative_required, justification = self._narrative_decision(
             report_type="CTR",
@@ -1269,16 +867,12 @@ class MultiReportAggregator:
         report_type: Optional[str] = None,
     ) -> Union[SARCaseSchema, CTRCaseSchema]:
         case = normalize_case_data(raw_data)
-        resolved_report_type = str(
-            report_type or case.get("report_type") or "SAR"
-        ).upper()
+        resolved_report_type = str(report_type or case.get("report_type") or "SAR").upper()
         if resolved_report_type == "SAR":
             return self.process_sar(case, case_id=case_id)
         if resolved_report_type == "CTR":
             return self.process_ctr(case, case_id=case_id)
-        raise ValueError(
-            f"Unknown report_type: {resolved_report_type}. Expected SAR or CTR."
-        )
+        raise ValueError(f"Unknown report_type: {resolved_report_type}. Expected SAR or CTR.")
 
 
 # Backward-compatible name used by current orchestration code.

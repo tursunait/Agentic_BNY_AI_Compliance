@@ -1,0 +1,56 @@
+.agent-timeline {
+  position: relative;
+  padding-left: 1.8rem;
+}
+
+.agent-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #D3D3D3;
+}
+
+.agent-step {
+  position: relative;
+  margin-bottom: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  padding: .6rem .75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+
+.agent-step::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #D3D3D3;
+}
+
+.agent-step.completed::before { background: #28A745; }
+.agent-step.active::before,
+.agent-step.processing::before { background: #0077C8; animation: pulse 1.4s infinite; }
+.agent-step.skipped::before { background: #9AA0A6; }
+.agent-step.error::before,
+.agent-step.failed::before { background: #DC3545; }
+
+.agent-step-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agent-step-title { font-weight: 700; color: #003B5C; }
+.agent-step-meta { color: #767676; font-size: .8rem; }
+.agent-step-description { color: #4A4A4A; font-size: .85rem; margin-top: .2rem; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}

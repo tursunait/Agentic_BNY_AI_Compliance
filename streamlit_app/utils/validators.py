@@ -109,7 +109,112 @@ def build_manual_case_payload(
     }
 
 
-def build_text_case_payload(free_text: str, subject_name: str = "Unknown Subject") -> dict[str, Any]:
+# ---------------------------------------------------------------------------
+# Intake field definitions — required FinCEN SAR subject fields
+# ---------------------------------------------------------------------------
+
+INTAKE_FIELDS: list[dict[str, Any]] = [
+    {
+        "key": "subject_name",
+        "label": "Subject full name (individual) or entity legal name",
+        "path": ("subject", "name"),
+        "required": True,
+        "placeholder": "e.g. Jane Smith or Global Trade Corp",
+        "blank_values": {"Subject Unknown", "Unknown Subject", ""},
+    },
+    {
+        "key": "subject_address",
+        "label": "Subject street address",
+        "path": ("subject", "address"),
+        "required": True,
+        "placeholder": "e.g. 123 Main St",
+    },
+    {
+        "key": "subject_city",
+        "label": "Subject city",
+        "path": ("subject", "city"),
+        "required": True,
+        "placeholder": "e.g. Miami",
+    },
+    {
+        "key": "subject_state",
+        "label": "Subject state (2-letter code)",
+        "path": ("subject", "state"),
+        "required": True,
+        "placeholder": "e.g. FL",
+    },
+    {
+        "key": "subject_zip",
+        "label": "Subject ZIP / postal code",
+        "path": ("subject", "zip"),
+        "required": True,
+        "placeholder": "e.g. 33101",
+    },
+    {
+        "key": "subject_tin",
+        "label": "Subject TIN / SSN / EIN",
+        "path": ("subject", "tin"),
+        "required": True,
+        "placeholder": "e.g. 123-45-6789",
+    },
+    {
+        "key": "subject_dob",
+        "label": "Subject date of birth (MM/DD/YYYY) — leave blank for entities",
+        "path": ("subject", "dob"),
+        "required": False,
+        "placeholder": "e.g. 01/15/1980",
+    },
+]
+
+
+def identify_missing_intake_fields(case_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return list of INTAKE_FIELDS entries whose value is absent in *case_data*."""
+    missing: list[dict[str, Any]] = []
+    for field in INTAKE_FIELDS:
+        # Walk the nested path to find the current value.
+        node: Any = case_data
+        for key in field["path"]:
+            node = node.get(key) if isinstance(node, dict) else None
+        blank_values: set[str] = field.get("blank_values", {""})
+        value = (node or "").strip() if isinstance(node, str) else (node or "")
+        if not value or (isinstance(value, str) and value in blank_values):
+            missing.append(field)
+    return missing
+
+
+def merge_intake_answers(case_data: dict[str, Any], answers: dict[str, str]) -> dict[str, Any]:
+    """Merge analyst-supplied answers into *case_data*, updating nested subject fields."""
+    case = dict(case_data)
+    subject = dict(case.get("subject") or {})
+
+    field_map = {f["key"]: f["path"] for f in INTAKE_FIELDS}
+    for key, value in answers.items():
+        value = (value or "").strip()
+        if not value or key not in field_map:
+            continue
+        path = field_map[key]
+        if path[0] == "subject":
+            subject[path[1]] = value
+
+    case["subject"] = subject
+
+    # Mirror into top-level convenience keys used by the aggregator.
+    tin = subject.get("tin") or subject.get("ssn") or subject.get("ein")
+    if tin:
+        case["customer_ssn"] = tin
+    addr_parts = [subject.get("address", ""), subject.get("city", ""),
+                  subject.get("state", ""), subject.get("zip", "")]
+    full_addr = ", ".join(p for p in addr_parts if p)
+    if full_addr:
+        case["customer_address"] = full_addr
+    dob = subject.get("dob")
+    if dob:
+        case["customer_dob"] = dob
+
+    return case
+
+
+def build_text_case_payload(free_text: str) -> dict[str, Any]:
     """
     Build a minimally structured case payload from free-text analyst input.
     """
@@ -143,8 +248,8 @@ def build_text_case_payload(free_text: str, subject_name: str = "Unknown Subject
         "source_type": "free_text",
         "raw_user_input": text,
         "subject": {
-            "subject_id": f"SUB-{subject_name[:8].upper().replace(' ', '')}",
-            "name": subject_name or "Unknown Subject",
+            "subject_id": "SUB-UNKNOWN",
+            "name": "Subject Unknown",
             "type": "Individual",
             "country": "US",
         },
@@ -187,6 +292,8 @@ def build_text_case_payload(free_text: str, subject_name: str = "Unknown Subject
 
 def _try_parse_structured_case(text: str) -> dict[str, Any] | None:
     """Accept raw JSON or fenced JSON pasted into text input."""
+    import ast as _ast
+
     if not text:
         return None
 
@@ -199,25 +306,40 @@ def _try_parse_structured_case(text: str) -> dict[str, Any] | None:
         if block:
             candidates.append(block)
 
-    # Support prose + embedded JSON object.
+    # Support prose + embedded JSON/dict object.
     first_brace = text.find("{")
     last_brace = text.rfind("}")
     if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
-        candidates.append(text[first_brace : last_brace + 1].strip())
+        extracted = text[first_brace : last_brace + 1].strip()
+        candidates.append(extracted)
 
     for candidate in candidates:
+        # Try standard JSON first.
         try:
             parsed = json.loads(candidate)
+            if isinstance(parsed, list):
+                for item in parsed:
+                    if isinstance(item, dict):
+                        return item
+                continue
+            if isinstance(parsed, dict):
+                return parsed
         except json.JSONDecodeError:
-            continue
+            pass
 
-        if isinstance(parsed, list):
-            for item in parsed:
-                if isinstance(item, dict):
-                    return item
-            continue
-        if isinstance(parsed, dict):
-            return parsed
+        # Fall back to Python literal eval (handles pprint/single-quote format).
+        try:
+            parsed = _ast.literal_eval(candidate)
+            if isinstance(parsed, list):
+                for item in parsed:
+                    if isinstance(item, dict):
+                        return item
+                continue
+            if isinstance(parsed, dict):
+                return parsed
+        except Exception:
+            pass
+
     return None
 
 

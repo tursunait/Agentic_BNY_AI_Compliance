@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-022",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR",
+  "institution": {
+    "name": "Gulf States Bank",
+    "type": "Bank",
+    "address": "500 Louisiana St",
+    "city": "Houston",
+    "state": "TX",
+    "postal_code": "77002",
+    "country": "United States",
+    "contact_person": "Karen White",
+    "telephone": "713-555-1012",
+    "email": "kwhite@gulfstatesbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "250000.00",
+    "currency": "USD",
+    "transaction_type": "Standby letter of credit (draw)",
+    "date_of_transaction": "2026-01-28",
+    "date_of_rejection": "2026-01-28",
+    "program_or_reason": "Iran — ITSR (Iran Transactions and Sanctions Regulations), 31 C.F.R. Part 560",
+    "originator_name_address": "Applicant: PetroChem Gulf Inc., 600 Louisiana St, Houston, TX 77002, United States",
+    "originating_fi": "Gulf States Bank, 500 Louisiana St, Houston, TX 77002, United States",
+    "intermediary_fi": "Confirming bank: European bank (beneficiary in Iran)",
+    "beneficiary_fi": "Bank Melli Iran, Tehran, Iran",
+    "beneficiary_name_address": "Iranian Petrochemical Co., Tehran, Iran",
+    "additional_relevant_info": "Draw under standby LC. Beneficiary and presenting bank Iran-related; payment would violate ITSR.",
+    "additional_data": "SBLC GS-2025-1002; draw notice 20260128"
+  },
+  "preparer": {
+    "name": "Karen White",
+    "title": "BSA/OFAC Compliance Officer",
+    "date_prepared": "2026-01-29"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — standby LC draw documents indicated Iran nexus",
+    "sanctions_nexus": "Honoring draw would result in payment to Iran-related party; ITSR prohibits",
+    "documents_reviewed": [
+      "Standby LC and draw documents",
+      "Sanctions screening and legal review",
+      "Applicant account file"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}

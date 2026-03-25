@@ -1,0 +1,48 @@
+{
+  "case_id": "OFAC-DAT-029",
+  "report_type_code": "OFAC_REJECT",
+  "scenario_type": "sanctioned_jurisdiction",
+  "sanctions_program": "Iran — ITSR (secondary sanctions / correspondent)",
+  "institution": {
+    "name": "New York International Bank",
+    "type": "Bank",
+    "address": "1 Wall Street",
+    "city": "New York",
+    "state": "NY",
+    "postal_code": "10005",
+    "country": "United States",
+    "contact_person": "Victoria Chen",
+    "telephone": "212-555-1019",
+    "email": "vchen@nyintlbank.com"
+  },
+  "transaction": {
+    "amount_rejected": "195000.00",
+    "currency": "USD",
+    "transaction_type": "Correspondent banking — incoming wire (for further credit)",
+    "date_of_transaction": "2026-03-11",
+    "date_of_rejection": "2026-03-11",
+    "program_or_reason": "Iran — ITSR; wire from foreign bank for credit to Iran-related party; U.S. correspondent rejected",
+    "originator_name_address": "Ordering customer: Dubai Trading Co., Dubai, UAE (ultimate beneficiary Iran)",
+    "originating_fi": "Emirates NBD, Dubai, UAE",
+    "intermediary_fi": "New York International Bank (correspondent)",
+    "beneficiary_fi": "N/A — for further credit to Iran",
+    "beneficiary_name_address": "Ultimate beneficiary in Iran (identified in payment details)",
+    "additional_relevant_info": "Incoming wire for further credit to Iran. U.S. bank rejected to avoid facilitating Iran-related transaction.",
+    "additional_data": "SWIFT MT103; field 72/remittance info indicated Iran"
+  },
+  "preparer": {
+    "name": "Victoria Chen",
+    "title": "OFAC Compliance Officer",
+    "date_prepared": "2026-03-12"
+  },
+  "case_facts": {
+    "alert_trigger": "Automated screening — payment details and party data indicated Iran nexus",
+    "sanctions_nexus": "Processing wire would have facilitated Iran-related transaction; U.S. correspondent rejected per ITSR",
+    "documents_reviewed": [
+      "Incoming SWIFT message",
+      "Sanctions screening and party lookup",
+      "Correspondent banking policy memo"
+    ],
+    "disposition": "Rejected — transaction not processed"
+  }
+}
