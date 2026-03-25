@@ -1,0 +1,100 @@
+{
+  "document_id": "FINCEN-CTR-INSTRUCTIONS-2024",
+  "document_title": "Currency Transaction Report (CTR) Filing Instructions and Compliance Guidance",
+  "issuing_authority": "FinCEN",
+  "report_types": ["CTR"],
+  "effective_date": "2024-01-01",
+  "source_url": "https://www.fincen.gov/resources/filing-information/currency-transaction-report",
+  "sections": [
+    {
+      "section_id": "CTR-OVERVIEW",
+      "section_number": "1",
+      "section_title": "CTR Overview and Filing Obligation",
+      "effective_date": "2024-01-01",
+      "keywords": ["CTR", "currency transaction", "31 USC 5313", "10000 threshold", "mandatory filing"],
+      "text": "A Currency Transaction Report (CTR) must be filed by financial institutions for each deposit, withdrawal, exchange of currency, or other payment or transfer involving U.S. currency (or its equivalent) in an amount exceeding $10,000. The obligation is established under 31 U.S.C. 5313 and implementing regulations at 31 CFR 1010.311. The $10,000 threshold applies to the aggregate of all currency transactions conducted by or on behalf of the same person on the same business day. CTRs must be filed electronically through FinCEN's BSA E-Filing System within 15 calendar days of the transaction date. Financial institutions may not structure their reporting to avoid the $10,000 threshold.",
+      "practical_guidance": "File a CTR for: single cash transactions exceeding $10,000; multiple transactions by the same customer on the same day aggregating above $10,000; transactions conducted on behalf of another person (the beneficial owner must be identified). Exempt from CTR: other financial institutions, federally or state-chartered banks, government agencies.",
+      "agent_usage_notes": "Check total_cash_amount against the $10,000 threshold. If aggregated same-day transactions exceed $10,000, a CTR is required even if no single transaction does."
+    },
+    {
+      "section_id": "CTR-AGGREGATION",
+      "section_number": "2",
+      "section_title": "Transaction Aggregation Rules",
+      "effective_date": "2024-01-01",
+      "keywords": ["aggregation", "same-day", "multiple transactions", "beneficial owner", "on behalf of"],
+      "text": "Multiple currency transactions must be aggregated and treated as a single transaction when: (1) conducted by or on behalf of the same person; (2) on the same business day; (3) total currency involved exceeds $10,000. Aggregation applies to transactions at any branch of the same institution. Transactions conducted by multiple individuals on behalf of the same beneficial owner must be aggregated. Transactions in different currencies must be converted to USD using the exchange rate on the transaction date. Mixed transactions (cash-in and cash-out on the same day) are reported separately — do not net them against each other.",
+      "practical_guidance": "For aggregation: identify the beneficial owner across all transactions, not just the person conducting them. A business owner sending employees to make deposits at different branches in the same day — all deposits aggregate under the owner's identity.",
+      "agent_usage_notes": "Sum all cash transactions for the same customer_id or beneficial_owner on the same date. Report total_cash_in and total_cash_out separately."
+    },
+    {
+      "section_id": "CTR-IDENTIFICATION",
+      "section_number": "3",
+      "section_title": "Customer Identification Requirements",
+      "effective_date": "2024-01-01",
+      "keywords": ["identification", "government ID", "driver's license", "passport", "TIN", "date of birth", "known customer prohibited"],
+      "text": "All individuals conducting reportable currency transactions must be identified using a government-issued document at the time of the transaction. Required identification information on the CTR: type of document (driver's license, passport, state ID, alien registration card, other); document number; issuing state or country; date of birth (individuals only). The use of phrases such as 'known customer,' 'regular customer,' 'signature card on file,' or 'recognized by teller' is explicitly prohibited as a substitute for documented identification. For entities, the EIN must be provided along with the legal name and address. If identification cannot be obtained, the transaction may not proceed for CTR purposes without flagging as suspicious.",
+      "practical_guidance": "Train tellers: 'known customer' is never acceptable on a CTR. Document the specific ID type and number every time, even for long-standing customers. If the customer refuses to provide ID for a transaction above $10,000, file a SAR.",
+      "agent_usage_notes": "Validate that identification fields are populated with real document data, not placeholders. Flag 'known customer' or similar phrases as CTR compliance violations."
+    },
+    {
+      "section_id": "CTR-TIMING",
+      "section_number": "4",
+      "section_title": "Filing Deadlines and Amendments",
+      "effective_date": "2024-01-01",
+      "keywords": ["15-day deadline", "amendment", "correct amend", "DCN", "late filing"],
+      "text": "Filing Deadline: CTRs must be filed electronically within 15 calendar days of the transaction date. Late filings may result in civil money penalties. Amendments: to correct a previously filed CTR, check the 'Correct/amend prior report' box and provide the Document Control Number (DCN) or BSA Identifier of the original report. All corrected fields must be fully completed — do not leave fields blank in an amendment. Superseding CTR: if an entire report must be replaced rather than corrected, check 'Correct/amend prior report' and note in the narrative that this is a complete superseding report.",
+      "practical_guidance": "Set filing deadlines in your case management system at T+12 days to allow 3 business days for review before the deadline. For aggregated transactions, the filing clock starts on the day the aggregate threshold is exceeded.",
+      "agent_usage_notes": "CTR filing_date should be set to today's date if filing is current. Flag if transaction_date is more than 15 days old."
+    },
+    {
+      "section_id": "CTR-INSTITUTION-INFO",
+      "section_number": "5",
+      "section_title": "Filing Institution Information Requirements",
+      "effective_date": "2024-01-01",
+      "keywords": ["EIN", "primary federal regulator", "institution name", "address", "contact officer", "institution type"],
+      "text": "Part III of the CTR (Financial Institution Where Transaction Occurred) must include: Legal name of the institution; Employer Identification Number (EIN) — must be 9 digits, cannot be all zeros or all nines; Primary federal regulator code (OCC, FRB, FDIC, NCUA, IRS, OTS, SEC, CFTC, or Not Applicable); Street address, city, state, and ZIP code; Institution type (bank, savings association, credit union, MSB, etc.); Contact officer name (Item 40); Contact phone number (Item 41). The institution's address must be the specific location where the transaction occurred, not the headquarters address, unless it is a single-location institution.",
+      "practical_guidance": "For BNY Mellon filings: use the branch address where the transaction occurred. EIN is 13-5266003. Primary federal regulator is OCC (national bank charter). Always include the branch contact officer, not the BSA department.",
+      "agent_usage_notes": "BNY Mellon institution defaults: name='The Bank of New York Mellon', EIN='135266003', regulator='OCC', address='240 Greenwich Street, New York, NY 10286'."
+    },
+    {
+      "section_id": "CTR-AMOUNTS",
+      "section_number": "6",
+      "section_title": "Amount Reporting and Currency Handling",
+      "effective_date": "2024-01-01",
+      "keywords": ["cash in", "cash out", "subcategories", "foreign currency", "amount consistency", "rounding"],
+      "text": "CTR Amount Reporting: Total cash-in (Item 25) must equal the sum of all cash-in subcategories (deposits, currency exchanges, payments, etc.). Total cash-out (Item 27) must equal the sum of all cash-out subcategories. Report amounts in whole dollars — do not include cents. Foreign Currency: if foreign currency is involved, report the amount in the foreign currency (not converted to USD) in Items 26 or 28, and include the two-letter country code. Foreign cash amounts must be rounded up to the next whole unit. The exchange rate used must be documented in the institution's records. Mixed Transactions: report cash-in and cash-out amounts separately; do not net them.",
+      "practical_guidance": "Verify amount consistency before filing: sum all subcategory amounts and confirm they equal the totals. For foreign currency transactions, use the mid-market rate on the transaction date from an authoritative source.",
+      "agent_usage_notes": "Validate: total_cash_in == sum of cash_in subcategories; total_cash_out == sum of cash_out subcategories. Both cannot be zero simultaneously."
+    },
+    {
+      "section_id": "CTR-EXEMPTIONS",
+      "section_number": "7",
+      "section_title": "CTR Exemptions (Phase I and Phase II)",
+      "effective_date": "2024-01-01",
+      "keywords": ["exemption", "Phase I", "Phase II", "listed business", "non-listed business", "annual review"],
+      "text": "Financial institutions may exempt certain customers from CTR filing under 31 CFR 1020.315. Phase I Exempt Customers (automatic with documentation): other banks, government agencies, NYSE/Nasdaq/Amex-listed companies and their US subsidiaries. Phase II Exempt Customers (discretionary): businesses that have maintained an account for more than 2 months and regularly engage in large cash transactions due to the nature of their business (e.g., retail stores, restaurants, parking lots). Phase II exemptions must be reviewed at least annually to ensure the customer continues to qualify. Exempt persons designation (FinCEN Form 110) must be filed when Phase II exemptions are established or renewed. Exemptions do not apply to transactions believed to be suspicious — a SAR must still be filed if activity is suspicious.",
+      "practical_guidance": "Never grant exemptions without completing Form 110 and conducting the annual review. Exemptions are not transferable — a new exemption must be filed for each branch. Suspicious transactions always require a SAR regardless of CTR exemption status.",
+      "agent_usage_notes": "If customer has an active CTR exemption on file, skip CTR generation but still evaluate for SAR indicators."
+    },
+    {
+      "section_id": "CTR-PROHIBITED-WORDS",
+      "section_number": "8",
+      "section_title": "Prohibited Words and Formatting Rules",
+      "effective_date": "2024-01-01",
+      "keywords": ["prohibited words", "AKA", "N/A", "not applicable", "XX", "computer generated", "format rules"],
+      "text": "FinCEN prohibits the use of the following words or phrases in any CTR field: AKA (use separate subject entries for aliases), Computer Generated, Customer, N/A, NA, Not Applicable, XX, and their variants. State fields must use two-letter USPS abbreviations (e.g., NY, CA, TX). Country fields must use two-letter ISO country codes (e.g., US, GB, DE). ZIP codes must be 5 or 9 digits; a 9-digit ZIP cannot end in 0000 or 9999. Telephone numbers must be 10 digits (US) or include country code (international). TINs must be exactly 9 digits for US entities/individuals, no formatting characters (no hyphens, spaces, or periods).",
+      "practical_guidance": "Validate all fields before submission. Build automated checks for prohibited words, TIN format, ZIP format, and state code validity into your filing workflow.",
+      "agent_usage_notes": "Before generating CTR output, strip prohibited words from all fields and validate TIN format (9-digit numeric), ZIP (5 or 9 digits), and state codes (2-letter)."
+    },
+    {
+      "section_id": "CTR-RETENTION",
+      "section_number": "9",
+      "section_title": "Record Retention Requirements",
+      "effective_date": "2024-01-01",
+      "keywords": ["5-year retention", "1825 days", "supporting documentation", "transaction records"],
+      "text": "Under 31 CFR 1010.430, financial institutions must retain a copy of each filed CTR and all supporting documentation for five years (1,825 days) from the date of filing. Supporting documentation includes: original transaction records, teller logs, account statements, copies of identification documents, and any internal investigation notes. Records must be retrievable within a reasonable time and must be provided to FinCEN, law enforcement, or supervisory agencies upon request. Electronic retention is acceptable if the records are legible and accessible.",
+      "practical_guidance": "Implement a 5-year retention policy in your document management system. Tag all CTR-related records with the report date and DCN to facilitate retrieval during examinations.",
+      "agent_usage_notes": "CTR retention period is 5 years from filing date. Record this in the compliance database at time of filing."
+    }
+  ]
+}

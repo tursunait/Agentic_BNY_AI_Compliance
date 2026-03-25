@@ -25,7 +25,6 @@ from streamlit_app.utils.session_state import add_tracked_job, init_session_stat
 from streamlit_app.utils.validators import (
     build_manual_case_payload,
     build_text_case_payload,
-    identify_missing_intake_fields,
     merge_intake_answers,
     validate_transaction_data,
 )
@@ -378,114 +377,174 @@ t_text, t_upload, t_manual, t_batch, t_direct = st.tabs(
 )
 
 with t_text:
-    st.markdown("#### Free-Text Case Intake")
+    # ── Chat session state ─────────────────────────────────────────────────
+    if "chat_messages" not in st.session_state:
+        st.session_state["chat_messages"] = []          # [{role, content}]
+    if "chat_case" not in st.session_state:
+        st.session_state["chat_case"] = {}
+    if "chat_missing" not in st.session_state:
+        st.session_state["chat_missing"] = []           # remaining fields to collect
+    if "chat_answers" not in st.session_state:
+        st.session_state["chat_answers"] = {}           # key → answered value
+    if "chat_stage" not in st.session_state:
+        st.session_state["chat_stage"] = "idle"         # idle | questioning | ready | submitted
 
-    # ── Session-state keys for multi-step intake ──────────────────────────
-    if "text_intake_step" not in st.session_state:
-        st.session_state["text_intake_step"] = "input"   # "input" | "collecting" | "ready"
-    if "text_intake_case" not in st.session_state:
-        st.session_state["text_intake_case"] = {}
-    if "text_intake_missing" not in st.session_state:
-        st.session_state["text_intake_missing"] = []
+    def _chat_reset() -> None:
+        st.session_state["chat_messages"] = []
+        st.session_state["chat_case"] = {}
+        st.session_state["chat_missing"] = []
+        st.session_state["chat_answers"] = {}
+        st.session_state["chat_stage"] = "idle"
 
-    step = st.session_state["text_intake_step"]
+    def _next_question() -> str | None:
+        """Return the prompt for the next unanswered required field, or None."""
+        for field in st.session_state["chat_missing"]:
+            if field["key"] not in st.session_state["chat_answers"]:
+                placeholder = field.get("placeholder", "")
+                hint = f" (e.g. {placeholder})" if placeholder else ""
+                return field["label"] + hint
+        return None
 
-    # ── Step 1 — initial case description ────────────────────────────────
-    if step == "input":
-        free_text = st.text_area(
-            "Case Description",
-            height=220,
-            placeholder="Paste a JSON case or describe the suspicious activity. The system will extract what it can and ask for anything missing.",
-        )
-        if st.button("Analyze Case", use_container_width=True):
-            if not free_text.strip():
-                st.warning("Enter case text before analyzing.")
-            else:
-                partial = build_text_case_payload(free_text)
-                missing = identify_missing_intake_fields(partial)
-                st.session_state["text_intake_case"] = partial
-                st.session_state["text_intake_missing"] = missing
-                st.session_state["text_intake_step"] = "collecting" if missing else "ready"
-                st.rerun()
+    def _assistant(msg: str) -> None:
+        st.session_state["chat_messages"].append({"role": "assistant", "content": msg})
 
-    # ── Step 2 — collect missing required fields ──────────────────────────
-    elif step == "collecting":
-        partial = st.session_state["text_intake_case"]
-        missing_fields = st.session_state["text_intake_missing"]
+    def _user(msg: str) -> None:
+        st.session_state["chat_messages"].append({"role": "user", "content": msg})
 
+    # ── Header row ────────────────────────────────────────────────────────
+    hcol, rcol = st.columns([5, 1])
+    with hcol:
+        st.markdown("#### Compliance Chat")
+        st.caption("Describe the suspicious activity or paste a case. I'll extract what I can and ask for anything missing.")
+    with rcol:
+        if st.button("Clear chat", use_container_width=True):
+            _chat_reset()
+            st.rerun()
+
+    # ── Render conversation history ───────────────────────────────────────
+    for msg in st.session_state["chat_messages"]:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # ── "ready" stage — show confirm/submit above the input ───────────────
+    if st.session_state["chat_stage"] == "ready":
+        case = st.session_state["chat_case"]
+        sai = case.get("SuspiciousActivityInformation") or {}
+        subject_name = (case.get("subject") or {}).get("name") or "Unknown"
+        amount = (sai.get("26_AmountInvolved") or {}).get("amount_usd") or 0
+        dr = sai.get("27_DateOrDateRange") or {}
+        summary_lines = [
+            f"**Subject:** {subject_name}",
+            f"**Amount:** ${amount:,.2f}" if amount else "**Amount:** not specified",
+        ]
+        if dr.get("from") and dr.get("to"):
+            summary_lines.append(f"**Activity period:** {dr['from']} – {dr['to']}")
         with st.chat_message("assistant"):
-            subject_name = (partial.get("subject") or {}).get("name") or ""
-            detected_lines = []
-            sai = partial.get("SuspiciousActivityInformation") or {}
-            amount = (sai.get("26_AmountInvolved") or {}).get("amount_usd") or 0
-            dr = sai.get("27_DateOrDateRange") or {}
-            if subject_name and subject_name not in ("Subject Unknown", "Unknown Subject"):
-                detected_lines.append(f"**Subject:** {subject_name}")
-            if amount:
-                detected_lines.append(f"**Amount involved:** ${amount:,.2f}")
-            if dr.get("from") and dr.get("to"):
-                detected_lines.append(f"**Activity period:** {dr['from']} – {dr['to']}")
-            act_cats = [
-                k.split("_", 1)[-1].replace("_", " ")
-                for k in ("29_Structuring", "30_TerroristFinancing", "31_Fraud", "33_MoneyLaundering")
-                if sai.get(k)
-            ]
-            if act_cats:
-                detected_lines.append(f"**Activity categories:** {', '.join(act_cats)}")
+            st.markdown("All required information collected. Here's the summary:\n\n" + "\n\n".join(summary_lines))
+            st.markdown("Ready to submit — click **Submit Case** to process, or type anything to add more context.")
+        if st.button("Submit Case", use_container_width=True, type="primary"):
+            st.session_state["chat_stage"] = "submitted"
+            _submit_payload(api_client, st.session_state["chat_case"])
+            st.rerun()
 
-            if detected_lines:
-                st.markdown("I've extracted the following from your input:\n\n" + "\n\n".join(detected_lines))
-            st.markdown(
-                "To complete the FinCEN filing I need a few more details. "
-                "Please fill in the fields below:"
-            )
+    # ── Chat input ────────────────────────────────────────────────────────
+    user_input = st.chat_input(
+        "Describe the case or answer the question above…",
+        disabled=(st.session_state["chat_stage"] == "submitted"),
+    )
 
-        with st.form("intake_missing_fields_form"):
-            answers: dict[str, str] = {}
-            for field in missing_fields:
-                answers[field["key"]] = st.text_input(
-                    field["label"],
-                    placeholder=field.get("placeholder", ""),
-                    key=f"intake_{field['key']}",
-                )
+    if user_input:
+        _user(user_input)
+        stage = st.session_state["chat_stage"]
 
-            col_submit, col_reset = st.columns([3, 1])
-            with col_submit:
-                submitted = st.form_submit_button("Complete & Submit", use_container_width=True)
-            with col_reset:
-                reset = st.form_submit_button("Start Over", use_container_width=True)
+        if stage == "idle":
+            # First message — call backend router/analyze to identify truly missing fields
+            partial = build_text_case_payload(user_input)
+            with st.spinner("Analyzing case…"):
+                analysis = api_client.analyze_case(text=user_input, case_data=partial)
 
-            if reset:
-                st.session_state["text_intake_step"] = "input"
-                st.rerun()
-
-            if submitted:
-                # Check required fields are filled
-                required_missing = [
-                    f["label"] for f in missing_fields
-                    if f.get("required") and not (answers.get(f["key"]) or "").strip()
+            # Use router-detected missing_field_prompts (only fields not found in input)
+            # May be a list of {field_path, prompt} dicts or a {field: prompt} dict
+            raw_missing = analysis.get("missing_field_prompts") or []
+            if isinstance(raw_missing, dict):
+                missing = [{"key": k, "label": v, "required": True} for k, v in raw_missing.items()]
+            elif isinstance(raw_missing, list):
+                missing = [
+                    {
+                        "key": str(item.get("input_key") or item.get("field_path") or item.get("key") or i),
+                        "label": str(item.get("ask_user_prompt") or item.get("field_label") or item.get("label") or item.get("input_key") or item),
+                        "required": True,
+                    }
+                    for i, item in enumerate(raw_missing)
+                    if isinstance(item, dict)
                 ]
-                if required_missing:
-                    st.error("Please fill in the required fields:\n- " + "\n- ".join(required_missing))
-                else:
-                    complete_case = merge_intake_answers(partial, answers)
-                    st.session_state["text_intake_step"] = "input"
-                    _submit_payload(api_client, complete_case)
+            else:
+                missing = []
 
-    # ── Step 3 — all fields present, submit directly ──────────────────────
-    elif step == "ready":
-        partial = st.session_state["text_intake_case"]
-        with st.chat_message("assistant"):
-            st.markdown("All required fields are present. Ready to submit.")
-        col_go, col_back = st.columns([3, 1])
-        with col_go:
-            if st.button("Submit Case", use_container_width=True):
-                st.session_state["text_intake_step"] = "input"
-                _submit_payload(api_client, partial)
-        with col_back:
-            if st.button("Start Over", use_container_width=True):
-                st.session_state["text_intake_step"] = "input"
-                st.rerun()
+            st.session_state["chat_case"] = partial
+            st.session_state["chat_missing"] = missing
+            st.session_state["chat_answers"] = {}
+            # Store report type from router for later submission
+            if analysis.get("report_type"):
+                partial["report_type_hint"] = analysis["report_type"]
+                partial["report_type"] = analysis["report_type"]
+                st.session_state["chat_case"] = partial
+
+            # Build extraction summary from router's detected fields
+            det = analysis.get("detected") or {}
+            detected = []
+            if det.get("subject_name") and det["subject_name"] not in ("Subject Unknown", "Unknown Subject", ""):
+                detected.append(f"**Subject:** {det['subject_name']}")
+            if det.get("amount"):
+                detected.append(f"**Amount involved:** ${float(det['amount']):,.2f}")
+            if det.get("date_from") and det.get("date_to"):
+                detected.append(f"**Activity period:** {det['date_from']} – {det['date_to']}")
+            if det.get("activity_types"):
+                detected.append(f"**Activity categories:** {', '.join(det['activity_types'])}")
+            if analysis.get("report_type"):
+                detected.append(f"**Report type:** {analysis['report_type']}")
+
+            if not missing:
+                st.session_state["chat_stage"] = "ready"
+                reply = ("I've extracted all required information from your input."
+                         + ("\n\n" + "\n\n".join(detected) if detected else ""))
+            else:
+                st.session_state["chat_stage"] = "questioning"
+                intro = ("I've extracted the following:\n\n" + "\n\n".join(detected) + "\n\n") if detected else ""
+                next_q = _next_question()
+                reply = intro + f"To complete the FinCEN filing I need a few more details.\n\n**{next_q}**"
+            _assistant(reply)
+
+        elif stage == "questioning":
+            # Map this answer to the current open field
+            for field in st.session_state["chat_missing"]:
+                if field["key"] not in st.session_state["chat_answers"]:
+                    st.session_state["chat_answers"][field["key"]] = user_input.strip()
+                    break
+
+            # Merge all answers collected so far into the case
+            updated_case = merge_intake_answers(
+                st.session_state["chat_case"],
+                st.session_state["chat_answers"],
+            )
+            st.session_state["chat_case"] = updated_case
+
+            next_q = _next_question()
+            if next_q is None:
+                st.session_state["chat_stage"] = "ready"
+                _assistant("Got it. I have everything I need.")
+            else:
+                _assistant(f"Got it. Next: **{next_q}**")
+
+        elif stage == "ready":
+            # User typed something extra — treat as additional context in narrative
+            case = st.session_state["chat_case"]
+            existing_narrative = str(case.get("narrative") or "")
+            case["narrative"] = (existing_narrative + "\n\nAdditional context: " + user_input.strip()).strip()
+            st.session_state["chat_case"] = case
+            _assistant("Added to the case notes. Click **Submit Case** when ready.")
+
+        st.rerun()
 
 with t_upload:
     uploaded = st.file_uploader("Upload case JSON", type=["json"])

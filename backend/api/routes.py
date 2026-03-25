@@ -9,7 +9,7 @@ from backend.api.schemas import ReportSubmission
 from backend.knowledge_base.kb_manager import KBManager
 from backend.knowledge_base.supabase_client import SupabaseClient
 from backend.orchestration.crew import create_compliance_crew
-from backend.tools.field_mapper import determine_report_types
+from backend.tools.field_mapper import determine_report_types, normalize_case_data
 from backend.tools.pdf_tools import CTRReportFiler, SARReportFiler
 
 router = APIRouter()
@@ -27,6 +27,76 @@ def run_crew_workflow(job_id: str, transaction_data: dict) -> None:
         db.update_job_status(job_id, "completed", result=result, progress=100)
     except Exception as exc:
         db.update_job_status(job_id, "failed", error=str(exc))
+
+
+@router.post("/router/analyze")
+async def router_analyze(body: dict):
+    """
+    Run the router agent on input data and return what was detected plus
+    which fields are still missing — without starting a full pipeline job.
+
+    Accepts: {"text": "...", "case_data": {...}}
+    Returns: {
+        "report_type", "report_types", "confidence_score", "reasoning",
+        "kb_status", "missing_fields", "missing_field_prompts",
+        "detected": {subject_name, amount, date_from, date_to, activity_types}
+    }
+    """
+    from backend.agents.router_agent import run_router
+    from backend.tools.field_mapper import normalize_case_data
+
+    raw_text = str(body.get("text") or "").strip()
+    case_data = body.get("case_data") or {}
+
+    # Build input: prefer structured case_data, fallback to wrapping raw text
+    if not case_data and raw_text:
+        case_data = {
+            "source_type": "free_text",
+            "raw_user_input": raw_text,
+            "narrative": raw_text,
+        }
+    elif raw_text and isinstance(case_data, dict):
+        case_data.setdefault("raw_user_input", raw_text)
+        case_data.setdefault("source_type", "free_text")
+
+    try:
+        normalized = normalize_case_data(case_data)
+        result = run_router(normalized)
+        router_dict = result.to_dict()
+
+        # Build detected-fields summary for the UI
+        validated = result.validated_input or {}
+        sai = validated.get("SuspiciousActivityInformation") or {}
+        subject = validated.get("subject") or {}
+        amount = (sai.get("26_AmountInvolved") or {}).get("amount_usd") or 0
+        dr = sai.get("27_DateOrDateRange") or {}
+        act_cats = [
+            k.split("_", 1)[-1].replace("_", " ").title()
+            for k in ("29_Structuring", "30_TerroristFinancing", "31_Fraud", "33_MoneyLaundering", "35_OtherSuspiciousActivities")
+            if sai.get(k)
+        ]
+        router_dict["detected"] = {
+            "subject_name": subject.get("name") or "",
+            "amount": float(amount),
+            "date_from": dr.get("from") or "",
+            "date_to": dr.get("to") or "",
+            "activity_types": act_cats,
+        }
+        return router_dict
+    except Exception as exc:
+        from loguru import logger
+        logger.warning("router/analyze failed: {}", exc)
+        return {
+            "report_type": "SAR",
+            "report_types": ["SAR"],
+            "confidence_score": 0.0,
+            "reasoning": "",
+            "kb_status": "UNKNOWN",
+            "missing_fields": [],
+            "missing_field_prompts": {},
+            "detected": {},
+            "error": str(exc),
+        }
 
 
 @router.post("/reports/submit")

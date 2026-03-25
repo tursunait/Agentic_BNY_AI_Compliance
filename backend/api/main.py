@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -26,7 +28,7 @@ app.add_middleware(
 app.include_router(router, prefix="/api/v1")
 
 
-def check_database_connection() -> bool:
+def _check_database_connection() -> bool:
     try:
         db = SupabaseClient()
         with db.engine.connect() as conn:
@@ -36,7 +38,7 @@ def check_database_connection() -> bool:
         return False
 
 
-def check_weaviate_connection() -> bool:
+def _check_weaviate_connection() -> bool:
     try:
         client = WeaviateClient(settings.WEAVIATE_URL, settings.WEAVIATE_API_KEY)
         return client.client.is_ready() if hasattr(client.client, "is_ready") else True
@@ -44,7 +46,7 @@ def check_weaviate_connection() -> bool:
         return False
 
 
-def check_redis_connection() -> bool:
+def _check_redis_connection() -> bool:
     try:
         redis = Redis.from_url(settings.REDIS_URL)
         return redis.ping()
@@ -54,13 +56,18 @@ def check_redis_connection() -> bool:
 
 @app.get("/health")
 async def health_check() -> dict:
-    database_ok = check_database_connection()
+    loop = asyncio.get_event_loop()
+    db_ok, weaviate_ok, redis_ok = await asyncio.gather(
+        loop.run_in_executor(None, _check_database_connection),
+        loop.run_in_executor(None, _check_weaviate_connection),
+        loop.run_in_executor(None, _check_redis_connection),
+    )
     return {
         "status": "healthy",
         "services": {
-            "database": database_ok,
-            "weaviate": check_weaviate_connection(),
-            "redis": check_redis_connection(),
+            "database": db_ok,
+            "weaviate": weaviate_ok,
+            "redis": redis_ok,
         },
     }
 

@@ -73,6 +73,18 @@ class APIClient:
     def health_check(self) -> dict[str, Any]:
         return self._json(self._request("GET", "/health", headers={}))
 
+    def analyze_case(self, text: str = "", case_data: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Call /router/analyze to detect fields and return missing_field_prompts."""
+        payload: dict[str, Any] = {}
+        if text:
+            payload["text"] = text
+        if case_data:
+            payload["case_data"] = case_data
+        try:
+            return self._json(self._request("POST", "/api/v1/router/analyze", json=payload))
+        except APIClientError:
+            return {"missing_fields": [], "missing_field_prompts": {}, "detected": {}}
+
     def submit_case(self, case_data: dict[str, Any], report_type_hint: str | None = None) -> dict[str, Any]:
         payload: dict[str, Any] = {"transaction_data": case_data}
         if report_type_hint:

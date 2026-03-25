@@ -24,6 +24,7 @@ from backend.agents.router_agent import (
     derive_and_normalize_case,
     strip_prompt_keys,
     fallback_classify,
+    run_router,
 )
 from backend.agents.narrative_agent import generate_narrative_payload
 from backend.agents.validator_agent import create_validator_agent, create_validator_task
@@ -502,19 +503,10 @@ def create_compliance_crew(
         }
     else:
         try:
-            # Agent 1 (Router) executed via CrewAI; tools intentionally disabled to
-            # prevent tool-loop failures and keep routing stable.
             mark_stage("router", 15)
-            router_agent = create_router_agent(llm=base_llm, tools=[])
-            router_task = create_router_task(router_agent, normalized_case)
-            router_crew = Crew(
-                agents=[router_agent],
-                tasks=[router_task],
-                process=Process.sequential,
-                verbose=True,
-            )
-            router_result = router_crew.kickoff()
-            router_output = _parse_jsonish(router_result)
+            router_result = run_router(normalized_case)
+            normalized_case = router_result.validated_input
+            router_output = router_result.to_dict()
         except Exception as exc:
             router_output = fallback_classify(normalized_case)
             router_output["router_error"] = str(exc)

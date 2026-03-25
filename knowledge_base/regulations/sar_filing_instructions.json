@@ -1,0 +1,110 @@
+{
+  "document_id": "FINCEN-SAR-INSTRUCTIONS-2024",
+  "document_title": "Suspicious Activity Report (SAR) Filing Instructions and Compliance Guidance",
+  "issuing_authority": "FinCEN",
+  "report_types": ["SAR"],
+  "effective_date": "2024-01-01",
+  "source_url": "https://www.fincen.gov/resources/filing-information/suspicious-activity-report",
+  "sections": [
+    {
+      "section_id": "SAR-OVERVIEW",
+      "section_number": "1",
+      "section_title": "SAR Overview and Filing Obligation",
+      "effective_date": "2024-01-01",
+      "keywords": ["SAR", "filing obligation", "BSA", "31 USC 5318", "mandatory filing"],
+      "text": "A Suspicious Activity Report (SAR) must be filed by financial institutions when they detect a known, suspected, or attempted violation of federal law or a suspicious transaction related to money laundering or BSA violations. Filing is mandatory under 31 U.S.C. 5318(g) and implementing regulations at 31 CFR Part 1020 (banks), 31 CFR Part 1021 (casinos), and 31 CFR Part 1022 (money services businesses). The filing threshold is $5,000 for banks and $2,000 for MSBs where a suspect can be identified; $25,000 regardless of suspect identification. SARs must be filed within 30 calendar days of initial detection of suspicious activity. If no suspect is identified, the institution has an additional 30 days (60 days total) to file.",
+      "practical_guidance": "File when you detect: structuring, unusual transaction patterns inconsistent with customer profile, transactions with no apparent lawful purpose, use of multiple accounts to evade reporting, rapid movement of funds through the institution, transactions involving OFAC-designated parties.",
+      "agent_usage_notes": "Use this section to determine whether a SAR filing is legally required. Check the dollar threshold against the total transaction amount and verify whether a suspect can be identified."
+    },
+    {
+      "section_id": "SAR-NARRATIVE-REQUIREMENTS",
+      "section_number": "2",
+      "section_title": "SAR Narrative Requirements",
+      "effective_date": "2024-01-01",
+      "keywords": ["narrative", "five Ws", "who what when where why how", "funds flow", "red flags", "method of operation"],
+      "text": "The SAR narrative is the most critical part of the report and must provide a clear, complete description of the suspicious activity. The narrative must address the five essential elements: (1) WHO is conducting the suspicious activity — full name, account numbers, identification, role; (2) WHAT is the suspicious activity — specific transactions, amounts, products, instruments; (3) WHEN did it occur — dates, times, frequency, duration of the activity period; (4) WHERE did the activity occur — branch location, geographic area, accounts involved; (5) WHY is the activity suspicious — specific red flags, deviations from expected behavior, lack of lawful purpose; and (6) HOW was the activity conducted — method of operation, layering, structuring techniques. The narrative must also describe the flow of funds including origination, movement, and destination of funds.",
+      "practical_guidance": "Do NOT use phrases like 'see attached' or reference attachments. Do NOT include tables or spreadsheets in the narrative. All relevant information must be in the narrative text. Maximum length is 17,000 characters. Write in clear, factual prose. Include specific dollar amounts, dates, account numbers (last 4 digits masked), and the names of all involved parties.",
+      "agent_usage_notes": "When generating a SAR narrative, ensure it contains all six elements (who/what/when/where/why/how), describes fund flow with account references, explains specific red flags, and does not reference attachments."
+    },
+    {
+      "section_id": "SAR-STRUCTURING",
+      "section_number": "3",
+      "section_title": "Structuring and Sub-Threshold Transactions",
+      "effective_date": "2024-01-01",
+      "keywords": ["structuring", "smurfing", "sub-threshold", "31 USC 5324", "CTR avoidance"],
+      "text": "Structuring (also called smurfing) is the deliberate breaking up of cash transactions to avoid the $10,000 Currency Transaction Report (CTR) filing requirement. It is a federal crime under 31 U.S.C. 5324 regardless of whether the underlying funds are from lawful or unlawful sources. Indicators include: multiple cash deposits just below $10,000 on the same or consecutive days; use of multiple tellers, branches, or ATMs for the same purpose; customer questions about reporting thresholds; customer requesting to combine or split transactions.",
+      "practical_guidance": "When documenting structuring in a SAR narrative: specify the number of transactions, the date range, the total amount, and how each individual transaction was kept below the threshold. Note any statements made by the subject about reporting thresholds. Reference 31 U.S.C. 5324 as the applicable statute.",
+      "agent_usage_notes": "Structuring SAR narratives should quantify the pattern: 'X transactions over Y days totaling $Z, each below $10,000.' Include the customer's response when questioned."
+    },
+    {
+      "section_id": "SAR-MONEY-LAUNDERING",
+      "section_number": "4",
+      "section_title": "Money Laundering Indicators and Three-Stage Model",
+      "effective_date": "2024-01-01",
+      "keywords": ["money laundering", "placement", "layering", "integration", "predicate offense", "18 USC 1956"],
+      "text": "Money laundering under 18 U.S.C. 1956 involves three stages: (1) Placement — introducing illicit cash into the financial system through deposits, currency exchanges, or purchases; (2) Layering — obscuring the trail through multiple transfers, account hops, international wire transfers, or currency conversions; (3) Integration — reintroducing laundered funds into the legitimate economy through real estate, business purchases, or loan repayments. Red flags include: rapid movement of funds with no business purpose, use of shell companies or nominees, round-dollar wire transfers to high-risk jurisdictions, transactions inconsistent with stated business type, and layering through multiple accounts or institutions.",
+      "practical_guidance": "In the SAR narrative, identify which stage(s) of the money laundering cycle are present. Describe the specific layering mechanism used. Reference the predicate offense (drug trafficking, fraud, etc.) if known or suspected.",
+      "agent_usage_notes": "For money laundering SARs, structure the narrative to describe placement → layering → integration stages if all three are observable. Always specify the destination of funds."
+    },
+    {
+      "section_id": "SAR-WIRE-TRANSFERS",
+      "section_number": "5",
+      "section_title": "Suspicious Wire Transfer Activity",
+      "effective_date": "2024-01-01",
+      "keywords": ["wire transfer", "international wire", "SWIFT", "correspondent banking", "high-risk jurisdiction", "round-dollar"],
+      "text": "Suspicious wire transfer activity includes: (1) Rapid in-and-out transactions (funds received and forwarded within 24-48 hours with no business purpose); (2) Transfers to or from high-risk jurisdictions (FATF monitored countries, offshore secrecy jurisdictions); (3) Round-dollar transfers inconsistent with commercial practice; (4) Unexplained changes in wire transfer volume or frequency; (5) Transfers to entities with no identifiable business nexus; (6) Use of concentration accounts to obscure beneficial ownership. All wire transfer activity above $3,000 must include complete originator and beneficiary information under the Travel Rule (31 CFR 1010.410).",
+      "practical_guidance": "For wire transfer SARs, include: originator name and account, beneficiary name and account, intermediary banks, amount, date, currency, and stated purpose. Compare to the customer's expected activity profile and document the deviation.",
+      "agent_usage_notes": "Wire transfer SAR narratives must include all SWIFT/wire details available. Note any gaps in Travel Rule compliance (missing originator or beneficiary information) as additional red flags."
+    },
+    {
+      "section_id": "SAR-ELDER-EXPLOITATION",
+      "section_number": "6",
+      "section_title": "Elder Financial Exploitation",
+      "effective_date": "2024-01-01",
+      "keywords": ["elder financial exploitation", "elder abuse", "power of attorney", "FIN-2022-A002", "behavioral changes", "third party"],
+      "text": "Elder financial exploitation is the illegal or improper use of an older adult's funds, property, or assets. Financial institutions should file SARs when they observe: sudden large cash withdrawals by elderly customers, especially when accompanied by a third party; changes in account signatories or power of attorney documents near the time unusual activity begins; elderly customers who appear confused, fearful, or unable to speak independently; transactions inconsistent with the customer's long-term account history; a caregiver or family member directing the elderly customer's financial decisions. Reference FinCEN Advisory FIN-2022-A002 for elder financial exploitation typologies.",
+      "practical_guidance": "Document specific observations about the customer's demeanor and any third-party involvement. Note the date when behavioral changes were first observed and when new POA documentation was executed relative to the suspicious activity.",
+      "agent_usage_notes": "Elder exploitation SARs should specifically reference FIN-2022-A002, describe the victim's vulnerability indicators, and quantify the financial harm."
+    },
+    {
+      "section_id": "SAR-TERRORIST-FINANCING",
+      "section_number": "7",
+      "section_title": "Terrorist Financing Red Flags",
+      "effective_date": "2024-01-01",
+      "keywords": ["terrorist financing", "OFAC", "SDN", "FIN-2021-A004", "nonprofit misuse", "18 USC 2339B"],
+      "text": "Terrorist financing involves providing material support to designated terrorist organizations under 18 U.S.C. 2339B. Financial institutions must screen transactions against the OFAC Specially Designated Nationals (SDN) list and file SARs for potential matches. Red flags include: transactions involving OFAC-listed countries (Iran, North Korea, Cuba, Syria, Russia under specific sanctions); use of nonprofit organizations or charities as fund conduits; rapid transit of donated funds to foreign beneficiaries; structuring of donations; transactions with entities whose names are similar to SDN-listed parties. Reference FinCEN Advisories FIN-2021-A004 (charitable organizations) and FIN-2014-A007 (hawala networks).",
+      "practical_guidance": "For terrorist financing SARs, document the OFAC screening result and match rationale. Include the full name of the flagged entity, the SDN list designation category, and the nexus to the account holder.",
+      "agent_usage_notes": "When an OFAC hit is involved, always include the specific SDN match details in the narrative. Reference the applicable sanctions program (e.g., SDGT, OFAC-Iran, OFAC-Cuba)."
+    },
+    {
+      "section_id": "SAR-HUMAN-TRAFFICKING",
+      "section_number": "8",
+      "section_title": "Human Trafficking Financial Indicators",
+      "effective_date": "2024-01-01",
+      "keywords": ["human trafficking", "labor trafficking", "sex trafficking", "FIN-2014-A008", "third-party deposits", "controlled remittances"],
+      "text": "Human trafficking involves the exploitation of persons through force, fraud, or coercion for labor or commercial sex. Financial indicators include: multiple third-party cash deposits followed by immediate international remittances to a single beneficiary; account holder who appears to have limited control over their financial activities; transactions at unusual hours; deposits from multiple unrelated individuals; patterns of frequent low-denomination cash deposits inconsistent with stated income; remittances to high-risk geographic corridors. Reference FinCEN Advisory FIN-2014-A008. The Trafficking Victims Protection Act (22 U.S.C. 7101) defines federal offenses.",
+      "practical_guidance": "Document the number of distinct depositors, the time pattern of deposits, the single destination of outbound remittances, and any observed behavioral indicators of coercion or lack of autonomy.",
+      "agent_usage_notes": "Human trafficking SAR narratives should quantify the sender diversity (number of distinct depositors), map the deposit-to-remittance timeline, and reference FIN-2014-A008."
+    },
+    {
+      "section_id": "SAR-TIMING-RETENTION",
+      "section_number": "9",
+      "section_title": "SAR Filing Deadlines and Record Retention",
+      "effective_date": "2024-01-01",
+      "keywords": ["30-day deadline", "60-day deadline", "record retention", "5 years", "confidentiality", "safe harbor"],
+      "text": "SAR Filing Deadlines: (1) 30 calendar days from the date of initial detection of facts that constitute a basis for filing when a suspect is identified; (2) 60 calendar days from the date of initial detection when no suspect can be identified. Continuing suspicious activity: file a new SAR every 90 days as long as the suspicious activity continues. Record Retention: financial institutions must retain a copy of the SAR and all supporting documentation (transaction records, account statements, internal investigation notes) for a minimum of five years from the date of filing (31 CFR 1010.430). SAR Confidentiality: institutions are prohibited from disclosing the existence of a SAR to any person involved in the reported transaction (31 U.S.C. 5318(g)(2)). Safe Harbor: good-faith SAR filers are protected from civil liability under 31 U.S.C. 5318(g)(3).",
+      "practical_guidance": "Track SAR filing deadlines in your case management system. For continuing suspicious activity, calendar a 90-day follow-up to assess whether a continuation SAR is required. Never inform the subject of a SAR filing.",
+      "agent_usage_notes": "When computing SAR filing dates, count from the initial detection date. For ongoing activity patterns, flag for 90-day continuation review."
+    },
+    {
+      "section_id": "SAR-SUBJECT-INFORMATION",
+      "section_number": "10",
+      "section_title": "Subject and Filer Information Requirements",
+      "effective_date": "2024-01-01",
+      "keywords": ["subject identification", "TIN", "date of birth", "occupation", "filer information", "EIN"],
+      "text": "Subject Information (Part I of FinCEN SAR Form 111): Must include legal name (last, first, middle for individuals; full legal name for entities), address, date of birth (individuals only), occupation or type of business, TIN (SSN/ITIN for individuals; EIN for entities) or reason it is unavailable, government-issued identification (type, number, issuing country). If information is unknown, the 'Unknown' checkbox must be checked — fields must not be left blank. Filing Institution Information (Part IV): Must include the institution's legal name, EIN, primary federal regulator, address, and contact officer name and phone number.",
+      "practical_guidance": "Always verify subject TIN against account records before filing. Use the last 4 digits of account numbers in the narrative. For entities, confirm the EIN against SEC or IRS records if possible.",
+      "agent_usage_notes": "Validate that subject TIN is 9 digits for US entities/individuals. Flag if TIN is missing and note in the narrative whether the customer refused to provide it or it was otherwise unavailable."
+    }
+  ]
+}
