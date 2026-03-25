@@ -18,7 +18,13 @@ from backend.tools.field_mapper import (
 )
 from backend.config.settings import settings
 from backend.agents.aggregator_agent import AggregatorOrchestrator
-from backend.agents.router_agent import create_router_agent, create_router_task
+from backend.agents.router_agent import (
+    create_router_agent,
+    create_router_task,
+    derive_and_normalize_case,
+    strip_prompt_keys,
+    fallback_classify,
+)
 from backend.agents.narrative_agent import generate_narrative_payload
 from backend.agents.validator_agent import create_validator_agent, create_validator_task
 
@@ -463,6 +469,14 @@ def create_compliance_crew(
 ) -> Dict[str, dict]:
     normalized_case = normalize_case_data(transaction_data)
     normalized_case = _enrich_from_raw_user_input(normalized_case)
+    # Derive report type hint early (needed by derive_and_normalize_case for CTR person_a fields)
+    _early_rt = str(
+        normalized_case.get("report_type_hint")
+        or normalized_case.get("report_type")
+        or normalized_case.get("report_type_code")
+        or "SAR"
+    ).strip().upper()
+    normalized_case = derive_and_normalize_case(normalized_case, _early_rt)
     base_llm = LLM(model="gpt-4o", temperature=0.1, max_tokens=4000, api_key=settings.OPENAI_API_KEY)
 
     def mark_stage(agent: str, progress: int) -> None:
@@ -502,7 +516,8 @@ def create_compliance_crew(
             router_result = router_crew.kickoff()
             router_output = _parse_jsonish(router_result)
         except Exception as exc:
-            router_output = {"router_error": str(exc)}
+            router_output = fallback_classify(normalized_case)
+            router_output["router_error"] = str(exc)
 
     total_cash_amount = calculate_total_cash_amount(normalized_case)
     suspicious = has_suspicious_activity(normalized_case)
@@ -543,6 +558,9 @@ def create_compliance_crew(
         }
 
     # Researcher (Agent 2) intentionally skipped per workflow requirement.
+
+    # Strip prompt-text artifacts from top-level keys before sending to aggregator
+    normalized_case = strip_prompt_keys(normalized_case)
 
     aggregated_by_type: Dict[str, Dict[str, Any]] = {}
     mark_stage("aggregator", 35)
